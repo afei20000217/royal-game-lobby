@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#160909" />
+  <meta name="description" content="皇家遊戲大廳 — 夜色之中，盛宴即將開始。" />
+  <title>皇家遊戲大廳</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      min-height: 100svh;
+      overflow: hidden;
+      color: #fff3cf;
+      background: #160909;
+      font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    }
+    .lobby {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      isolation: isolate;
+      background-image: linear-gradient(180deg, rgba(20,5,8,.2), transparent 28%, transparent 65%, rgba(14,4,7,.35)), url("lobby-background.png");
+      background-position: center;
+      background-size: cover;
+      animation: appear 1.4s ease both;
+    }
+    .lobby::after {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      background: radial-gradient(ellipse at 50% 68%, transparent 10%, rgba(13,3,6,.16) 72%, rgba(12,3,5,.34));
+      pointer-events: none;
+    }
+    .brand {
+      position: absolute;
+      top: clamp(28px, 5vh, 58px);
+      left: 50%;
+      width: min(90vw, 520px);
+      transform: translateX(-50%);
+      text-align: center;
+      text-shadow: 0 2px 18px #160609, 0 0 32px rgba(255,183,63,.38);
+      animation: rise 1.2s .2s ease both;
+    }
+    .crown { display: block; margin-bottom: 9px; color: #ffd878; font-size: 26px; filter: drop-shadow(0 0 11px rgba(255,193,72,.85)); }
+    h1 { margin: 0; font-size: clamp(22px, 3vw, 34px); font-weight: 500; letter-spacing: .34em; padding-left: .34em; }
+    .rule { width: 120px; height: 1px; margin: 15px auto 0; background: linear-gradient(90deg, transparent, #f1bd61, transparent); opacity: .8; }
+    .bottom-mark { position: absolute; bottom: clamp(18px, 3.5vh, 34px); left: 50%; transform: translateX(-50%); color: rgba(255,231,187,.72); font: 10px/1.5 Arial, sans-serif; letter-spacing: .32em; text-transform: uppercase; white-space: nowrap; text-shadow: 0 2px 12px #1b0709; }
+    @keyframes appear { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes rise { from { opacity: 0; translate: 0 -8px } to { opacity: 1; translate: 0 0 } }
+    @media (max-width: 600px) {
+      .lobby { background-position: 50% center; }
+      .brand { top: 26px; }
+      h1 { letter-spacing: .25em; padding-left: .25em; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+  </style>
+</head>
+<body>
+  <main class="lobby" aria-label="皇家遊戲大廳">
+    <header class="brand">
+      <span class="crown" aria-hidden="true">♛</span>
+      <h1>皇家遊戲大廳</h1>
+      <div class="rule" aria-hidden="true"></div>
+    </header>
+    <div class="bottom-mark">A night of golden possibilities</div>
+  </main>
+</body>
+</html>
