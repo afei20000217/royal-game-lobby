@@ -22,7 +22,7 @@ async function register(request, env) {
   const body = await readBody(request);
   if (body.error) return json({ error: body.error }, 400);
   const username = accountName(body.account);
-  if (!username) return json({ error: "帳號需為 3–24 位英文、數字、底線或連字號，並以英文或數字開頭。" }, 400);
+  if (!username) return json({ error: "帳號需為 1–24 個字，不能空白或包含控制字元。" }, 400);
   if (!validPassword(body.password)) return json({ error: "密碼需為 10–128 個字元。" }, 400);
   if (await limited(env, "register", username, 8, 3600)) return json({ error: "建立帳號次數過多，請一小時後再試。" }, 429);
   if (await env.DB.prepare("SELECT id FROM users WHERE username = ?").bind(username).first()) return json({ error: "這個帳號已經有人使用。" }, 409);
@@ -85,8 +85,8 @@ async function readBody(request) {
 }
 function accountName(value) {
   if (typeof value !== "string") return null;
-  const result = value.trim().toLowerCase();
-  return /^[a-z0-9][a-z0-9_-]{2,23}$/.test(result) ? result : null;
+  const result = value.trim().normalize("NFC").toLowerCase();
+  return Array.from(result).length >= 1 && Array.from(result).length <= 24 && !/[\u0000-\u001f\u007f]/u.test(result) ? result : null;
 }
 function validPassword(value) {
   const count = typeof value === "string" ? Array.from(value).length : 0;
