@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#160909" />
+  <meta name="description" content="皇家遊戲大廳 — 夜色之中，盛宴即將開始。" />
+  <title>皇家遊戲大廳</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="lobby" aria-label="皇家遊戲大廳">
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="皇家遊戲大廳首頁"><span aria-hidden="true">♛</span> 皇家遊戲大廳</a>
+      <div class="account-area">
+        <span id="user-label" class="user-label" hidden></span>
+        <button id="auth-button" class="top-button" type="button">登入</button>
+      </div>
+    </header>
+    <section class="brand" aria-label="大廳標題">
+      <span class="hero-crown" aria-hidden="true">♛</span>
+      <h1>皇家遊戲大廳</h1>
+      <div class="rule" aria-hidden="true"></div>
+      <p>夜色之中，盛宴即將開始</p>
+    </section>
+    <div class="bottom-mark">A night of golden possibilities</div>
+  </main>
+
+  <dialog id="auth-dialog" class="dialog" aria-labelledby="auth-title">
+    <button class="dialog-close" type="button" data-close="auth-dialog" aria-label="關閉">×</button>
+    <span class="dialog-crown" aria-hidden="true">♛</span>
+    <h2 id="auth-title">歡迎回來</h2>
+    <p class="dialog-intro">登入或建立帳號，進入皇家大廳</p>
+    <div class="mode-switch" role="tablist" aria-label="登入或註冊">
+      <button id="login-tab" type="button" role="tab" aria-selected="true">登入</button>
+      <button id="register-tab" type="button" role="tab" aria-selected="false">註冊</button>
+    </div>
+    <form id="auth-form" novalidate>
+      <label for="account">帳號</label>
+      <input id="account" name="account" type="text" autocomplete="username" minlength="3" maxlength="24" required placeholder="3–24 位英文、數字、底線或連字號" />
+      <label for="password">密碼</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" minlength="10" maxlength="128" required placeholder="至少 10 個字元" />
+      <p id="auth-message" class="form-message" aria-live="polite"></p>
+      <button id="auth-submit" class="gold-button" type="submit">登入</button>
+    </form>
+    <p class="privacy-note">密碼會安全加密保存，不會以明文儲存。</p>
+  </dialog>
+
+  <dialog id="nickname-dialog" class="dialog nickname-dialog" aria-labelledby="nickname-title">
+    <span class="dialog-crown" aria-hidden="true">♛</span>
+    <h2 id="nickname-title">設定你的暱稱</h2>
+    <p class="dialog-intro">取一個喜歡的名字，讓大家在大廳認識你。</p>
+    <form id="nickname-form" novalidate>
+      <label for="nickname">暱稱</label>
+      <input id="nickname" name="nickname" type="text" autocomplete="nickname" maxlength="24" required placeholder="輸入 1–24 個字" />
+      <p id="nickname-message" class="form-message" aria-live="polite"></p>
+      <button id="nickname-submit" class="gold-button" type="submit">儲存暱稱</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
