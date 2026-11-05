@@ -12,7 +12,18 @@
 <body>
   <main class="lobby" aria-label="皇家遊戲大廳">
     <header class="topbar">
-      <a class="wordmark" href="/" aria-label="皇家遊戲大廳首頁"><span aria-hidden="true">♛</span> 皇家遊戲大廳</a>
+      <div class="topbar-start">
+        <a class="wordmark" href="/" aria-label="皇家遊戲大廳首頁"><span aria-hidden="true">♛</span> 首頁</a>
+        <section class="player-widget" aria-label="玩家資訊">
+          <div class="player-photo-frame" aria-hidden="true"><div class="player-photo"></div></div>
+          <div class="player-widget-info">
+            <div class="player-widget-title"><span>玩家資訊</span><span class="player-level">LV.1</span></div>
+            <strong id="player-name">訪客玩家</strong>
+            <div class="player-exp-label"><span>經驗值</span><span>0 / 100</span></div>
+            <div class="player-exp-track" role="progressbar" aria-label="經驗值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+          </div>
+        </section>
+      </div>
       <div class="account-area">
         <span id="user-label" class="user-label" hidden></span>
         <button id="auth-button" class="top-button" type="button">登入</button>

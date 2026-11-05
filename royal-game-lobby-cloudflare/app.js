@@ -2,6 +2,7 @@ const authDialog = document.querySelector("#auth-dialog");
 const nicknameDialog = document.querySelector("#nickname-dialog");
 const authButton = document.querySelector("#auth-button");
 const userLabel = document.querySelector("#user-label");
+const playerName = document.querySelector("#player-name");
 const authForm = document.querySelector("#auth-form");
 const accountInput = document.querySelector("#account");
 const passwordInput = document.querySelector("#password");
@@ -63,13 +64,15 @@ function updateAccountUI() {
   if (currentUser) {
     authButton.textContent = "登出";
     authButton.setAttribute("aria-label", `登出${currentUser.nickname ? `（${currentUser.nickname}）` : ""}`);
-    userLabel.hidden = false;
+    userLabel.hidden = true;
     userLabel.textContent = currentUser.nickname || currentUser.username;
+    playerName.textContent = currentUser.nickname || currentUser.username;
   } else {
     authButton.textContent = "登入";
     authButton.setAttribute("aria-label", "登入");
     userLabel.hidden = true;
     userLabel.textContent = "";
+    playerName.textContent = "訪客玩家";
   }
 }
 
