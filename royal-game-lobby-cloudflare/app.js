@@ -18,6 +18,21 @@ const toast = document.querySelector("#toast");
 let mode = "login";
 let currentUser = null;
 let toastTimer;
+const PASSWORD_ITERATIONS = 600_000;
+const encoder = new TextEncoder();
+
+function randomSalt() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function derivePasswordVerifier(password, saltHex, iterations = PASSWORD_ITERATIONS) {
+  if (!crypto.subtle) throw new Error("目前瀏覽器無法安全處理密碼，請更新瀏覽器後再試。");
+  const salt = new Uint8Array(saltHex.match(/.{2}/g).map((byte) => Number.parseInt(byte, 16)));
+  const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations, hash: "SHA-256" }, key, 256);
+  return Array.from(new Uint8Array(bits), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
 
 function showMessage(element, message, isError = false) {
   element.textContent = message;
@@ -132,11 +147,27 @@ authForm.addEventListener("submit", async (event) => {
 
   const account = accountInput.value.trim();
   const password = passwordInput.value;
+  const passwordLength = Array.from(password).length;
   authSubmit.disabled = true;
-  authSubmit.textContent = mode === "login" ? "登入中…" : "建立帳號中…";
+  authSubmit.textContent = mode === "login" ? "登入中…" : "安全建立帳號中…";
   try {
-    const path = mode === "login" ? "/api/auth/login" : "/api/auth/register";
-    const result = await api(path, { method: "POST", body: { account, password } });
+    if (passwordLength < 10 || passwordLength > 128) throw new Error("密碼需為 10–128 個字元。");
+    let result;
+    if (mode === "register") {
+      const salt = randomSalt();
+      const passwordVerifier = await derivePasswordVerifier(password, salt);
+      result = await api("/api/auth/register", {
+        method: "POST",
+        body: { account, salt, passwordVerifier, passwordLength }
+      });
+    } else {
+      const challenge = await api("/api/auth/challenge", { method: "POST", body: { account } });
+      const passwordVerifier = await derivePasswordVerifier(password, challenge.salt, challenge.iterations);
+      result = await api("/api/auth/login", {
+        method: "POST",
+        body: { account, passwordVerifier, passwordLength }
+      });
+    }
     currentUser = result.user;
     updateAccountUI();
     authDialog.close();
