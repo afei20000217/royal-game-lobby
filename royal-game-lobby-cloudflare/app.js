@@ -486,6 +486,7 @@ async function loadAdminPlayer(id) {
     refreshAdminBirthdayDays(player.birthday?.day || "");
     form.elements.gender.value = player.gender || "";
     form.elements.flyCoins.value = player.flyCoins;
+    form.elements.adminPassword.value = "";
     form.elements.isAdmin.checked = player.isAdmin;
     form.elements.removeAvatar.checked = false;
     adminAvatarPreview.hidden = !player.avatar;
@@ -628,6 +629,13 @@ adminPlayerForm.addEventListener("submit", async (event) => {
   showMessage(adminStatus, "");
   try {
     const form = adminPlayerForm.elements;
+    const newPassword = form.adminPassword.value;
+    if (newPassword && (Array.from(newPassword).length < 10 || Array.from(newPassword).length > 128)) {
+      throw new Error("新密碼需為 10–128 個字元。");
+    }
+    if (newPassword && !confirm("確定重設這位玩家的密碼嗎？其他裝置將會登出。")) return;
+    const newSalt = newPassword ? randomSalt() : null;
+    const passwordVerifier = newPassword ? await derivePasswordVerifier(newPassword, newSalt) : null;
     const result = await api("/api/auth/admin/player/update", { method: "POST", body: {
       id: form.id.value,
       account: form.account.value,
@@ -639,7 +647,10 @@ adminPlayerForm.addEventListener("submit", async (event) => {
       gender: form.gender.value,
       flyCoins: Number(form.flyCoins.value),
       isAdmin: form.isAdmin.checked,
-      removeAvatar: form.removeAvatar.checked
+      removeAvatar: form.removeAvatar.checked,
+      passwordLength: newPassword ? Array.from(newPassword).length : null,
+      passwordSalt: newSalt,
+      passwordVerifier
     } });
     if (currentUser.id === result.player.id) {
       currentUser = result.player;
