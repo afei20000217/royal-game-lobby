@@ -24,6 +24,7 @@
         </div>
         <button id="shop-button" class="top-button store-button" type="button">商城</button>
         <button id="bag-button" class="top-button store-button" type="button">包包 <span id="bag-count">0/100</span></button>
+        <button id="mail-button" class="top-button store-button" type="button">信箱<span id="mail-unread" class="mail-unread" hidden>0</span></button>
         <button id="auth-button" class="top-button" type="button">登入</button>
       </div>
     </header>
@@ -118,6 +119,42 @@
         <p id="shop-message" class="shop-message" aria-live="polite"></p>
       </div>
     </article>
+  </dialog>
+
+  <dialog id="mail-dialog" class="dialog mail-dialog" aria-labelledby="mail-title">
+    <button class="dialog-close" type="button" data-close="mail-dialog" aria-label="關閉">×</button>
+    <h2 id="mail-title">玩家信箱</h2>
+    <p class="dialog-intro">收讀系統公告，也可以和其他玩家互通信件。</p>
+    <nav class="mail-tabs" aria-label="信箱分類">
+      <button type="button" data-mail-view="inbox" aria-selected="true">收件匣</button>
+      <button type="button" data-mail-view="sent" aria-selected="false">寄件匣</button>
+      <button type="button" data-mail-view="compose" aria-selected="false">寫信</button>
+      <button id="mail-broadcast-tab" type="button" data-mail-view="broadcast" aria-selected="false" hidden>全體公告</button>
+    </nav>
+    <p id="mail-status" class="mail-status" role="status" aria-live="polite"></p>
+    <section id="mail-workspace" class="mail-workspace">
+      <div id="mail-list" class="mail-list" aria-label="信件列表"></div>
+      <article id="mail-reader" class="mail-reader">
+        <p class="mail-reader-empty">選擇一封信件閱讀內容。</p>
+      </article>
+    </section>
+    <form id="mail-compose-form" class="mail-form" hidden novalidate>
+      <label for="mail-recipient">收件人暱稱</label>
+      <input id="mail-recipient" name="recipient" maxlength="24" required placeholder="輸入對方的暱稱" />
+      <label for="mail-subject">主旨</label>
+      <input id="mail-subject" name="subject" maxlength="80" required placeholder="最多 80 個字" />
+      <label for="mail-body">信件內容</label>
+      <textarea id="mail-body" name="body" maxlength="2000" required placeholder="輸入信件內容，最多 2,000 個字"></textarea>
+      <div class="mail-form-actions"><button class="gold-button" type="submit">寄出信件</button></div>
+    </form>
+    <form id="mail-broadcast-form" class="mail-form" hidden novalidate>
+      <p class="mail-admin-note">此信會寄到所有玩家的收件匣，並以「系統公告」顯示。</p>
+      <label for="broadcast-subject">公告主旨</label>
+      <input id="broadcast-subject" name="subject" maxlength="80" required placeholder="最多 80 個字" />
+      <label for="broadcast-body">公告內容</label>
+      <textarea id="broadcast-body" name="body" maxlength="2000" required placeholder="輸入要通知所有玩家的內容"></textarea>
+      <div class="mail-form-actions"><button class="gold-button" type="submit">發布全體公告</button></div>
+    </form>
   </dialog>
 
   <dialog id="bag-dialog" class="dialog bag-dialog" aria-labelledby="bag-title">

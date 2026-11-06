@@ -9,6 +9,16 @@ const shopDialog = document.querySelector("#shop-dialog");
 const bagDialog = document.querySelector("#bag-dialog");
 const shopButton = document.querySelector("#shop-button");
 const bagButton = document.querySelector("#bag-button");
+const mailButton = document.querySelector("#mail-button");
+const mailUnread = document.querySelector("#mail-unread");
+const mailDialog = document.querySelector("#mail-dialog");
+const mailWorkspace = document.querySelector("#mail-workspace");
+const mailList = document.querySelector("#mail-list");
+const mailReader = document.querySelector("#mail-reader");
+const mailStatus = document.querySelector("#mail-status");
+const mailComposeForm = document.querySelector("#mail-compose-form");
+const mailBroadcastForm = document.querySelector("#mail-broadcast-form");
+const mailBroadcastTab = document.querySelector("#mail-broadcast-tab");
 const buyNikoButton = document.querySelector("#buy-niko-button");
 const shopMessage = document.querySelector("#shop-message");
 const bagItemsElement = document.querySelector("#bag-items");
@@ -58,6 +68,8 @@ let cropPanX = 0;
 let cropPanY = 0;
 let cropPointer = null;
 let inventoryItems = [];
+let activeMailView = "inbox";
+let activeMailItems = [];
 const BAG_CAPACITY = 100;
 const ITEM_DETAILS = {
   "niko-cat": { name: "尼可", image: "/game-art/niko.jpg", description: "把尼可帶回包包收藏吧。" }
@@ -114,6 +126,7 @@ function updateAccountUI() {
     currencyAmount.textContent = formatCurrency(currentUser.flyCoins);
     memberCenterButton.hidden = false;
     document.querySelector("#member-account-value").textContent = currentUser.username;
+    mailBroadcastTab.hidden = !currentUser.isAdmin;
   } else {
     authButton.textContent = "登入";
     authButton.setAttribute("aria-label", "登入");
@@ -123,6 +136,10 @@ function updateAccountUI() {
     currencyDisplay.hidden = true;
     memberCenterButton.hidden = true;
     memberCenterDialog.close();
+    mailDialog.close();
+    mailUnread.hidden = true;
+    mailUnread.textContent = "0";
+    mailBroadcastTab.hidden = true;
     inventoryItems = [];
     updateBagUI();
   }
@@ -212,6 +229,133 @@ async function openBag() {
   }
 }
 
+function updateMailUnread(count) {
+  const unread = Math.max(0, Number(count || 0));
+  mailUnread.textContent = unread > 99 ? "99+" : String(unread);
+  mailUnread.hidden = !currentUser || unread === 0;
+}
+
+function formatMailDate(timestamp) {
+  return new Intl.DateTimeFormat("zh-TW", { dateStyle: "short", timeStyle: "short" })
+    .format(new Date(Number(timestamp) * 1000));
+}
+
+function renderMailReader(item) {
+  mailReader.replaceChildren();
+  const meta = document.createElement("div");
+  meta.className = "mail-reader-meta";
+  const subject = document.createElement("h3");
+  subject.className = "mail-reader-title";
+  subject.textContent = item.subject;
+  const sender = document.createElement("span");
+  sender.className = "mail-reader-line";
+  sender.textContent = `寄件者：${item.senderName}`;
+  const recipient = document.createElement("span");
+  recipient.className = "mail-reader-line";
+  recipient.textContent = `收件者：${item.recipientName}`;
+  const date = document.createElement("span");
+  date.className = "mail-reader-line";
+  date.textContent = formatMailDate(item.createdAt);
+  meta.append(subject, sender, recipient, date);
+  const body = document.createElement("p");
+  body.className = "mail-reader-body";
+  body.textContent = item.body;
+  mailReader.append(meta, body);
+}
+
+function renderMailList(items) {
+  mailList.replaceChildren();
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "mail-list-empty";
+    empty.textContent = activeMailView === "sent" ? "目前沒有寄出的信件。" : "目前沒有信件或系統公告。";
+    mailList.append(empty);
+    mailReader.innerHTML = '<p class="mail-reader-empty">選擇一封信件閱讀內容。</p>';
+    return;
+  }
+  for (const item of items) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "mail-row";
+    if (activeMailView === "inbox" && !item.isRead) button.classList.add("unread");
+    const sender = document.createElement("span");
+    sender.className = "mail-row-sender";
+    sender.textContent = `${item.type === "system" ? "系統公告" : activeMailView === "sent" ? `寄給 ${item.recipientName}` : `來自 ${item.senderName}`}`;
+    const subject = document.createElement("span");
+    subject.className = "mail-row-subject";
+    subject.textContent = item.subject;
+    const date = document.createElement("span");
+    date.className = "mail-row-date";
+    date.textContent = formatMailDate(item.createdAt);
+    button.append(sender, subject, date);
+    button.addEventListener("click", () => openMailItem(item, button));
+    mailList.append(button);
+  }
+  mailReader.innerHTML = '<p class="mail-reader-empty">選擇一封信件閱讀內容。</p>';
+}
+
+async function openMailItem(item, selectedButton) {
+  if (activeMailView === "inbox" && !item.isRead) {
+    try {
+      const result = await api("/api/auth/mail/read", { method: "POST", body: { type: item.type, id: item.id } });
+      item.isRead = true;
+      selectedButton.classList.remove("unread");
+      updateMailUnread(result.unread);
+    } catch (error) {
+      showMessage(mailStatus, error.message, true);
+    }
+  }
+  mailList.querySelectorAll(".mail-row").forEach((row) => row.removeAttribute("aria-current"));
+  selectedButton.setAttribute("aria-current", "true");
+  renderMailReader(item);
+}
+
+async function loadMail(view) {
+  activeMailView = view;
+  document.querySelectorAll("[data-mail-view]").forEach((button) => {
+    button.setAttribute("aria-selected", String(button.dataset.mailView === view));
+  });
+  const isList = view === "inbox" || view === "sent";
+  mailWorkspace.hidden = !isList;
+  mailComposeForm.hidden = view !== "compose";
+  mailBroadcastForm.hidden = view !== "broadcast";
+  showMessage(mailStatus, "");
+  if (!isList) {
+    if (view === "compose") mailComposeForm.elements.recipient.focus();
+    if (view === "broadcast") mailBroadcastForm.elements.subject.focus();
+    return;
+  }
+  mailList.replaceChildren();
+  mailReader.innerHTML = '<p class="mail-reader-empty">信件載入中…</p>';
+  try {
+    const result = await api(`/api/auth/mail/${view}`);
+    activeMailItems = Array.isArray(result.items) ? result.items : [];
+    updateMailUnread(result.unread);
+    renderMailList(activeMailItems);
+  } catch (error) {
+    mailList.replaceChildren();
+    mailReader.innerHTML = '<p class="mail-reader-empty">無法載入信件。</p>';
+    showMessage(mailStatus, error.message, true);
+  }
+}
+
+async function openMail() {
+  if (!currentUser) {
+    openAuth("login");
+    return;
+  }
+  mailDialog.showModal();
+  await loadMail("inbox");
+}
+
+async function refreshMailBadge() {
+  if (!currentUser) return;
+  try {
+    const result = await api("/api/auth/mail/inbox");
+    updateMailUnread(result.unread);
+  } catch { /* Keep the lobby usable when mailbox refresh is temporarily unavailable. */ }
+}
+
 function updateProfileUI() {
   profileNickname.textContent = currentUser?.nickname || (currentUser ? "尚未設定暱稱" : "訪客玩家");
   profileAccount.textContent = currentUser ? `帳號：${currentUser.username}` : "訪客模式";
@@ -259,7 +403,10 @@ async function loadSession() {
     const result = await api("/api/auth/me");
     currentUser = result.user;
     updateAccountUI();
-    if (currentUser) refreshInventory().catch(() => {});
+    if (currentUser) {
+      refreshInventory().catch(() => {});
+      refreshMailBadge().catch(() => {});
+    }
     if (currentUser && !currentUser.nickname) openNicknameDialog();
   } catch {
     currentUser = null;
@@ -287,6 +434,54 @@ document.querySelectorAll("[data-close]").forEach((button) => {
 
 shopButton.addEventListener("click", openShop);
 bagButton.addEventListener("click", openBag);
+mailButton.addEventListener("click", openMail);
+document.querySelectorAll("[data-mail-view]").forEach((button) => button.addEventListener("click", () => {
+  const view = button.dataset.mailView;
+  if (view === "broadcast" && !currentUser?.isAdmin) return;
+  loadMail(view);
+}));
+mailComposeForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = mailComposeForm.querySelector('[type="submit"]');
+  button.disabled = true;
+  showMessage(mailStatus, "");
+  try {
+    await api("/api/auth/mail/send", { method: "POST", body: {
+      recipient: mailComposeForm.elements.recipient.value,
+      subject: mailComposeForm.elements.subject.value,
+      body: mailComposeForm.elements.body.value
+    } });
+    mailComposeForm.reset();
+    showMessage(mailStatus, "信件已寄出。");
+    await loadMail("sent");
+    showMessage(mailStatus, "信件已寄出。");
+  } catch (error) {
+    showMessage(mailStatus, error.message, true);
+  } finally {
+    button.disabled = false;
+  }
+});
+mailBroadcastForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!currentUser?.isAdmin || !confirm("這則公告會寄到所有玩家的收件匣，確定發布嗎？")) return;
+  const button = mailBroadcastForm.querySelector('[type="submit"]');
+  button.disabled = true;
+  showMessage(mailStatus, "");
+  try {
+    await api("/api/auth/mail/broadcast", { method: "POST", body: {
+      subject: mailBroadcastForm.elements.subject.value,
+      body: mailBroadcastForm.elements.body.value
+    } });
+    mailBroadcastForm.reset();
+    showMessage(mailStatus, "全體公告已發布。");
+    await loadMail("inbox");
+    showMessage(mailStatus, "全體公告已發布。");
+  } catch (error) {
+    showMessage(mailStatus, error.message, true);
+  } finally {
+    button.disabled = false;
+  }
+});
 document.querySelector("#bag-shop-button").addEventListener("click", () => {
   bagDialog.close();
   openShop();
@@ -578,6 +773,7 @@ authForm.addEventListener("submit", async (event) => {
     currentUser = result.user;
     updateAccountUI();
     refreshInventory().catch(() => {});
+    refreshMailBadge().catch(() => {});
     authDialog.close();
     authForm.reset();
     if (!currentUser.nickname) openNicknameDialog();

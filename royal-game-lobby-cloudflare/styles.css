@@ -151,6 +151,39 @@ button, input { font: inherit; }
 .currency-copy strong { color: #fff0c7; font: 600 13px/1.2 Arial, "Noto Sans TC", sans-serif; letter-spacing: .04em; }
 .store-button { min-width: auto; padding-right: 14px; padding-left: 14px; letter-spacing: .08em; }
 #bag-count { margin-left: 3px; color: #ffe0a0; font: 10px Arial, sans-serif; letter-spacing: 0; }
+.mail-unread { display: inline-grid; min-width: 17px; height: 17px; margin-left: 5px; padding: 0 4px; place-items: center; border-radius: 999px; color: #35180c; background: #f4cc78; font: 10px Arial, sans-serif; letter-spacing: 0; }
+.mail-unread[hidden] { display: none; }
+.mail-dialog { width: min(94vw, 860px); max-width: 860px; max-height: min(90svh, 780px); overflow-y: auto; }
+.mail-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0 12px; }
+.mail-tabs button { padding: 8px 14px; border: 1px solid rgba(239,190,105,.32); border-radius: 999px; color: #e8d0a6; background: rgba(0,0,0,.2); font-size: 12px; cursor: pointer; }
+.mail-tabs button[aria-selected="true"] { border-color: #e8be6d; color: #33190e; background: linear-gradient(135deg, #ffe5a0, #c18a3c); }
+.mail-tabs button[hidden] { display: none; }
+.mail-status { min-height: 18px; margin: 4px 0 8px; color: #f3d092; text-align: center; font-size: 12px; }
+.mail-status.error { color: #ffaaa1; }
+.mail-workspace { display: grid; grid-template-columns: minmax(200px, .8fr) minmax(0, 1.5fr); min-height: 300px; max-height: 52svh; overflow: hidden; border: 1px solid rgba(239,190,105,.23); border-radius: 14px; background: rgba(0,0,0,.16); }
+.mail-list { min-width: 0; overflow-y: auto; border-right: 1px solid rgba(239,190,105,.2); }
+.mail-list-empty { padding: 24px 14px; color: rgba(235,211,177,.62); text-align: center; font-size: 12px; line-height: 1.7; }
+.mail-row { display: grid; width: 100%; gap: 4px; padding: 13px 14px; border: 0; border-bottom: 1px solid rgba(239,190,105,.13); color: #fff0c7; background: transparent; cursor: pointer; text-align: left; }
+.mail-row:hover, .mail-row[aria-current="true"] { background: rgba(226,171,79,.12); }
+.mail-row.unread .mail-row-subject { color: #ffe19a; }
+.mail-row-sender { overflow: hidden; color: rgba(235,211,177,.7); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.mail-row-subject { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.mail-row-date { color: rgba(235,211,177,.5); font: 10px Arial, sans-serif; }
+.mail-reader { min-width: 0; overflow-y: auto; padding: 20px; }
+.mail-reader-empty { margin: 70px 10px; color: rgba(235,211,177,.55); text-align: center; font-size: 13px; }
+.mail-reader-meta { display: grid; gap: 7px; padding-bottom: 14px; border-bottom: 1px solid rgba(239,190,105,.2); }
+.mail-reader-title { margin: 0; color: #fff0c7; font-size: 19px; font-weight: 500; letter-spacing: .06em; overflow-wrap: anywhere; }
+.mail-reader-line { color: rgba(235,211,177,.68); font-size: 11px; }
+.mail-reader-body { margin: 17px 0 0; color: #f7e8cb; font-size: 13px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+.mail-form { display: grid; gap: 9px; max-height: 52svh; overflow-y: auto; padding: 16px 18px; border: 1px solid rgba(239,190,105,.23); border-radius: 14px; background: rgba(0,0,0,.16); }
+.mail-form[hidden] { display: none; }
+.mail-form label { margin-top: 4px; color: #f5dfb6; font-size: 12px; letter-spacing: .06em; }
+.mail-form input, .mail-form textarea { width: 100%; padding: 11px 12px; border: 1px solid rgba(241,197,127,.28); border-radius: 9px; outline: none; color: #fff7e5; background: rgba(6,4,6,.55); font: 13px Arial, "Noto Sans TC", sans-serif; }
+.mail-form textarea { min-height: 140px; resize: vertical; line-height: 1.7; }
+.mail-form input:focus, .mail-form textarea:focus { border-color: #e8be6d; box-shadow: 0 0 0 3px rgba(232,190,109,.13); }
+.mail-form-actions { display: flex; justify-content: flex-end; margin-top: 4px; }
+.mail-form-actions .gold-button { padding: 11px 18px; }
+.mail-admin-note { margin: 0 0 4px; color: #f4d394; font-size: 12px; line-height: 1.7; }
 .shop-dialog, .bag-dialog { width: min(92vw, 600px); max-width: 600px; max-height: min(90svh, 760px); overflow-y: auto; }
 .shop-item-card { display: grid; grid-template-columns: minmax(180px, .9fr) 1fr; gap: 22px; margin-top: 22px; padding: 14px; border: 1px solid rgba(239,190,105,.28); border-radius: 16px; background: linear-gradient(145deg, rgba(74,37,25,.38), rgba(12,7,9,.45)); }
 .shop-item-image-wrap { display: grid; min-height: 210px; overflow: hidden; place-items: center; border: 1px solid rgba(239,190,105,.38); border-radius: 12px; background: radial-gradient(ellipse at 50% 38%, #c9ae7c 0%, #a8804c 54%, #74512e 100%); box-shadow: inset 0 0 32px rgba(55,31,15,.22); }
@@ -175,8 +208,17 @@ button, input { font: inherit; }
 .bag-dialog > .gold-button { display: block; margin: 14px auto 0; }
 @media (max-width: 640px) {
   .account-area { gap: 6px; }
-  .store-button { padding: 8px 9px; font-size: 11px; }
+  .store-button { padding: 8px 7px; font-size: 10px; }
   #bag-count { font-size: 9px; }
+  .mail-dialog { padding-right: 18px; padding-left: 18px; }
+  .mail-tabs { gap: 5px; }
+  .mail-tabs button { padding: 7px 10px; font-size: 11px; }
+  .mail-workspace { grid-template-columns: minmax(110px, .7fr) minmax(0, 1.3fr); min-height: 280px; }
+  .mail-row { padding: 11px 8px; }
+  .mail-reader { padding: 14px 12px; }
+  .mail-reader-title { font-size: 16px; }
+  .mail-reader-body { font-size: 12px; }
+  .mail-form { padding: 13px 12px; }
   .shop-item-card { grid-template-columns: 1fr; gap: 15px; }
   .shop-item-image-wrap { min-height: 160px; max-height: 220px; }
   .shop-item-image-wrap img { max-height: 210px; }
@@ -185,7 +227,8 @@ button, input { font: inherit; }
 }
 @media (max-width: 420px) {
   .account-area { gap: 4px; }
-  .store-button { padding: 7px 7px; font-size: 10px; }
+  .store-button { padding: 7px 5px; font-size: 9px; }
+  .mail-unread { min-width: 15px; height: 15px; margin-left: 2px; font-size: 9px; }
   .currency-display { padding: 5px 6px; }
   .currency-copy strong { font-size: 9px; }
 }
