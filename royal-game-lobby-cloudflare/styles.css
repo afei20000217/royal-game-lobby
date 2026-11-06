@@ -11,11 +11,19 @@ button, input { font: inherit; }
 .member-center-dialog { max-height: min(90svh, 760px); overflow-y: auto; }
 .member-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(239,190,105,.2); }
 .member-section h3 { margin: 0 0 14px; color: #f4d394; font-size: 16px; font-weight: 500; letter-spacing: .1em; }
+.member-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.member-row h3 { margin-bottom: 6px; }
+.member-value { color: #fff0c7; font: 14px Arial, "Noto Sans TC", sans-serif; letter-spacing: .04em; }
+.member-edit-button, .member-form-actions > button { padding: 8px 14px; border: 1px solid rgba(239,190,105,.38); border-radius: 8px; color: #f5d89f; background: rgba(0,0,0,.2); cursor: pointer; }
+.member-edit-button:hover, .member-form-actions > button:hover { border-color: rgba(255,217,141,.82); }
 .member-section form { display: grid; gap: 8px; }
+.member-section form[hidden] { display: none; }
 .member-section label { margin-top: 4px; color: #f5dfb6; font-size: 12px; letter-spacing: .06em; }
 .member-section input { width: 100%; padding: 11px 12px; border: 1px solid rgba(241,197,127,.28); border-radius: 9px; outline: none; color: #fff7e5; background: rgba(6,4,6,.55); font: 14px Arial, "Noto Sans TC", sans-serif; }
 .member-section input:focus { border-color: #e8be6d; box-shadow: 0 0 0 3px rgba(232,190,109,.13); }
 .member-section .gold-button { padding: 11px 14px; }
+.member-form-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 4px; }
+.member-form-actions .gold-button { margin-top: 0; }
 .user-label { color: #ffe8b4; font-size: 14px; letter-spacing: .08em; text-shadow: 0 2px 12px #160609; }
 .top-button { min-width: 94px; padding: 10px 20px; border: 1px solid rgba(255,217,141,.76); border-radius: 999px; color: #fff0ca; background: rgba(30,8,11,.56); box-shadow: inset 0 0 16px rgba(237,167,59,.08), 0 5px 24px rgba(0,0,0,.22); cursor: pointer; letter-spacing: .14em; transition: background .2s, box-shadow .2s, transform .2s; }
 .top-button:hover { background: rgba(99,35,26,.72); box-shadow: 0 0 22px rgba(255,195,88,.28); transform: translateY(-1px); }

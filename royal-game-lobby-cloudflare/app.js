@@ -98,6 +98,7 @@ function updateAccountUI() {
     currencyDisplay.hidden = false;
     currencyAmount.textContent = formatCurrency(currentUser.flyCoins);
     memberCenterButton.hidden = false;
+    document.querySelector("#member-account-value").textContent = currentUser.username;
   } else {
     authButton.textContent = "登入";
     authButton.setAttribute("aria-label", "登入");
@@ -200,10 +201,32 @@ memberCenterButton.addEventListener("click", () => {
   if (!currentUser) return;
   changeAccountForm.reset();
   changePasswordForm.reset();
+  changeAccountForm.hidden = true;
+  changePasswordForm.hidden = true;
   memberCenterDialog.querySelectorAll(".form-message").forEach((message) => { message.textContent = ""; message.classList.remove("error"); });
-  changeAccountForm.elements.newAccount.value = currentUser.username;
   memberCenterDialog.showModal();
 });
+document.querySelectorAll("[data-member-edit]").forEach((button) => button.addEventListener("click", () => {
+  const type = button.dataset.memberEdit;
+  const form = type === "account" ? changeAccountForm : changePasswordForm;
+  const otherForm = type === "account" ? changePasswordForm : changeAccountForm;
+  otherForm.hidden = true;
+  otherForm.reset();
+  otherForm.querySelector(".form-message").textContent = "";
+  otherForm.querySelector(".form-message").classList.remove("error");
+  form.hidden = false;
+  form.querySelector(".form-message").textContent = "";
+  form.querySelector(".form-message").classList.remove("error");
+  if (type === "account") form.elements.newAccount.value = currentUser.username;
+  form.querySelector('[name="currentPassword"]').focus();
+}));
+document.querySelectorAll("[data-member-cancel]").forEach((button) => button.addEventListener("click", () => {
+  const form = button.dataset.memberCancel === "account" ? changeAccountForm : changePasswordForm;
+  form.reset();
+  form.hidden = true;
+  form.querySelector(".form-message").textContent = "";
+  form.querySelector(".form-message").classList.remove("error");
+}));
 profileLogin.addEventListener("click", () => {
   profileDialog.close();
   openAuth("login");
@@ -483,7 +506,7 @@ async function submitCredentialChange(form, type) {
     currentUser = result.user;
     updateAccountUI();
     form.reset();
-    if (type === "account") changeAccountForm.elements.newAccount.value = currentUser.username;
+    form.hidden = true;
     showToast(type === "account" ? "帳號已更新" : "密碼已更新" + (result.sessionsRevoked ? "，其他登入裝置已登出" : ""));
   } catch (error) {
     message.textContent = error.message;

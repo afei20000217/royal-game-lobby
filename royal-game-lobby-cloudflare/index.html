@@ -68,21 +68,27 @@
   <dialog id="member-center-dialog" class="dialog member-center-dialog" aria-labelledby="member-center-title">
     <button class="dialog-close" type="button" data-close="member-center-dialog" aria-label="關閉">×</button>
     <h2 id="member-center-title">會員中心</h2>
-    <p class="dialog-intro">管理你的登入帳號與密碼。為保障帳戶安全，每次變更都要先確認目前密碼。</p>
+    <p class="dialog-intro">查看帳號資料，點選修改後再進行變更。</p>
     <section class="member-section" aria-labelledby="change-account-title">
-      <h3 id="change-account-title">修改帳號</h3>
-      <form id="change-account-form" novalidate>
+      <div class="member-row">
+        <div><h3 id="change-account-title">帳號</h3><span id="member-account-value" class="member-value"></span></div>
+        <button class="member-edit-button" type="button" data-member-edit="account">修改</button>
+      </div>
+      <form id="change-account-form" novalidate hidden>
         <label for="account-current-password">目前密碼</label>
         <input id="account-current-password" name="currentPassword" type="password" autocomplete="current-password" minlength="10" maxlength="128" required />
         <label for="new-account">新帳號</label>
         <input id="new-account" name="newAccount" type="text" autocomplete="username" minlength="1" maxlength="24" required placeholder="輸入新的帳號" />
         <p class="form-message" aria-live="polite"></p>
-        <button class="gold-button" type="submit">儲存新帳號</button>
+        <div class="member-form-actions"><button type="button" data-member-cancel="account">取消</button><button class="gold-button" type="submit">儲存新帳號</button></div>
       </form>
     </section>
     <section class="member-section" aria-labelledby="change-password-title">
-      <h3 id="change-password-title">修改密碼</h3>
-      <form id="change-password-form" novalidate>
+      <div class="member-row">
+        <div><h3 id="change-password-title">密碼</h3><span class="member-value" aria-label="密碼已隱藏">••••••••••</span></div>
+        <button class="member-edit-button" type="button" data-member-edit="password">修改</button>
+      </div>
+      <form id="change-password-form" novalidate hidden>
         <label for="password-current-password">目前密碼</label>
         <input id="password-current-password" name="currentPassword" type="password" autocomplete="current-password" minlength="10" maxlength="128" required />
         <label for="new-password">新密碼</label>
@@ -90,7 +96,7 @@
         <label for="confirm-new-password">再次輸入新密碼</label>
         <input id="confirm-new-password" name="confirmNewPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required />
         <p class="form-message" aria-live="polite"></p>
-        <button class="gold-button" type="submit">儲存新密碼</button>
+        <div class="member-form-actions"><button type="button" data-member-cancel="password">取消</button><button class="gold-button" type="submit">儲存新密碼</button></div>
       </form>
     </section>
   </dialog>
