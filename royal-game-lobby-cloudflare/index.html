@@ -6,10 +6,22 @@
   <meta name="theme-color" content="#160909" />
   <meta name="description" content="皇家遊戲大廳 — 夜色之中，盛宴即將開始。" />
   <title>皇家遊戲大廳</title>
+  <link rel="stylesheet" href="/page-loader.css" />
+  <script src="/page-loader.js" defer></script>
   <link rel="stylesheet" href="/styles.css" />
   <script src="/app.js" defer></script>
 </head>
 <body>
+  <section class="page-loader" data-page-loader data-page="lobby" hidden aria-hidden="true" aria-live="polite">
+    <img class="page-loader-art" src="/game-art/shanhaijing.png" alt="" />
+    <div class="page-loader-panel">
+      <span class="page-loader-kicker">ROYAL GAME LOBBY</span>
+      <strong class="page-loader-title">正在進入山海經</strong>
+      <span class="page-loader-caption" data-loader-caption>正在準備遊戲畫面…</span>
+      <div class="page-loader-track" role="progressbar" aria-label="遊戲載入進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-loader-bar></span></div>
+      <span class="page-loader-percent" data-loader-percent>0%</span>
+    </div>
+  </section>
   <main class="lobby" aria-label="皇家遊戲大廳">
     <header class="topbar">
       <div class="topbar-start">
@@ -40,7 +52,7 @@
       </span>
     </button>
     <section class="game-gallery" aria-label="遊戲選擇">
-      <a class="game-tile game-tile-link" href="/games/shanhaijing/" target="_blank" rel="noopener" aria-label="開啟山海經試玩版">
+      <a class="game-tile game-tile-link" href="/games/shanhaijing/" aria-label="開啟山海經試玩版">
         <img src="/game-art/shanhaijing.png" alt="山海經：金色九尾天狐與山海場景" />
         <span class="game-status">開始試玩</span>
       </a>
