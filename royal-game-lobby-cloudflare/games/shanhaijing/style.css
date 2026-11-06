@@ -1,0 +1,2155 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&display=swap');
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#fff;font-family:'Noto Serif TC',serif;background:radial-gradient(circle at 50% 0,#936d28 0,#244b46 35%,#061b2a 78%);transition:background .4s}
+main{max-width:1180px;margin:auto;padding:22px 24px 28px;position:relative;overflow:hidden}main:before,main:after{content:'';position:absolute;top:42px;width:210px;height:300px;background-size:contain;background-repeat:no-repeat;opacity:.8;pointer-events:none}main:before{left:-52px;background-image:url('assets/05.jpg')}main:after{right:-52px;background-image:url('assets/04.jpg')}
+header,footer,.game{display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;z-index:1}header{padding:12px 8px}small{color:#ffdc90;letter-spacing:.12em}h1{margin:2px 0;font-size:clamp(28px,4.5vw,52px);text-shadow:0 3px 2px #14200f;color:#ffe8ac}.balance,.feature{background:linear-gradient(145deg,#0a2e36e8,#071b29e8);border:1px solid #d7a942;border-radius:12px;padding:11px 17px;box-shadow:inset 0 0 16px #0008}.balance b{display:block;font-size:23px}.eventBanner{position:relative;z-index:1;margin:3px auto 13px;max-width:620px;padding:9px;text-align:center;border-top:1px solid #e8c46d;border-bottom:1px solid #e8c46d;color:#ffeca8;background:#102e31c9;font-weight:700;transition:.3s}
+.game{align-items:stretch}.game aside{width:178px;display:flex;flex-direction:column;gap:13px;position:relative;z-index:1}.feature strong{display:block;font-size:34px;color:#ffd35a}.game p{font-size:13px;line-height:1.75;color:#eef0d8;margin:0}.eventLog{padding:9px;border-left:1px solid #bda25a;background:#071e2ac9}.eventLog ol{padding-left:19px;margin:6px 0 0;color:#dce9d9;font:11px/1.55 Arial}.eventLog li{margin:2px 0}.rules{padding:16px;border-left:1px solid #cfaa58;background:#09263099}.reelStage{position:relative;z-index:1;flex:1;min-width:0}.reels{position:relative;z-index:1;display:grid;grid-template-columns:repeat(6,1fr);gap:7px;width:100%;padding:13px;background:linear-gradient(135deg,#6e4313,#f6d87b 19%,#6e4313 47%,#f4cf67 72%,#633a10);border:5px solid #ffe5a0;border-radius:20px;box-shadow:0 14px 38px #000a,inset 0 0 20px #582d04;transition:.3s}.winTicker{display:flex;align-items:center;justify-content:center;gap:15px;min-height:49px;margin:10px 8px 0;padding:7px 15px;border:1px solid #b58c3c;border-radius:11px;background:#071d29e5;text-align:center}.winTicker b{font-size:24px;color:#ffe06a}.winTicker span{font-size:12px;color:#cae9dd}.cell{aspect-ratio:1;background:radial-gradient(circle,#315f58,#071d2a);border:2px solid #e0bc60;border-radius:12px;display:grid;place-items:center;font-size:0;overflow:hidden;box-shadow:inset 0 0 15px #000b}.cell img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px #000)}.cell.win{background:#d38a24;animation:pulse .55s 2}.cell.orb{position:relative;border-color:#f5edcf}.orbValue{position:absolute;right:3px;bottom:2px;min-width:30px;padding:1px 4px;border-radius:8px;background:#1f681f;color:#ffe564;font:bold 12px Arial;text-shadow:0 1px #000}@keyframes pulse{50%{transform:scale(1.08);filter:brightness(1.6)}}
+footer{justify-content:center;margin-top:18px;padding:13px;background:#041a28df;border:1px solid #b58c3c;border-radius:14px}.bet{text-align:center;min-width:85px}.bet b{display:block;font-size:20px}button{border:0;border-radius:10px;padding:12px 16px;background:linear-gradient(#2e5f62,#153b45);color:#fff;font:700 15px inherit;cursor:pointer;box-shadow:inset 0 1px #84aaa0}button:hover{filter:brightness(1.14)}#spin{padding:15px 44px;font-size:21px;background:linear-gradient(#ffcc56,#a95f11);border:2px solid #ffe29a;color:#fff}.demoLinks{display:flex;gap:5px;border-left:1px solid #7b805c;padding-left:9px}.demoLinks button{font-size:11px;padding:7px 9px;background:#31512c}.hidden{display:none!important}#modal{position:fixed;z-index:5;inset:0;background:#000a;display:grid;place-items:center}#modal>div{text-align:center;padding:30px 44px;min-width:280px;max-width:420px;background:linear-gradient(#174a48,#061c2b);border:3px solid #edbd55;border-radius:18px}#modalArt{width:min(220px,70vw);max-height:150px;object-fit:contain;margin:-10px auto 3px;filter:drop-shadow(0 5px 8px #000)}#modal strong{display:block;color:#ffd35d;font-size:50px;margin:14px}#modal p{max-width:330px;line-height:1.6;color:#fff4cd}
+body[data-mode="free"]{background:radial-gradient(circle at 50% 0,#c28b30 0,#38633c 35%,#071c28 78%)}body[data-mode="free"] .eventBanner{color:#fff7c2;background:#446622d9}body[data-mode="free"] .reels{box-shadow:0 0 34px #b9df5399,inset 0 0 20px #582d04}body[data-mode="bonus"]{background:radial-gradient(circle at 50% 0,#976aa9 0,#203c6a 35%,#070f2c 78%)}body[data-mode="bonus"] .eventBanner{color:#f7dcff;background:#4d286cd9}body[data-mode="bonus"] .reels{box-shadow:0 0 38px #e297ff99,inset 0 0 20px #582d04}body[data-mode="bonus"] main:before,body[data-mode="bonus"] main:after{opacity:1}
+@media(max-width:800px){main{min-height:100vh;padding:12px 10px}main:before,main:after{opacity:.3;top:60px;width:130px;height:180px}main:before{left:-55px}main:after{right:-55px}header{padding-top:4px}.balance{padding:8px 11px}.balance b{font-size:18px}h1{font-size:28px}.game aside,.rules{display:none}.reels{gap:4px;padding:7px;border-width:4px;border-radius:15px}.winTicker{margin:7px 0 0;gap:8px;min-height:41px}.winTicker b{font-size:18px}.winTicker span{font-size:10px}.cell{border-radius:7px;border-width:1px}footer{gap:8px;flex-wrap:wrap;padding:10px}.demoLinks{order:2;width:100%;justify-content:center;border:0;padding:3px 0 0}button{padding:10px 12px}#spin{padding:13px 32px}.eventBanner{font-size:12px}}
+.orbSprite{display:block;width:91%;height:91%;background-image:url('assets/03.png');background-size:400% 200%;background-repeat:no-repeat}.orbSprite.green{background-position:0 0}.orbSprite.blue{background-position:33.333% 0}.orbSprite.purple{background-position:66.666% 0}.orbSprite.red{background-position:100% 0}
+.cell.locked{border-color:#7ceeff;box-shadow:0 0 14px #42dff8,inset 0 0 15px #000b}.lockValue{position:absolute;left:2px;top:2px;padding:2px 4px;border-radius:6px;background:#176a91;color:#e5ffff;font:bold 9px Arial}
+body{background:#07130f url('assets/22.jpg') center top/cover fixed no-repeat}body:before{content:'';position:fixed;inset:0;background:linear-gradient(#061b1aa8 0%,#071e1ee0 54%,#030f18f2 100%);pointer-events:none}main{max-width:860px;min-height:100vh;padding:16px 18px 28px;z-index:1}main:before,main:after{top:7px;width:205px;height:240px;opacity:.94;z-index:0}main:before{left:-40px}main:after{right:-40px}header{min-height:115px;padding:12px 10px;align-items:flex-start}header>div:first-child{position:relative;z-index:1}h1{font-size:clamp(30px,5.5vw,50px)}.eventBanner{max-width:100%;margin:0 0 10px;background:#0a2116df}.game{display:grid;grid-template-columns:1fr;gap:10px;max-width:760px;margin:auto}.game>aside:first-child{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;order:0}.game>aside:first-child .feature{padding:8px 13px}.game>aside:first-child .feature strong{font-size:27px}.game>aside:first-child p,.game>aside:first-child .eventLog{grid-column:1 / -1}.game>aside:first-child p{padding:4px 8px}.eventLog{display:none}.reelStage{order:1}.game>.rules{width:100%;display:flex;flex-direction:row;align-items:center;justify-content:space-around;gap:4px;padding:8px 12px;border:1px solid #a9833c;background:#061c1bdb;order:2}.rules p{font-size:11px}.reels{padding:27px 32px 31px;border:0;border-radius:0;background-color:#071a16;background-image:url('assets/26.png');background-size:100% 100%;background-position:center;background-blend-mode:multiply;box-shadow:0 13px 32px #000b}.cell{border:1px solid #d6a84d;border-radius:7px;background:radial-gradient(circle at 50% 35%,#44624b,#071912 72%);box-shadow:inset 0 0 13px #000d}.cell img{mix-blend-mode:screen;filter:drop-shadow(0 3px 3px #000)}.cell.dropping{animation:columnDrop .22s ease-out}@keyframes columnDrop{from{transform:translateY(-34px);opacity:.15}to{transform:translateY(0);opacity:1}}.winTicker{margin:8px 0 0;background:#061814e8;border-color:#d1a44c}footer{max-width:760px;margin:13px auto 0;background:#061a18ef}.demoLinks{display:none}
+@media(max-width:800px){body{background-position:center top}main{padding:8px 7px 18px}main:before,main:after{width:120px;height:155px;opacity:.42}header{min-height:86px;padding:5px 5px}.game>aside:first-child,.game>.rules{display:none}.reels{padding:18px 20px 22px;gap:4px}.cell{border-radius:5px}.eventBanner{margin-bottom:7px}.winTicker{margin-top:6px}footer{margin-top:9px}.demoLinks{display:flex}}
+
+/* Proposal artwork is used as the original presentation layer for each game state. */
+body[data-mode="free"]{background:#1f3118 url('assets/20.jpg') center top/cover fixed no-repeat}
+body[data-mode="bonus"]{background:#15251d url('assets/24.jpg') center top/cover fixed no-repeat}
+body[data-mode="free"]:before{background:linear-gradient(#263c1bb4 0%,#07170feb 68%,#030d0aea 100%)}
+body[data-mode="bonus"]:before{background:linear-gradient(#1c2714ba 0%,#10180ded 68%,#040b0aea 100%)}
+.winTicker{position:relative;overflow:hidden;border-color:#dbb65d;background:#071914e8 url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply;box-shadow:inset 0 0 18px #000b,0 4px 12px #0008}
+.winTicker>*{position:relative;z-index:1}.winTicker:before{content:'';position:absolute;inset:4px 12%;border-top:1px solid #f9dc84a8;border-bottom:1px solid #9b641f99;pointer-events:none}
+footer{background:#061711ef url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply;box-shadow:inset 0 0 22px #000c,0 8px 22px #0009}
+.feature,.balance{background-color:#071c18e8;background-image:linear-gradient(145deg,#163e2edb,#061511ee);border-color:#d9b35b}
+.reels.spinning{filter:brightness(1.12);box-shadow:0 0 22px #e8c35d8c,0 13px 32px #000b}.reels.spinning .cell{animation:reelHum .18s linear infinite alternate}@keyframes reelHum{to{filter:brightness(1.2);transform:translateY(2px)}}
+.cell.fox,.cell.qingqiu,.cell.nuwa,.cell.fuxi,.cell.orb{isolation:isolate}.cell.fox:after,.cell.qingqiu:after,.cell.nuwa:after,.cell.fuxi:after{content:'';position:absolute;inset:4px;border:1px solid #ffec9a99;border-radius:inherit;box-shadow:inset 0 0 10px #f1c95b55;pointer-events:none}.cell.special{z-index:2;animation:specialReveal .22s ease-in-out 3;border-color:#fff0ad;box-shadow:0 0 20px #ffd85c,inset 0 0 16px #fff3a177}.cell.special:after{content:'';position:absolute;inset:-35%;background:linear-gradient(115deg,transparent 38%,#fff8c899 50%,transparent 62%);animation:shimmer .55s ease-out forwards;pointer-events:none}@keyframes specialReveal{50%{transform:scale(1.1);filter:brightness(1.45)}}@keyframes shimmer{from{transform:translateX(-50%) rotate(12deg)}to{transform:translateX(50%) rotate(12deg)}}
+.cell.jp{border-color:#f6d36c;box-shadow:0 0 14px #e5ae34,inset 0 0 14px #000d}.cell.jp img{mix-blend-mode:multiply;filter:drop-shadow(0 2px 3px #000)}#modalArt.cutout{mix-blend-mode:multiply}
+.cell.baize img,.cell.bifang img{mix-blend-mode:multiply;filter:drop-shadow(0 3px 4px #000)}.cell.baize{border-color:#e8d998;box-shadow:0 0 11px #f1d87466,inset 0 0 13px #000d}.cell.bifang{border-color:#ecae61;box-shadow:0 0 11px #e7723d66,inset 0 0 13px #000d}
+.orbSprite{mix-blend-mode:multiply;filter:drop-shadow(0 2px 4px #000)}.cell.orb{background:radial-gradient(circle,#416744,#071810 74%)}.cell.orb.rare{border-color:#f6baff;box-shadow:0 0 16px #d35dff,inset 0 0 13px #000d}.cell.orb.rare:after{content:'稀有';position:absolute;left:2px;top:2px;padding:1px 4px;border-radius:5px;background:#762797;color:#fff1ff;font:700 8px Arial}
+
+/* Vertical illustrated game layout: all controls remain interactive HTML. */
+body{background:#1a170b url('assets/19.jpg') center top/cover fixed no-repeat}body:before{background:linear-gradient(#301c08a0 0%,#07150dcc 46%,#030e0ce8 100%)}
+main{max-width:620px;min-height:100vh;padding:0 9px 22px;overflow:visible}main:before,main:after{display:none}
+header{position:relative;min-height:238px;padding:174px 16px 10px;align-items:flex-end;isolation:isolate;overflow:hidden;border-bottom:2px solid #d9b354;background:linear-gradient(180deg,transparent 5%,#10231733 48%,#06140fdf 100%)}
+header:before,header:after{content:'';position:absolute;top:0;width:52%;height:184px;background-repeat:no-repeat;background-size:contain;z-index:-1;filter:drop-shadow(0 8px 10px #25130488)}header:before{left:-1%;background-image:url('assets/05.jpg');background-position:left top}header:after{right:-1%;background-image:url('assets/04.jpg');background-position:right top}
+header>div:first-child{max-width:360px;padding:8px 15px;border:1px solid #e4bf60;border-radius:9px;background:#0a241edb url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply;box-shadow:inset 0 0 15px #000b}header small{font-size:9px}h1{font-size:clamp(27px,7vw,42px);line-height:1.05;text-shadow:0 3px 4px #120900;color:#ffebac}.balance{position:absolute;right:16px;bottom:10px;padding:8px 13px;border:2px solid #e4bf60;border-radius:12px;background:#09211be8;box-shadow:0 0 13px #f4c45355,inset 0 0 15px #000}.balance b{font-size:20px}
+.eventBanner{margin:8px auto 9px;min-height:31px;padding:7px 14px;border:0;background:#071d17e8 url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply;color:#ffedab;font-size:12px;box-shadow:inset 0 0 14px #000b}
+.game{max-width:600px;gap:8px}.reelStage{order:1}.game>aside:first-child{order:2;display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0;background:transparent}.game>aside:first-child .feature{min-height:66px;padding:9px 15px;border-radius:8px;background:#081f19e8 url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply}.game>aside:first-child .feature strong{font-size:28px}.game>aside:first-child p{padding:6px 12px;text-align:center;font-size:11px;color:#f5e6ba;background:#071b16d9;border:1px solid #a88238;border-radius:8px}.game>.rules{order:3;display:flex;min-height:36px;padding:6px 9px;background:#071b16de url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply}.rules b{color:#ffdfa0}.rules p{font-size:9px;color:#f2e2b4}
+.reels{padding:28px 29px 30px;gap:5px;border:0;border-radius:0;background-color:#061a14;background-image:url('assets/25.png');background-size:100% 100%;background-position:center;background-blend-mode:multiply;box-shadow:0 14px 30px #000c,inset 0 0 18px #c68a2b55}.cell{border:1px solid #e0b95b;border-radius:6px;background:radial-gradient(circle at 50% 30%,#45664a,#071810 75%);box-shadow:inset 0 0 12px #000d,0 1px 4px #000b}.winTicker{min-height:51px;margin:7px 4px 0;border:0;border-radius:0;background:#071912e8 url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply;box-shadow:inset 0 0 16px #000c}.winTicker b{font-size:25px;color:#ffe285}.winTicker span{font-size:10px;color:#f3dfad}
+footer{max-width:600px;display:grid;grid-template-columns:42px 86px 42px 112px 70px 54px;justify-content:center;gap:6px;align-items:center;margin:10px auto 0;padding:12px 10px;border:1px solid #d7ad52;border-radius:12px;background:#091c16f2 url('assets/44.png') center/100% 100% no-repeat;background-blend-mode:multiply}footer button{min-height:42px;padding:7px 5px;border:1px solid #d9ad4e;border-radius:10px;background:linear-gradient(145deg,#29554c,#0a251f);box-shadow:inset 0 0 8px #ffffff26,0 2px 4px #0009}footer .bet{min-width:0;color:#ffedab}footer .bet b{font-size:18px;color:#fff0ba}footer #spin{min-height:57px;padding:8px;font-size:20px;border-radius:50%;background:radial-gradient(circle at 45% 28%,#ffe48d,#b96a12 65%,#5c2b08);box-shadow:0 0 12px #f6c14f88,inset 0 0 5px #fff3c7}footer #auto,footer #rulesBtn{font-size:10px}.demoLinks{grid-column:1/-1;justify-content:center;border:0;padding:3px 0 0}.demoLinks button{min-height:29px;font-size:10px}
+@media(max-width:620px){main{padding:0 5px 14px}header{min-height:213px;padding:155px 10px 9px}header:before,header:after{height:166px}header>div:first-child{max-width:315px;padding:7px 10px}h1{font-size:28px}.balance{right:10px;bottom:9px;padding:6px 9px}.balance b{font-size:17px}.eventBanner{font-size:10px}.reels{padding:24px 24px 27px;gap:4px}.cell{border-radius:5px}.game>aside:first-child p{font-size:10px}.game>.rules{display:flex}.rules p{font-size:8px}footer{grid-template-columns:35px 70px 35px 82px 56px 42px;gap:4px;padding:8px 5px}footer button{min-height:38px;font-size:14px}footer #spin{min-height:50px;font-size:17px}footer #auto,footer #rulesBtn{font-size:8px}.demoLinks{display:none}}
+
+/* Reference-aligned presentation layer: only proposal artwork is used. */
+/* 22.jpg is the golden 山水主視覺 from the proposal, replacing the previous dark landscape. */
+body{background:#5c3a12 url('assets/22.jpg') center top/cover fixed no-repeat}body:before{background:linear-gradient(#4d2a0870 0%,#122116bb 49%,#050f0bea 100%)}
+/* Scene map from the proposal: 19 = base, 20 = Free Game, 21 = 神啟覺醒. */
+body[data-mode="base"]{background:#5c3a12 url('assets/19.jpg') center top/cover fixed no-repeat}body[data-mode="base"]:before{background:linear-gradient(#4d2a081c 0%,#122116a6 55%,#050f0bea 100%)}body[data-mode="free"]{background:#735016 url('assets/20.jpg') center top/cover fixed no-repeat}body[data-mode="bonus"]{background:#513114 url('assets/21.jpg') center top/cover fixed no-repeat}body[data-mode="free"]:before{background:linear-gradient(#8a5d1625 0%,#263009b8 51%,#071209e9 100%)}body[data-mode="bonus"]:before{background:linear-gradient(#6d3c1225 0%,#26130ab8 51%,#090608e9 100%)}body[data-mode="free"] .reels{background-image:url('assets/26.png')!important}body[data-mode="bonus"] .reels{background-image:url('assets/27.png')!important}body.sceneShift main{animation:sceneArrival .82s ease-out}@keyframes sceneArrival{0%{transform:scale(1.035);filter:brightness(2.1) saturate(1.5)}100%{transform:scale(1);filter:brightness(1) saturate(1)}}
+/* Match the reference's uninterrupted vertical composition: hero scene → plaque → reel frame → two carved panels → treasure base. */
+header{min-height:267px;padding:192px 16px 11px;background-image:linear-gradient(180deg,#5e320008 3%,#14301908 44%,#07170fa8 90%),url('assets/19.jpg');background-position:center top;background-size:cover;background-repeat:no-repeat}body[data-mode="free"] header{background-image:linear-gradient(180deg,#86521b08 3%,#26300908 44%,#07170fa8 90%),url('assets/20.jpg')}body[data-mode="bonus"] header{background-image:linear-gradient(180deg,#75401608 3%,#26130a08 44%,#07170fa8 90%),url('assets/21.jpg')}header:before,header:after{width:64%;height:215px;top:0;opacity:.98}header:before{left:-9%;background-position:left top}header:after{right:-9%;background-position:right top}.heroBadge{top:166px}.eventBanner{margin:5px auto 8px;min-height:29px}.reels{padding:30px 30px 31px;gap:4px}.winTicker{min-height:46px;margin-top:5px}.game>aside:first-child{gap:5px}.game>aside:first-child .feature{min-height:52px;padding:6px 15px}.game>aside:first-child .feature strong{font-size:24px}.game>aside:first-child p{min-height:31px;padding:5px 12px}.game>.rules{min-height:31px;padding:4px 9px}.coinBase{min-height:158px}.coinBase span{font-size:37px}.coinBase span i{font-size:64px}body[data-mode="free"] .coinBase,body[data-mode="bonus"] .coinBase{min-height:190px}body[data-mode="free"] .coinBase span,body[data-mode="bonus"] .coinBase span{font-size:43px}body[data-mode="free"] .coinBase span i,body[data-mode="bonus"] .coinBase span i{font-size:72px}@media(max-width:620px){header{min-height:235px;padding:172px 10px 9px}header:before,header:after{height:188px}.heroBadge{top:145px}.coinBase{min-height:135px}.coinBase span{font-size:32px}.coinBase span i{font-size:55px}body[data-mode="free"] .coinBase,body[data-mode="bonus"] .coinBase{min-height:155px}}
+
+/* Latest reference layout: a narrow portrait cabinet with the hero scene and reel frame as one composition. */
+main{max-width:438px;padding:0 4px 16px}.game,footer{max-width:430px}header{min-height:231px;padding:178px 8px 7px}header:before,header:after{width:67%;height:192px}header:before{left:-12%}header:after{right:-12%}header .titlePanel{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:184px;min-height:28px;padding:5px 8px;text-align:center;border-radius:14px;background:#08261ddd url('assets/44.png') center/150% 220% no-repeat;background-blend-mode:multiply}header .titlePanel small{display:none}header .titlePanel h1{margin:0;font-size:13px;line-height:1.2;white-space:nowrap}.balance{right:7px;bottom:7px;padding:5px 7px;border-width:1px}.balance small{font-size:7px}.balance b{font-size:14px}.heroBadge{top:168px;right:4px;width:48px;height:48px;font-size:17px}.eventBanner{margin:3px auto 6px;min-height:22px;padding:4px 8px;font-size:8px}.reels{padding:24px 22px 25px;gap:4px}.cell{border-radius:5px}.winTicker{min-height:38px;margin:3px 2px 0}.winTicker b{font-size:19px}.game>aside:first-child{margin-top:2px;gap:3px}.game>aside:first-child .feature{min-height:43px;padding:5px 11px}.game>aside:first-child .feature strong{font-size:20px}.game>aside:first-child p{min-height:26px;padding:4px 7px;font-size:8px}.game>.rules{min-height:25px;padding:3px 6px}.rules p{font-size:7px}footer{margin-top:5px;padding:7px 4px;gap:3px;grid-template-columns:31px 63px 31px 72px 51px 42px}footer button{min-height:33px;font-size:10px}footer #spin{min-height:45px}footer .demoLinks{gap:4px;padding-top:1px}footer .demoLinks button{min-height:25px;padding:4px 7px;font-size:8px}body[data-mode="base"] .coinBase{min-height:54px;margin:0 -4px -16px;background-position:center bottom}body[data-mode="base"] .coinBase span{display:none}body[data-mode="free"] .coinBase,body[data-mode="bonus"] .coinBase{min-height:168px;margin:0 -4px -16px}@media(max-width:620px){main{max-width:438px;padding:0 3px 12px}header{min-height:221px;padding:170px 5px 6px}header:before,header:after{height:181px}.heroBadge{top:157px}.reels{padding:22px 20px 23px}.coinBase{min-height:120px}}
+
+/* The central nameplate is left intentionally clean, like the reference artwork; live data stays in the lower panels. */
+header .titlePanel h1{font-size:0}header .titlePanel:after{content:'';display:block;height:14px}header .balance{display:none}.reels{padding:29px 31px 30px;background-image:none!important;background-color:#071a14!important;isolation:isolate;border:2px solid #e4bd5a;box-shadow:inset 0 0 18px #bd843555,0 6px 16px #000b}.reels:after{content:'';position:absolute;inset:0;z-index:0;background:url('assets/25.png') center/100% 100% no-repeat;mix-blend-mode:multiply;filter:brightness(1.7) contrast(1.12);pointer-events:none}.cell{position:relative;z-index:1}
+
+/* Remove the portrait-card feeling by cropping the supplied character artwork into the hero scene. */
+header:before,header:after{top:5px;height:210px;background-size:113% auto;filter:drop-shadow(0 7px 8px #2a140788)}header:before{left:-8%;background-position:18% top}header:after{right:-8%;background-position:82% top}.reels{border:3px solid #f2cf70;box-shadow:0 0 0 2px #68400d,0 8px 20px #000c,inset 0 0 22px #b9833655}.reels:after{filter:brightness(2.45) contrast(1.28) saturate(1.12)}.winTicker{margin:5px 0 0;min-height:43px;border:0;background-image:url('assets/44.png')!important;background-size:105% 280%!important;background-position:center 16%!important}.game>aside:first-child{grid-template-columns:1fr;margin-top:5px;gap:5px}.game>aside:first-child .feature{min-height:42px;border:0;border-radius:0;background-image:url('assets/44.png')!important;background-size:105% 300%!important;background-position:center 82%!important}.game>aside:first-child .feature:first-child{border-radius:12px 12px 0 0}.game>aside:first-child .feature:nth-child(2){border-radius:0 0 12px 12px}.game>aside:first-child p{display:none}.game>.rules{display:none}footer{margin-top:7px;border:0;border-radius:0;background-image:url('assets/44.png')!important;background-size:105% 180%!important;background-position:center bottom!important}footer:before{content:'';position:absolute;left:5%;right:5%;height:1px;background:#f0ca6f88;transform:translateY(-9px)}
+
+/* Actual proposal UI panels replace the generic CSS boxes. */
+header .titlePanel{width:194px;height:36px;min-height:0;padding:0;background:#0a2e28 url('assets/28.jpg') center/135% 135% no-repeat!important;background-blend-mode:multiply;border:0!important;border-radius:0;box-shadow:none}header .titlePanel:after{display:none}.eventBanner{background:#0c3029 url('assets/29.jpg') center/145% 260% no-repeat!important;background-blend-mode:multiply;border:0!important;box-shadow:none}.winTicker{background:#102f28 url('assets/35.jpg') center 12%/114% 235% no-repeat!important;background-blend-mode:multiply}.game>aside:first-child .feature{background:#102f28 url('assets/35.jpg') center 88%/114% 235% no-repeat!important;background-blend-mode:multiply}.game>aside:first-child .feature:first-child{background-image:url('assets/29.jpg')!important;background-size:145% 245%!important;background-position:center!important}.game>aside:first-child .feature:nth-child(2){background-image:url('assets/30.jpg')!important;background-size:145% 245%!important;background-position:center!important}footer{background:#35200c url('assets/36.jpg') center/108% 180% no-repeat!important;background-blend-mode:multiply}footer button,footer .demoLinks button{background-color:#0b2d28!important;background-image:url('assets/28.jpg')!important;background-size:165% 210%!important;background-blend-mode:multiply!important;border:0!important}
+
+/* Exact reference composition: the user-supplied top illustration is the real hero scene, not a CSS approximation. */
+main{display:flex;flex-direction:column;max-width:430px;padding:0 0 14px;overflow:hidden}header{order:1;min-height:265px;height:265px;padding:0!important;background:url('assets/reference-ui.jpg') center top/100% auto no-repeat!important;border:0!important}header:before,header:after,header .titlePanel,header .balance,.heroBadge,#eventBanner{display:none!important}.game{order:2;width:100%;max-width:430px;gap:0}.reelStage{width:100%}.reels{padding:21px 30px 24px;border:0;background-color:#061a14!important;box-shadow:none}.reels:after{filter:brightness(2.1) contrast(1.12)}.winTicker{margin:0;min-height:38px;background-size:112% 225%!important}.game>aside:first-child{order:3;width:100%;margin:0;gap:2px}.game>aside:first-child .feature{min-height:38px}.coinBase{order:4;width:100%;min-height:178px!important;margin:0!important;background-image:url('assets/20.jpg')!important;background-size:cover!important;background-position:center bottom!important;background-blend-mode:normal!important;border:0}.coinBase:before{background:linear-gradient(#27140522,#27140566)!important}.coinBase span{display:block!important;font-size:38px!important}.coinBase span i{font-size:65px!important}footer{order:5;width:100%;margin:0;padding:8px 4px;border:0;border-top:1px solid #c3913d;background-size:108% 180%!important}.game>.rules{display:none}@media(max-width:620px){main{max-width:430px;padding-bottom:10px}header{height:265px;min-height:265px}.reels{padding:21px 30px 24px}.coinBase{min-height:165px!important}}
+/* Preserve the painted dark symbols. 白澤／畢方 source artwork has a white square, so remove it with multiply and restore its contrast. */
+.cell img{mix-blend-mode:normal}.cell.baize img,.cell.bifang img{mix-blend-mode:multiply;filter:brightness(1.48) contrast(1.18) drop-shadow(0 3px 4px #000)}
+/* 白澤／畢方素材本身有方形底色；以圓形符石裁切保留原畫，不讓底色出現在盤面。 */
+.cell.baize img,.cell.bifang img{mix-blend-mode:normal;clip-path:circle(47% at 50% 50%);transform:scale(1.12);filter:drop-shadow(0 3px 4px #000)}
+footer .demoLinks{display:flex;grid-column:1/-1;justify-content:center;gap:8px;border:0;padding:3px 0 0}footer .demoLinks button{min-height:31px;padding:6px 12px;font-size:11px;background:linear-gradient(145deg,#3a692f,#102b1c)}
+/* Every control uses the ornamental panel artwork from the proposal rather than a flat UI treatment. */
+footer button,footer .demoLinks button{color:#fff0b1;border:0;background-color:#13261d;background-image:url('assets/44.png');background-position:center;background-size:150% 210%;background-repeat:no-repeat;background-blend-mode:multiply;text-shadow:0 2px 2px #281102;box-shadow:inset 0 0 12px #0009,0 2px 5px #0009}footer #spin{color:transparent;background-color:#c7871d;background-image:url('assets/31.jpg');background-position:center;background-size:125% 125%;background-repeat:no-repeat;background-blend-mode:multiply;border:2px solid #ffd56d;box-shadow:0 0 13px #f6c14f99,inset 0 0 7px #fff3c7}footer #spin::after{content:'SPIN';color:#fff7c7;font:900 16px Georgia,serif;text-shadow:0 2px 3px #4b1e04}.reels{background-image:url('assets/25.png')!important}.winTicker,.feature,.balance,.eventBanner,.game>.rules{background-image:url('assets/44.png')!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-blend-mode:multiply!important}
+header .titlePanel{position:relative;z-index:1}.heroBadge{position:absolute;z-index:2;right:7px;top:145px;width:58px;height:58px;display:grid;place-items:center;border:3px solid #e8bf56;border-radius:50%;background:radial-gradient(circle at 35% 25%,#ffe995,#b67717 42%,#4c2607 72%);box-shadow:0 0 0 3px #573007,0 0 17px #ffce5877;color:#fff3ba;font:900 20px Georgia;text-shadow:0 2px 2px #3b1903}.reelStage:before{content:'';position:absolute;z-index:0;left:7%;right:7%;top:11px;height:32px;border:2px solid #bd8d37;border-bottom:0;border-radius:18px 18px 0 0;background:linear-gradient(#0c2f27,#06160f);box-shadow:inset 0 0 10px #000,0 2px 5px #0008}.reelStage:after{content:'';position:absolute;z-index:0;left:20%;right:20%;bottom:45px;height:5px;background:linear-gradient(90deg,transparent,#efca6e,transparent);filter:drop-shadow(0 0 4px #ffc95d)}.coinBase{position:relative;min-height:126px;margin:0 -9px -22px;display:grid;place-items:center;overflow:hidden;border-top:1px solid #b98932;background:#4b2f0c url('assets/20.jpg') center 69%/cover no-repeat;box-shadow:inset 0 20px 40px #0b140acc}.coinBase:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#201105b5,transparent 27%,transparent 73%,#201105b5),linear-gradient(0deg,#4b2a0c33,#0000 55%)}.coinBase span{position:relative;color:#ffe7a2;font:900 31px/0.83 Georgia,serif;letter-spacing:.02em;text-align:center;text-shadow:0 4px 3px #472007,0 0 12px #e8b444}.coinBase span i{font-size:54px;font-style:normal;color:#fff0ae}@media(max-width:620px){.heroBadge{top:128px;right:5px;width:49px;height:49px;font-size:17px}.coinBase{min-height:104px}.coinBase span{font-size:26px}.coinBase span i{font-size:46px}}
+
+/* A six-reel cadence: blurred movement continues until each reel settles left to right. */
+.reels.spinning .cell.rolling{animation:reelRoll .09s linear infinite;filter:blur(1.5px) brightness(1.22);opacity:.82}
+.reels.spinning .cell.rolling img,.reels.spinning .cell.rolling .orbSprite{transform:translateY(11px) scale(1.04)}
+.cell.dropping{animation:columnDrop .38s cubic-bezier(.14,.82,.28,1.05)}
+@keyframes reelRoll{0%{transform:translateY(-12px)}100%{transform:translateY(12px)}}
+
+/* Horizontal main-game layout built directly around the supplied landscape artwork. */
+@media (min-width:621px){
+  body{min-width:900px;background:#2b1a0b!important;overflow-x:auto}
+  body:before{display:none!important}
+  main{display:block!important;position:relative;width:min(100vw,1200px);max-width:none!important;min-height:0!important;aspect-ratio:1006/617;margin:auto;padding:0!important;overflow:hidden;background:url('assets/main-game-landscape.jpg') center/100% 100% no-repeat!important}
+  header,#eventBanner,.game>.rules,.coinBase{display:none!important}
+  .game{display:block!important;position:absolute!important;inset:0!important;width:100%!important;max-width:none!important;margin:0!important}
+  .reelStage{position:absolute!important;left:19.1%;top:18.1%;width:63.7%;height:79.0%;z-index:2}
+  .reels{position:absolute!important;inset:0!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+  .reels:after,.reelStage:before,.reelStage:after{display:none!important}
+  .cell,.cell.orb,.cell.baize,.cell.bifang{aspect-ratio:auto!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+  /* Keep every supplied symbol inside the painted reel window.  The artwork has
+     ornate top/bottom rails, so a small clear margin is intentional here. */
+  .cell{display:grid!important;place-items:center!important}
+  .cell img{width:89%!important;height:89%!important;object-fit:contain!important;filter:drop-shadow(0 4px 4px #000a)!important}
+  .cell.baize img,.cell.bifang img{clip-path:circle(45% at 50% 50%);transform:none!important}
+  .cell.win{animation:gemPulse .58s ease-in-out 2!important;background:radial-gradient(circle,#ffd96c66 0 38%,transparent 68%)!important}
+  .orbSprite{width:88%!important;height:88%!important;mix-blend-mode:multiply!important;filter:drop-shadow(0 3px 4px #000a)!important}
+  .orbSprite.green.rare{background-position:0 100%!important}.orbSprite.blue.rare{background-position:33.333% 100%!important}.orbSprite.purple.rare{background-position:66.666% 100%!important}.orbSprite.red.rare{background-position:100% 100%!important}
+  .orbValue{display:none!important}.lockValue{left:6%!important;top:8%!important}
+  /* Status stays in the left scenic margin: it must never cover reel 1. */
+  .game>aside:first-child{display:flex!important;position:absolute!important;z-index:5;left:.4%;bottom:2.2%;width:17.3%!important;max-width:17.3%!important;min-width:0!important;gap:4px!important;flex-direction:column!important}
+  .game>aside:first-child .feature{display:none!important;box-sizing:border-box!important;min-width:0!important;min-height:0!important;padding:5px 10px!important;overflow:hidden!important;border:1px solid #b88937!important;border-radius:8px!important;background:#10281dcc!important}
+  body[data-mode="free"] .game>aside:first-child .feature:first-child,body[data-mode="bonus"] .game>aside:first-child .feature:first-child{display:block!important}
+  .game>aside:first-child .feature:nth-child(2){display:block!important}
+  .game>aside:first-child p,.eventLog{display:none!important}
+  .feature small{font-size:10px!important}.feature strong{font-size:20px!important}
+  .winTicker{position:absolute!important;z-index:6;left:28%!important;right:28%!important;bottom:1.3%!important;width:auto!important;min-height:4.8%!important;margin:0!important;padding:3px 12px!important;background:#160d08d9!important;border:1px solid #c39743!important;border-radius:8px!important}
+  .winTicker b{font-size:18px!important}
+  footer{position:absolute!important;z-index:7;right:2.3%!important;bottom:1.5%!important;width:24%!important;margin:0!important;padding:3px!important;display:grid!important;grid-template-columns:28px 56px 28px 1fr!important;gap:3px!important;background:#0a221bdd!important;border:1px solid #bd8c35!important;border-radius:9px!important}
+  footer button{min-height:32px!important;padding:4px!important;font-size:10px!important}footer #spin{min-height:40px!important;font-size:0!important}footer #spin::after{font-size:13px!important}
+  footer #auto,footer #rulesBtn,footer .demoLinks{display:none!important}
+}
+
+/* v241 FINAL ARTWORK LOCK — physically last, overrides all historical drafts. */
+@media (min-width:621px){
+  main{overflow:visible!important}
+  .game,.reelStage{overflow:visible!important}
+  .reels{position:relative!important;z-index:1!important;overflow:hidden!important;isolation:isolate!important;background-color:transparent!important;box-shadow:none!important}
+  .reelStage .deity{
+    display:block!important;position:absolute!important;z-index:0!important;
+    bottom:0!important;width:auto!important;height:90%!important;max-width:none!important;
+    margin:0!important;padding:0!important;object-fit:contain!important;object-position:center bottom!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;
+    clip-path:none!important;mask:none!important;pointer-events:none!important;
+  }
+  .reelStage .deityFuxi{left:-34.5%!important;right:auto!important}
+  .reelStage .deityNuwa{right:-34.5%!important;left:auto!important}
+  .winTicker,.playHud,footer,.multiplierFeature,.roundsFeature{z-index:200!important}
+
+  body[data-mode="base"] .reels{background:transparent url('assets/board-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .reels{background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .reels{background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .reels::before,
+  body[data-mode="free"] .reels::before,
+  body[data-mode="bonus"] .reels::before{content:none!important;display:none!important;background:none!important}
+
+  body[data-mode="base"] main{background:transparent url('assets/base-game-background-current.png') center/cover no-repeat!important}
+  body[data-mode="free"] main{background:transparent url('assets/free-game-background-v2.png') center/cover no-repeat!important}
+  body[data-mode="bonus"] main{background:transparent url('assets/awakening-background-final.png') center/cover no-repeat!important}
+  body[data-mode="base"] .winTicker{background:transparent url('assets/win-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .winTicker{background:transparent url('assets/free-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .winTicker{background:transparent url('assets/awakening-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .playHud{background:transparent url('assets/wallet-bet-frame-current.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .playHud{background:transparent url('assets/free-info-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .playHud{background:transparent url('assets/awakening-info-frame.png') center/100% 100% no-repeat!important}
+
+  .boardWolf{display:none!important}
+  body[data-mode="free"] .reelStage .boardWolf,
+  body[data-mode="bonus"] .reelStage .boardWolf{
+    display:block!important;position:absolute!important;z-index:170!important;
+    top:-1.5%!important;width:17%!important;height:auto!important;max-width:none!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .reelStage .boardWolfLeft,
+  body[data-mode="bonus"] .reelStage .boardWolfLeft{left:-10.2%!important;right:auto!important;transform:none!important}
+  body[data-mode="free"] .reelStage .boardWolfRight,
+  body[data-mode="bonus"] .reelStage .boardWolfRight{right:-10.2%!important;left:auto!important;transform:scaleX(-1)!important}
+}
+
+/* v240 FINAL: authoritative artwork, board, deity and decoration layout.
+   This intentionally comes last: older experimental mode rules must not override it. */
+@media (min-width:621px){
+  main{overflow:visible!important}
+  .game,.reelStage{overflow:visible!important}
+  .reels{overflow:hidden!important;isolation:isolate!important;background-color:transparent!important;box-shadow:none!important}
+
+  /* The characters remain behind the actual board and every playable symbol. */
+  .reelStage .deity{
+    display:block!important;position:absolute!important;z-index:0!important;
+    bottom:0!important;width:auto!important;height:90%!important;max-width:none!important;
+    margin:0!important;padding:0!important;object-fit:contain!important;object-position:center bottom!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;
+    clip-path:none!important;mask:none!important;pointer-events:none!important;
+  }
+  .reelStage .deityFuxi{left:-34.5%!important;right:auto!important}
+  .reelStage .deityNuwa{right:-34.5%!important;left:auto!important}
+  .reels{position:relative!important;z-index:1!important}
+  .winTicker,.playHud,footer,.multiplierFeature,.roundsFeature{z-index:200!important}
+
+  /* One board source per mode. The frame itself provides the opaque inner artwork. */
+  body[data-mode="base"] .reels{background:transparent url('assets/board-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .reels{background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .reels{background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .reels::before,
+  body[data-mode="free"] .reels::before,
+  body[data-mode="bonus"] .reels::before{content:none!important;display:none!important;background:none!important}
+
+  /* Mode backgrounds and their matching information artwork. */
+  body[data-mode="base"] main{background-image:url('assets/base-game-background-current.png')!important}
+  body[data-mode="free"] main{background-image:url('assets/free-game-background-v2.png')!important}
+  body[data-mode="bonus"] main{background-image:url('assets/awakening-background-final.png')!important}
+  body[data-mode="base"] .winTicker{background-image:url('assets/win-frame-transparent.png')!important}
+  body[data-mode="free"] .winTicker{background-image:url('assets/free-win-frame.png')!important}
+  body[data-mode="bonus"] .winTicker{background-image:url('assets/awakening-win-frame.png')!important}
+  body[data-mode="base"] .playHud{background-image:url('assets/wallet-bet-frame-current.png')!important}
+  body[data-mode="free"] .playHud{background-image:url('assets/free-info-frame.png')!important}
+  body[data-mode="bonus"] .playHud{background-image:url('assets/awakening-info-frame.png')!important}
+
+  /* Wolves are exterior ornaments only: never inside the six playable columns. */
+  .boardWolf{display:none!important}
+  body[data-mode="free"] .reelStage .boardWolf,
+  body[data-mode="bonus"] .reelStage .boardWolf{
+    display:block!important;position:absolute!important;z-index:170!important;
+    top:-1.5%!important;width:17%!important;height:auto!important;max-width:none!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .reelStage .boardWolfLeft,
+  body[data-mode="bonus"] .reelStage .boardWolfLeft{left:-10.2%!important;right:auto!important;transform:none!important}
+  body[data-mode="free"] .reelStage .boardWolfRight,
+  body[data-mode="bonus"] .reelStage .boardWolfRight{right:-10.2%!important;left:auto!important;transform:scaleX(-1)!important}
+}
+
+/* v236 final scene-layer lock: characters enrich the side scenery without
+   covering reels; wolves remain above them; the cumulative multiplier is
+   always the top interactive-scene layer in Free / Awakening modes. */
+@media (min-width:621px){
+  .reelStage .deity{z-index:130!important;pointer-events:none!important}
+  body[data-mode="free"] .reelStage .deity,
+  body[data-mode="bonus"] .reelStage .deity{z-index:128!important}
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{z-index:220!important}
+}
+
+/* v229 FINAL POSITION LOCK */
+@media (min-width:621px){
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{top:-11.6%!important}
+
+  body[data-mode="free"] .reels{
+    background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="free"] .multiplierFeature,
+  body[data-mode="bonus"] .multiplierFeature{
+    display:flex!important;position:absolute!important;left:78.3%!important;top:13.8%!important;
+    width:10.8%!important;height:auto!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    background:transparent url('assets/free-multiplier-frame.png') center/100% 100% no-repeat!important;
+    border:0!important;box-shadow:none!important;pointer-events:none!important;z-index:150!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;
+    justify-content:center!important;margin:0!important;padding:0!important;text-align:center!important;
+    color:#fff0ad!important;font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;
+    text-shadow:0 2px 2px #4b2105!important;
+  }
+}
+
+/* v232 — one geometry system for all three game modes.
+   The main, Free Game and Awakening score plaques deliberately share the
+   same measured footprint and centre point; only their supplied artwork
+   changes.  This final block also restores the feature total-multiplier
+   medallion for both feature modes, with its number centred in the art. */
+@media (min-width:621px){
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{
+    z-index:180!important;
+    left:29%!important;
+    top:-11.6%!important;
+    width:42%!important;
+    height:auto!important;
+    aspect-ratio:1252 / 412!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0 12%!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    filter:none!important;
+  }
+  .winTicker{background:transparent url('assets/win-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .winTicker{background:transparent url('assets/free-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .winTicker{background:transparent url('assets/awakening-win-frame.png') center/100% 100% no-repeat!important}
+  .winTicker::before,.winTicker span{display:none!important;content:none!important}
+  #roundWin.roundWinValue,
+  body[data-mode="free"] #roundWin.roundWinValue,
+  body[data-mode="bonus"] #roundWin.roundWinValue{
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    font-size:clamp(18px,2.15vw,28px)!important;
+    line-height:1!important;
+  }
+
+  /* Feature multiplier: same designed medallion, centred number, no legacy
+     sidebar panel. The top-right placement follows the supplied guide. */
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{
+    position:absolute!important;
+    z-index:185!important;
+    left:78.6%!important;
+    top:12.7%!important;
+    width:11.2%!important;
+    height:auto!important;
+    aspect-ratio:1 / 1!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    background:transparent url('assets/free-multiplier-frame.png') center/100% 100% no-repeat!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    pointer-events:none!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;
+    inset:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    margin:0!important;
+    padding:0!important;
+    text-align:center!important;
+    color:#fff0ad!important;
+    font:900 clamp(15px,1.7vw,24px)/1 Georgia,serif!important;
+    text-shadow:0 2px 2px #4b2105!important;
+  }
+}
+
+/* v229 placement correction: score plaque touches, but never enters, the
+   top reel rail.  Feature frames use the same physical geometry as base. */
+@media (min-width:621px){
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{top:-11.6%!important}
+
+  /* The Free board is a real reel background.  This prevents symbols from
+     appearing to float over the scenic image when an older pseudo layer is
+     suppressed by a later stylesheet rule. */
+  body[data-mode="free"] .reels{
+    background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+
+  /* Both feature modes have a persistent total-multiplier medallion.  The
+     live x-value is positioned in the circular centre, never below it. */
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="free"] .multiplierFeature,
+  body[data-mode="bonus"] .multiplierFeature{
+    display:flex!important;position:absolute!important;left:78.3%!important;top:13.8%!important;
+    width:10.8%!important;height:auto!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    background:transparent url('assets/free-multiplier-frame.png') center/100% 100% no-repeat!important;
+    border:0!important;box-shadow:none!important;pointer-events:none!important;z-index:150!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;
+    justify-content:center!important;margin:0!important;padding:0!important;text-align:center!important;
+    color:#fff0ad!important;font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;
+    text-shadow:0 2px 2px #4b2105!important;
+  }
+}
+@keyframes gemPulse{50%{transform:scale(1.08);filter:brightness(1.45)}}
+
+/* Final art cleanup: the supplied board art remains visible and the built-in spin crest is the control. */
+@media (min-width:621px){
+  .reelStage{left:19.1%!important;width:63.7%!important;height:79.0%!important}
+  .reels,.reels.spinning{background:transparent!important;box-shadow:none!important;isolation:auto!important}
+  .reels .cell,.reels .cell.orb,.reels .cell.baize,.reels .cell.bifang{background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important}
+  .reels .cell::before,.reels .cell::after{border:0!important;box-shadow:none!important}
+  .reels .cell img{background:transparent!important}
+  .reels .cell img{transition:opacity .1s linear!important}
+  .orbSprite{clip-path:circle(45% at 50% 50%);mix-blend-mode:multiply!important}
+  footer{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;display:block!important;background:transparent!important;border:0!important;box-shadow:none!important}
+  footer::before,footer>*:not(#spin){display:none!important}
+  footer #spin{display:block!important;position:absolute!important;left:74.0%!important;top:78.3%!important;width:9.0%!important;height:15.3%!important;min-height:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;color:transparent!important;cursor:pointer!important}
+  footer #spin::after{display:none!important}
+  footer #spin:hover{filter:brightness(1.18) drop-shadow(0 0 8px #ffd45e)}
+  footer #spin:active{transform:scale(.93)}
+}
+
+/* Restore the full six-reel board width, then place the supplied left dragon ornament above it. */
+@media (min-width:621px){
+  body[data-mode] .game::before{content:'';position:absolute;inset:0;z-index:4;pointer-events:none;background:url('assets/main-game-landscape.jpg') center/100% 100% no-repeat;clip-path:polygon(15.5% 25%,27.5% 25%,27.5% 81%,15.5% 81%)}
+  .cell.win{background:transparent!important}
+  .cell.win img,.cell.win .orbSprite{filter:brightness(1.32) drop-shadow(0 0 7px #ffd56a)!important}
+}
+
+/* Calm reel motion: no shaking; only a slow visual blur until each reel stops. */
+.reels.spinning .cell{animation:none!important;transform:none!important}
+.reels.spinning .cell.rolling{animation:reelCalm .26s ease-in-out infinite!important;transform:none!important;filter:blur(1px) brightness(1.12)!important;opacity:.76}
+.reels.spinning .cell.rolling img,.reels.spinning .cell.rolling .orbSprite{transform:none!important}
+@keyframes reelCalm{0%,100%{opacity:.68}50%{opacity:.9}}
+
+/* Phone portrait fallback: keep the horizontal board full-width instead of shrinking it into a blank page. */
+@media (max-aspect-ratio:1/1){
+  body{min-width:0!important;min-height:0!important;overflow-x:hidden!important}
+  main{width:100vw!important;margin:0!important}
+}
+@media (min-width:621px){
+  /* Trace only the dragon itself; do not place an opaque rectangular crop over reel one. */
+  body[data-mode="base"] .game::before{clip-path:polygon(19% 34%,21.7% 34%,22% 40%,21.1% 46%,19.7% 50%,21% 55%,20.2% 61%,21.5% 67%,20.5% 74%,21.6% 80%,19.7% 80%,18.9% 73%,19.4% 67%,18.6% 62%,19.5% 56%,18.5% 51%,19.5% 46%,18.7% 40%)!important}
+  /* Invisible, generous hit area exactly over the original right-hand spin crest. */
+  /* The clickable area follows the green-and-gold circular arrow crest beside Fuxi. */
+  footer #spin{left:65.0%!important;top:74.0%!important;width:14.0%!important;height:23.0%!important;z-index:30!important;pointer-events:auto!important}
+}
+
+/* Source art has flat black/white export mattes. Blend those mattes into the board instead of showing square tiles. */
+@media (min-width:621px){
+  .reels .cell img{mix-blend-mode:screen!important}
+  .reels .cell.baize img,.reels .cell.bifang img{mix-blend-mode:screen!important}
+  .orbSprite{background-color:#0b2117!important;background-blend-mode:multiply!important}
+}
+
+/* Keep the game-symbol exports transparent even when a browser falls back from the landscape media rule. */
+.reels .cell{background-color:transparent!important}
+.reels .cell img{mix-blend-mode:screen!important}
+
+/* Keep the supplied 1006×617 landscape at or below its native resolution; never upscale it into softness. */
+@media (min-width:621px){
+  main{width:min(100vw,1006px)!important;max-width:1006px!important;background-size:100% 100%!important}
+  .reels .cell img{image-rendering:auto!important;transform:translateZ(0)}
+}
+
+/* Final landscape alignment: keep status in the supplied top plaque and leave every symbol unobstructed. */
+@media (min-width:621px){
+  .winTicker{top:-17%!important;bottom:auto!important;left:27%!important;right:27%!important;min-height:7.5%!important;background:#09211bdd!important;border-color:#d3ad58!important}
+  body[data-mode="base"] .game::before{clip-path:polygon(19% 35%,20.4% 35%,20.7% 41%,20% 46%,19.2% 51%,20.1% 56%,19.5% 62%,20.7% 68%,20% 74%,20.7% 80%,19.6% 80%,18.9% 73%,19.3% 67%,18.7% 62%,19.4% 56%,18.6% 51%,19.4% 46%,18.8% 40%)!important}
+}
+
+/* Each regular symbol is a round medallion.  Remove its exported square
+   matte at the geometry level, even if canvas processing is unavailable. */
+@media (min-width:621px){
+  .reels .cell:not(.nuwa):not(.fuxi) img:not(.orbImage){clip-path:circle(46.5% at 50% 50%)!important;background:transparent!important}
+}
+
+/* Exact hit box and tactile feedback for the visible green circular SPIN crest. */
+@media (min-width:621px){
+  footer #spin{left:87.0%!important;top:76.0%!important;width:11.0%!important;height:18.0%!important;cursor:pointer!important}
+  footer #spin:hover{filter:drop-shadow(0 0 9px #ffe27d)!important;transform:scale(1.04)!important}
+  footer #spin:active{filter:brightness(1.35) drop-shadow(0 0 13px #fff0a2)!important;transform:scale(.94)!important}
+}
+.cell.empty{background:transparent!important;border:0!important;box-shadow:none!important}
+.cell.dropping{animation:controlledDrop .46s cubic-bezier(.18,.78,.28,1)!important;will-change:transform,opacity}
+@keyframes controlledDrop{0%{transform:translateY(calc(var(--drop-distance,28px) * -1));opacity:.18}72%{transform:translateY(3px);opacity:1}100%{transform:translateY(0);opacity:1}}
+
+/* SPIN uses the two supplied proposal frames: 33 is hover/pressed art, 32 is the glow ring. */
+@media (min-width:621px){
+  main.spinPressed footer #spin{animation:spinPress 1s cubic-bezier(.2,.72,.25,1)!important}
+  footer #spin::before{content:'';position:absolute;inset:-17%;border-radius:50%;background:url('assets/33.jpg') center/100% 100% no-repeat;mix-blend-mode:multiply;opacity:0;transform:scale(.94);transition:opacity .18s ease,transform .18s ease;pointer-events:none}
+  footer #spin:hover::before{opacity:1;transform:scale(1.02)}
+  main.spinPressed footer #spin::after{content:''!important;display:block!important;position:absolute!important;inset:-28%!important;border:0!important;border-radius:50%!important;background:url('assets/32.jpg') center/100% 100% no-repeat!important;mix-blend-mode:multiply;box-shadow:none!important;animation:spinHalo 1s ease-out forwards!important;pointer-events:none!important}
+}
+@keyframes spinPress{0%{transform:scale(1)}14%{transform:scale(.88)}42%{transform:scale(1.09)}100%{transform:scale(1)}}
+@keyframes spinHalo{0%{opacity:0;transform:scale(.52)}18%{opacity:1}65%{opacity:.75;transform:scale(1.12)}100%{opacity:0;transform:scale(1.55)}}
+
+/* Multiplier balls only travel into the persistent total during a feature.
+   The copied sprite is placed above the board, then flies to the feature-only
+   total multiplier plaque; it never creates an extra number label. */
+.multiplierCollect{position:fixed;z-index:200;pointer-events:none;transform:translate3d(0,0,0) scale(1);opacity:1;will-change:transform,opacity}
+.multiplierCollect .orbSprite{display:block;width:100%;height:100%;clip-path:circle(45% at 50% 50%);background-color:#0b2117;background-blend-mode:multiply;mix-blend-mode:multiply}
+.multiplierCollect.flying{transform:translate3d(var(--collect-x),var(--collect-y),0) scale(.28);opacity:0;transition:transform .58s cubic-bezier(.18,.76,.18,1),opacity .58s ease}
+.reels .cell.collecting>*{opacity:0!important;transition:opacity .08s ease}
+.multiplierPulse{animation:multiplierPulse .42s ease-out}
+@keyframes multiplierPulse{0%{filter:brightness(1);transform:scale(1)}42%{filter:brightness(1.8) drop-shadow(0 0 10px #ffe38a);transform:scale(1.08)}100%{filter:brightness(1);transform:scale(1)}}
+
+/* The supplied pressed-frame export has an opaque matte.  Keep feedback as a
+   clean hover glow; reserve the proposal halo artwork for the one-second press
+   animation so a white oval never sits over the board while the cursor rests. */
+@media (min-width:621px){
+  footer #spin::before,footer #spin:hover::before{display:none!important;opacity:0!important}
+}
+
+/* Runtime-cropped multiplier ball: the exported white sheet never becomes a
+   square or oval behind the jewel. */
+.reels .cell .orbImage,.multiplierCollect .orbImage{display:block;width:100%;height:100%;object-fit:contain;background:transparent!important;mix-blend-mode:normal!important}
+
+/* Proposal Big Win art becomes a complete count-up presentation, rather than
+   a small generic dialog.  The board remains visible behind a restrained veil. */
+#modal.winCelebration{z-index:240;background:radial-gradient(circle at center,#e8bc5133 0%,#05080adf 66%);backdrop-filter:blur(3px);cursor:pointer;animation:winVeil .28s ease-out}
+#modal.winCelebration>div{width:min(900px,94vw);max-width:none;min-width:0;padding:0 18px 18px;border:0;border-radius:0;background:transparent;box-shadow:none}
+#modal.winCelebration #modalArt{display:block;width:min(860px,92vw);max-width:100%;max-height:58vh;object-fit:contain;margin:0 auto;filter:drop-shadow(0 10px 22px #000);animation:winArtIn .5s cubic-bezier(.14,.78,.25,1) both}
+#modal.winCelebration #modalTitle{display:none}
+#modal.winCelebration #modalWin{margin:-.15em 0 0;font-family:Georgia,'Noto Serif TC',serif;font-size:clamp(38px,7vw,78px);line-height:1;color:#fff2ad;text-shadow:0 3px #5f2505,0 0 18px #ffbd31;letter-spacing:.035em}
+#modal.winCelebration #modalText{margin:10px auto 0;color:#ffe6a5;font-size:clamp(12px,1.7vw,18px);text-shadow:0 2px #000}
+#modal.winCelebration button{margin-top:12px;padding:8px 18px;background:#4a240dcc;border:1px solid #e2b355;color:#ffe9b4}
+@keyframes winVeil{from{opacity:0}to{opacity:1}}@keyframes winArtIn{0%{opacity:0;transform:scale(.68) translateY(4vh);filter:brightness(2.4) drop-shadow(0 10px 22px #000)}65%{opacity:1;transform:scale(1.035) translateY(0)}100%{opacity:1;transform:scale(1) translateY(0)}}
+
+/* Awakening powers: three Nüwa locks a ball; three Fuxi splits one.  The
+   supplied character art enters above the board while only target balls pulse. */
+.awakeningPower{position:absolute;z-index:70;inset:0;display:grid;place-items:center;align-content:center;gap:1px;pointer-events:none;opacity:0;background:radial-gradient(circle,#f6d36a35 0%,#07150b00 63%);transition:opacity .22s ease}
+.awakeningPower.active{opacity:1}.awakeningPower img{width:min(180px,30%);max-height:42%;object-fit:contain;filter:drop-shadow(0 5px 12px #000);transform:translateY(16px) scale(.82);transition:transform .45s cubic-bezier(.18,.8,.2,1)}.awakeningPower.active img{transform:translateY(0) scale(1)}
+.awakeningPower strong{font-size:clamp(17px,2.4vw,27px);color:#ffe680;text-shadow:0 2px 3px #090c05,0 0 11px #f1b73a}.awakeningPower span{font-size:clamp(10px,1.4vw,14px);color:#fff3cb;text-shadow:0 2px #000}.awakeningPower.fuxi{background:radial-gradient(circle,#e0a9ff4d 0%,#07150b00 64%)}.awakeningPower.fuxi strong{color:#f1c6ff;text-shadow:0 2px 3px #210328,0 0 11px #c56dff}
+.reels .cell.powerTarget{animation:powerTarget .55s ease-in-out infinite!important;z-index:6}.reels .cell.powerTarget img{filter:brightness(1.48) drop-shadow(0 0 11px #ffeb84)!important}@keyframes powerTarget{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.13);filter:brightness(1.55) drop-shadow(0 0 10px #ffd65f)}}
+
+/* The interactive layer is intentionally invisible: the supplied landscape
+   already contains the visual SPIN crest at lower right.  Its hover/press glow
+   is drawn at that exact crest instead of leaking into a reel cell. */
+@media (min-width:621px){
+  footer #spin{opacity:0!important;appearance:none!important;-webkit-appearance:none!important}
+  footer:has(#spin:hover)::after,main.spinPressed footer::after{content:'';position:absolute;left:87%;top:76%;width:11%;height:18%;border-radius:50%;pointer-events:none;box-shadow:0 0 12px 5px #ffe36e99,inset 0 0 10px #fff0a8aa;animation:spinCrestGlow .5s ease-in-out infinite alternate}
+  main.spinPressed footer::after{animation:spinCrestPress 1s ease-out forwards}
+}
+@keyframes spinCrestGlow{from{transform:scale(.96);opacity:.55}to{transform:scale(1.08);opacity:1}}@keyframes spinCrestPress{0%{transform:scale(.7);opacity:0}22%{transform:scale(1.16);opacity:1}100%{transform:scale(1.55);opacity:0}}
+
+/* A genuine scene transition: Free Game and Awakening replace the normal
+   character landscape with their corresponding proposal backgrounds. */
+#modeScene{display:none}
+.modeLabel{display:none}
+@media (min-width:621px){
+  body[data-mode="free"] main,body[data-mode="bonus"] main{background:none!important}
+  body[data-mode="free"] #modeScene,body[data-mode="bonus"] #modeScene{display:block;position:absolute;inset:0;z-index:0;background-position:center 48%;background-size:cover;background-repeat:no-repeat}
+  body[data-mode="free"] #modeScene{background-image:linear-gradient(#4c2e0750,#07160975),url('assets/20.jpg')}
+  body[data-mode="bonus"] #modeScene{background-image:linear-gradient(#25091f5e,#06110f78),url('assets/21.jpg')}
+  /* These are not colour-only variants: each feature receives its own supplied
+     reel artwork.  Cells remain above the frame, preserving the 6×5 layout. */
+  body[data-mode="free"] .reels::before,body[data-mode="bonus"] .reels::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background-position:center;background-size:108% 108%;background-repeat:no-repeat;mix-blend-mode:multiply}
+  body[data-mode="free"] .reels::before{background-image:url('assets/26.png')}
+  body[data-mode="bonus"] .reels::before{background-image:url('assets/27.png')}
+  body[data-mode="free"] main>*:not(#modeScene),body[data-mode="bonus"] main>*:not(#modeScene){position:relative;z-index:1}
+  /* Retain the exact landscape layout when the scene asset changes. */
+  body[data-mode="free"] .game,body[data-mode="bonus"] .game{position:absolute!important;inset:0!important}
+  body[data-mode="free"] main>footer,body[data-mode="bonus"] main>footer{position:absolute!important;inset:0!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important}
+  body[data-mode="free"] main>footer #spin,body[data-mode="bonus"] main>footer #spin{display:block!important;position:absolute!important;left:65%!important;top:74%!important;width:14%!important;height:23%!important;opacity:1!important;background-color:transparent!important;background-image:var(--spin-clean,url('assets/31.jpg'))!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;mix-blend-mode:normal!important;filter:drop-shadow(0 3px 5px #000)!important}
+  body[data-mode="free"] .modeLabel,body[data-mode="bonus"] .modeLabel{display:block!important;order:-1;padding:4px 2px;color:#ffe7a0;text-align:center;font:900 15px/1 Georgia,serif;letter-spacing:.08em;text-shadow:0 2px 3px #201006,0 0 7px #f0ae35}
+}
+
+/* On the normal landscape the authored crest remains visible underneath.
+   Hover adds a clear gold response without moving the button. */
+@media (min-width:621px){
+  body[data-mode="base"] footer #spin{cursor:pointer!important}
+  body[data-mode="base"] footer #spin:hover{opacity:1!important;background:radial-gradient(circle,transparent 42%,#ffe77733 45%,#ffe777aa 53%,transparent 64%)!important;box-shadow:0 0 10px 5px #ffe377a8!important;filter:brightness(1.16)!important;transform:scale(1.04)!important}
+  body[data-mode="base"] footer #spin:active{transform:scale(.93)!important;filter:brightness(1.42)!important}
+}
+
+/* Reliable multiplier sprite frames: one ball only, never the entire sheet. */
+.reels .orbSprite,.multiplierCollect .orbSprite{display:block!important;width:90%!important;height:90%!important;background-image:url('assets/03.png')!important;background-size:400% 200%!important;background-repeat:no-repeat!important;background-color:transparent!important;mix-blend-mode:multiply!important;clip-path:circle(46% at 50% 50%)!important;filter:drop-shadow(0 3px 4px #0009)!important}
+.orbSprite.value2{background-position:0 0!important}.orbSprite.value10{background-position:33.333% 0!important}.orbSprite.value50{background-position:66.666% 0!important}.orbSprite.value150{background-position:100% 0!important}
+.orbSprite.value2.rare{background-position:0 100%!important}.orbSprite.value10.rare{background-position:33.333% 100%!important}.orbSprite.value50.rare{background-position:66.666% 100%!important}.orbSprite.value150.rare{background-position:100% 100%!important}
+
+/* Local-file previews cannot always crop a sprite canvas.  Use the transparent
+   extracted frames for the playable build, so white or black matte can never
+   appear around a multiplier ball. */
+.reels .orbSprite,.multiplierCollect .orbSprite{background-size:contain!important;background-position:center!important;mix-blend-mode:normal!important;clip-path:none!important}
+.orbSprite.value2{background-image:url('assets/orb-2.png')!important}.orbSprite.value10{background-image:url('assets/orb-10.png')!important}.orbSprite.value50{background-image:url('assets/orb-50.png')!important}.orbSprite.value150{background-image:url('assets/orb-150.png')!important}
+.orbSprite.value2.rare{background-image:url('assets/orb-2-rare.png')!important}.orbSprite.value10.rare{background-image:url('assets/orb-10-rare.png')!important}.orbSprite.value50.rare{background-image:url('assets/orb-50-rare.png')!important}.orbSprite.value150.rare{background-image:url('assets/orb-150-rare.png')!important}
+
+/* Rolling is steady rather than flashing.  Cascade symbols fall together,
+   visibly from above, then settle with a small natural rebound. */
+.reels.spinning .cell.rolling{animation:none!important;filter:blur(.7px) brightness(1.06)!important;opacity:.96!important}
+.cell.dropping{animation:controlledDrop .72s cubic-bezier(.16,.78,.22,1)!important;will-change:transform,opacity}
+@keyframes controlledDrop{0%{transform:translateY(calc(var(--drop-distance,42px) * -1));opacity:.86}100%{transform:translateY(0);opacity:1}}
+
+/* One-second click halo placed directly over the supplied lower-right crest. */
+@media (min-width:621px){
+  /* Undo the portrait layout's 430px footer cap.  This makes percentage-based
+     SPIN coordinates align to the full 1006px landscape artwork. */
+  footer{max-width:none!important}
+  /* This is live text laid over the score panel already present in the
+     supplied artwork; it must remain visible throughout every game mode. */
+  .winTicker{display:flex!important;position:absolute!important;z-index:55!important;top:-17%!important;bottom:auto!important;left:27%!important;right:27%!important;width:auto!important;min-height:7.5%!important;margin:0!important;padding:3px 12px!important;background:#09211bdd!important;border:1px solid #d3ad58!important;border-radius:8px!important}
+  .winTicker small{font-size:10px!important}.winTicker b{font-size:18px!important}.winTicker span{font-size:10px!important}
+  /* The former footer-level hover ring duplicated the click effect. */
+  footer:has(#spin:hover)::after{content:none!important;display:none!important}
+  /* The normal state has no circular hover ring: cursor feedback alone tells
+     the player this painted crest is clickable. */
+  footer #spin:hover,body[data-mode="base"] footer #spin:hover{opacity:0!important;background:transparent!important;box-shadow:none!important;filter:none!important;transform:none!important}
+  footer #spin:disabled{pointer-events:none!important;cursor:default!important}
+  /* Attach the effect to the original crest itself.  The centre of the source
+     image is masked out so it cannot draw a second SPIN button. */
+  main.spinPressed footer::after{content:none!important;display:none!important}
+  /* The invisible hit area must become visible for the one-second halo;
+     otherwise its pseudo-element inherits the transparent parent. */
+  main.spinPressed footer #spin{opacity:1!important;background:transparent!important;filter:none!important;transform:none!important}
+  /* The authored cloud ring is shown only for the click.  Its centre is
+     masked so the existing painted SPIN crest stays visible underneath. */
+  main.spinPressed footer #spin::after{content:''!important;display:block!important;position:absolute!important;z-index:60!important;inset:-8%!important;border:0!important;border-radius:0!important;pointer-events:none;background:var(--spin-press-glow,url('assets/spin-press-glow-clean.png?v=4')) center/106% 106% no-repeat!important;box-shadow:none!important;filter:contrast(1.12) saturate(1.12)!important;-webkit-mask-image:radial-gradient(ellipse 29% 35% at 50% 52%,transparent 96%,#000 100%)!important;mask-image:radial-gradient(ellipse 29% 35% at 50% 52%,transparent 96%,#000 100%)!important;animation:spinCrestCloud 1s cubic-bezier(.16,.72,.25,1) forwards!important}
+  /* Preserve an even clear lane at every painted reel divider.  Symbols are
+     centred inside their six equal columns instead of touching the dividers. */
+  /* A 15% safety lane on either side keeps medallions clear of the five
+     painted dividers, including when browser zoom rounds a column by 1 px. */
+  .reels .cell img{width:70%!important;height:70%!important}
+  .reels .cell .orbSprite{width:68%!important;height:68%!important}
+  /* The supplied board artwork already contains its five correctly aligned
+     dividers.  Do not draw a second CSS grid over it: that produced doubled
+     lines whenever its decorative spacing differed by even one pixel. */
+  .reels::before{content:none!important;display:none!important}
+  .reels .cell{position:relative!important;z-index:1!important}
+}
+@keyframes spinCrestCloud{0%{opacity:0;transform:scale(.86)}18%{opacity:1}68%{opacity:.94;transform:scale(1.05)}100%{opacity:0;transform:scale(1.16)}}
+
+/* The moved SPIN crest must remain a real, visible control. */
+@media (min-width:621px){
+  body[data-mode="base"] footer #spin{opacity:0!important;background:transparent!important;mix-blend-mode:normal!important;filter:none!important;cursor:pointer!important}
+  body[data-mode="base"] footer #spin:hover{opacity:0!important;background:transparent!important;filter:none!important;transform:none!important}
+  body[data-mode="base"] footer #spin:active{transform:scale(.94)!important}
+}
+
+/* Cascade gravity: an unchanged stone visibly travels straight down its own
+   reel; replacement stones enter from above.  The finished cell stays hidden
+   until that exact travelling stone reaches it, preventing pop-in flashes. */
+.reels .cell.cascadeLanding>*{opacity:0!important}
+.reels{overflow:hidden!important}
+.cascadeViewport{position:absolute;z-index:25;overflow:hidden;pointer-events:none;isolation:isolate}
+.cascadeStone{position:absolute;z-index:25;display:grid;place-items:center;pointer-events:none;transform:translate3d(0,0,0);will-change:transform}
+.cascadeStone img{display:block;width:70%;height:70%;object-fit:contain;clip-path:circle(46.5% at 50% 50%);mix-blend-mode:screen;filter:drop-shadow(0 4px 4px #000a)}
+.cascadeStone .orbSprite{display:block;width:68%;height:68%;background-size:contain;background-position:center;background-repeat:no-repeat;filter:drop-shadow(0 3px 4px #000a)}
+.cascadeStone.falling{transform:translate3d(0,var(--cascade-y),0);transition:transform .68s cubic-bezier(.14,.78,.24,1)}
+
+/* A stopping reel is one continuous vertical belt, clipped by its own column.
+   Its first five symbols are the landing result; they slide in together from
+   above, rather than fading into five separate cells. */
+.reelStrip{position:absolute;top:0;height:100%;z-index:35;overflow:hidden;pointer-events:none}
+.reelStripTrack{position:absolute;left:0;top:0;width:100%;height:200%;display:grid;grid-template-rows:repeat(10,1fr);transform:translate3d(0,-50%,0);will-change:transform}
+.reelStrip.falling .reelStripTrack{transform:translate3d(0,0,0);transition:transform .68s cubic-bezier(.16,.78,.24,1)}
+.reelStripTrack img{display:block;justify-self:center;align-self:center;width:70%;height:70%;object-fit:contain;clip-path:circle(46.5% at 50% 50%);mix-blend-mode:screen;filter:drop-shadow(0 4px 4px #000a)}
+.reelStripTrack .orbSprite{display:block;justify-self:center;align-self:center;width:68%;height:68%;background-size:contain;background-position:center;background-repeat:no-repeat;filter:drop-shadow(0 3px 4px #000a)}
+.reels .cell.reelLanding>*{opacity:0!important}
+
+/* Initial SPIN clear: an old reel leaves as one complete vertical belt before
+   the new symbols are allowed to enter. */
+.reelClearStrip{position:absolute;z-index:35;overflow:hidden;pointer-events:none}
+.reelClearTrack{position:absolute;left:0;top:var(--clear-track-top,0);width:100%;height:var(--clear-belt-height,100%);display:grid;grid-template-rows:repeat(5,1fr);transform:translate3d(0,0,0);will-change:transform}
+.reelClearStrip.falling .reelClearTrack{transform:translate3d(0,var(--clear-travel,100%),0);transition:transform .68s cubic-bezier(.16,.78,.24,1)}
+.reelClearTrack img{display:block;justify-self:center;align-self:center;width:70%;height:70%;object-fit:contain;clip-path:circle(46.5% at 50% 50%);mix-blend-mode:screen;filter:drop-shadow(0 4px 4px #000a)}
+.reelClearTrack .orbSprite{display:block;justify-self:center;align-self:center;width:68%;height:68%;background-size:contain;background-position:center;background-repeat:no-repeat;filter:drop-shadow(0 3px 4px #000a)}
+.reels .cell.reelClearing>*,.reels .cell.reelCleared>*{opacity:0!important}
+
+/* The reel belt is the only moving element during the first stop sequence.
+   Old whole-board filters and cell animations produced unrelated flicker. */
+.reels.spinning{filter:none!important}
+.reels.spinning .cell,.reels.spinning .cell.rolling{animation:none!important;filter:none!important;opacity:1!important;transform:none!important}
+
+/* A symbol changes only when a reel lands, tumbles, wins, or a declared
+   feature targets it.  Remove the old generic image-opacity transition that
+   made otherwise idle symbols blink after ordinary DOM updates. */
+.reels .cell img,.reels .cell .orbSprite{transition:none!important}
+
+/* Keep the supplied circular symbols inside the painted columns.  The board
+   has five fixed dividers, so a 15% clear lane remains on both sides. */
+@media (min-width:621px){
+  .reels .cell img{width:70%!important;height:70%!important}
+  .reels .cell .orbSprite{width:68%!important;height:68%!important}
+  /* Only the thin serpent body is drawn above reel one.  Do not include the
+     dark scenery beside the dragon: that scenery was what hid part of the
+     symbol in the previous version. */
+  body[data-mode] .game::before{z-index:50!important;clip-path:polygon(
+    17.9% 47.2%,17.0% 51.4%,16.1% 56.1%,16.5% 61.0%,17.6% 66.4%,18.0% 72.1%,17.4% 79.4%,16.2% 88.9%,15.8% 91.8%,
+    17.3% 92.1%,18.6% 83.0%,19.5% 74.0%,19.2% 66.9%,18.2% 60.1%,17.7% 55.5%,18.7% 49.2%
+  )!important}
+}
+
+/* All six reels are locked to the same grid track.  The five painted
+   dividers therefore use exactly the same 1/6 spacing as the symbols. */
+@media (min-width:621px){
+  .reels{grid-template-columns:repeat(6,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important}
+  .reels .cell{min-width:0!important;min-height:0!important;width:100%!important;height:100%!important;justify-self:stretch!important;align-self:stretch!important;display:grid!important;place-items:center!important;overflow:hidden!important}
+  /* The six equal grid tracks are the source of truth for both stones and
+     the five painted separators.  Keep a fixed clear lane at each side so a
+     circular stone cannot touch or cross a divider. */
+  .reels .cell img{max-width:70%!important;max-height:70%!important;object-position:center!important}
+  .reels .cell .orbSprite{max-width:68%!important;max-height:68%!important}
+}
+
+/* The painted crest is the only SPIN hit area.  It keeps the hand cursor
+   while it is ready; while a spin is running the disabled button still owns
+   the pointer area so the cursor cleanly returns to the normal arrow. */
+body[data-mode] footer #spin:not(:disabled){cursor:pointer!important}
+body[data-mode] footer #spin:disabled{cursor:default!important;pointer-events:auto!important}
+body[data-mode] footer #spin:disabled:hover,body[data-mode] footer #spin:disabled:active{filter:none!important;transform:none!important}
+body[data-mode] footer #spin:disabled::before{display:none!important;opacity:0!important}
+
+/* Align the real hit area to the painted lower-right SPIN crest. */
+@media (min-width:621px){
+  footer #spin{left:88.2%!important}
+  main.spinPressed footer #spin::after{display:block!important;opacity:1!important}
+}
+
+/* The click cloud is a footer-level overlay, independent of the invisible
+   SPIN hit target.  This guarantees it remains visible after the button is
+   disabled, while the masked centre prevents a duplicate button image. */
+@media (min-width:621px){
+  main.spinPressed footer #spin::after{content:none!important;display:none!important}
+  /* Button: left 88.2%, top 76%, 11% × 18%.  These values include the exact
+   8% halo inset, keeping the cloud centred on the moved crest. */
+  main.spinPressed footer:has(#spin)::after{content:''!important;display:block!important;position:absolute!important;z-index:80!important;left:87.32%!important;top:74.56%!important;width:12.76%!important;height:20.88%!important;border:0!important;border-radius:0!important;pointer-events:none!important;background:var(--spin-press-glow,url('assets/spin-press-glow-clean.png?v=4')) center/106% 106% no-repeat!important;box-shadow:none!important;filter:contrast(1.12) saturate(1.12)!important;-webkit-mask-image:radial-gradient(ellipse 29% 35% at 50% 52%,transparent 96%,#000 100%)!important;mask-image:radial-gradient(ellipse 29% 35% at 50% 52%,transparent 96%,#000 100%)!important;animation:spinCrestCloud 1s cubic-bezier(.16,.72,.25,1) forwards!important}
+}
+
+/* The click cloud is anchored to the SPIN circle itself, rather than the
+   footer canvas.  It cannot drift when the scene or layout changes. */
+@media (min-width:621px){
+  body[data-mode] main.spinPressed footer:has(#spin)::after{content:none!important;display:none!important}
+  /* The invisible click target must become visible for its child cloud layer;
+     its own background remains transparent, so no second button is drawn. */
+  body[data-mode] main.spinPressed footer #spin{opacity:1!important;background:transparent!important}
+  /* Only transparent cloud puffs surround the existing crest.  Do not use
+     the exported press image here: it contains a second button and a white
+     matte, both of which must never be drawn over the game. */
+  body[data-mode] main.spinPressed footer #spin::after{content:''!important;display:block!important;position:absolute!important;z-index:80!important;inset:-12%!important;border:0!important;border-radius:50%!important;pointer-events:none!important;background:radial-gradient(ellipse 18% 13% at 17% 39%,#fff8d4d9 0 36%,#f5d67599 47%,transparent 72%),radial-gradient(ellipse 17% 12% at 82% 38%,#fff8d4d9 0 34%,#f5d67599 48%,transparent 72%),radial-gradient(ellipse 20% 14% at 22% 68%,#fff8d4cc 0 33%,#f0c85f8c 47%,transparent 72%),radial-gradient(ellipse 19% 14% at 79% 69%,#fff8d4cc 0 33%,#f0c85f8c 47%,transparent 72%),radial-gradient(ellipse 25% 17% at 50% 14%,#fff8d4b8 0 28%,#e9bb5680 45%,transparent 75%),radial-gradient(ellipse 24% 16% at 50% 87%,#fff8d4b8 0 28%,#e9bb5680 45%,transparent 75%),radial-gradient(circle,transparent 37%,#e9bf5b38 51%,transparent 68%)!important;box-shadow:0 0 13px 3px #f6d77b55!important;filter:none!important;-webkit-mask-image:none!important;mask-image:none!important;animation:spinCloudPuffs 1s cubic-bezier(.16,.72,.25,1) forwards!important}
+}
+@keyframes spinCloudPuffs{0%{opacity:0;transform:scale(.82)}20%{opacity:.95}68%{opacity:.8;transform:scale(1.04)}100%{opacity:0;transform:scale(1.12)}}
+
+/* Quiet hover feedback: it uses the real SPIN hit area and never appears
+   while the button is disabled during a spin. */
+@media (min-width:621px){
+  body[data-mode] footer #spin:not(:disabled):hover{opacity:1!important;background:transparent!important;filter:none!important;transform:none!important}
+  /* Hover only brightens the original SPIN crest itself.  No outer ring,
+     cloud, scale, or pulse is shown until the player actually clicks. */
+  body[data-mode] footer #spin:not(:disabled):hover::before{content:''!important;display:block!important;position:absolute!important;z-index:70!important;inset:0!important;border:0!important;border-radius:50%!important;pointer-events:none!important;background:var(--spin-clean,url('assets/31.jpg')) center/100% 100% no-repeat!important;box-shadow:none!important;filter:brightness(1.28) saturate(1.12)!important;opacity:.72!important;animation:none!important}
+}
+
+/* User-supplied equidistant reel frame.  The grid is inset to its painted
+   inner window, so all six reel tracks align to the five actual dividers. */
+@media (min-width:621px){
+  .reels,.reels.spinning{
+    /* The supplied export includes a thin white margin around its own
+       frame.  The grid padding follows the real inner window after that
+       margin is cropped by the slightly enlarged background below. */
+    padding:4% 3% 6%!important;
+    background:none!important;
+    box-shadow:none!important;
+  }
+  /* Paint the supplied frame across the full reel stage, independently from
+     the padded six-column grid inside it.  This prevents a second inset
+     frame while retaining exact symbol/divider alignment. */
+  body[data-mode] .reels::before{content:''!important;display:block!important;position:absolute!important;inset:0!important;z-index:0!important;pointer-events:none!important;background:transparent var(--board-equidistant,url('assets/board-current.png')) center/107.5% 109% no-repeat!important}
+  .reels::after{display:none!important}
+}
+
+/* Final SPIN calibration: the interactive area is only the painted green
+   crest, while the click cloud is a continuous transparent cloud-ring. */
+@media (min-width:621px){
+  footer #spin{left:90.6%!important;top:77.3%!important;width:8.9%!important;height:14.5%!important}
+  body[data-mode] main.spinPressed footer #spin::after{
+    inset:-10%!important;
+    background:
+      radial-gradient(ellipse 27% 17% at 16% 42%,#fff7cfad 0 31%,#e9b85677 48%,transparent 74%),
+      radial-gradient(ellipse 27% 17% at 84% 42%,#fff7cfad 0 31%,#e9b85677 48%,transparent 74%),
+      radial-gradient(ellipse 26% 18% at 23% 70%,#fff7cf9b 0 31%,#e5af4e70 49%,transparent 74%),
+      radial-gradient(ellipse 26% 18% at 77% 70%,#fff7cf9b 0 31%,#e5af4e70 49%,transparent 74%),
+      radial-gradient(ellipse 30% 17% at 50% 14%,#fff7cf94 0 28%,#e5af4e68 49%,transparent 76%),
+      radial-gradient(ellipse 30% 17% at 50% 88%,#fff7cf94 0 28%,#e5af4e68 49%,transparent 76%),
+      radial-gradient(ellipse 42% 9% at 50% 50%,transparent 53%,#edc56a42 67%,transparent 82%)!important;
+    box-shadow:0 0 10px 2px #f2ce7050!important;
+  }
+}
+
+/* The equidistant board is composited once into the landscape, so the old
+   frame cannot show through underneath it as a second overlapping image. */
+@media (min-width:621px){
+  main{background:url('assets/main-game-landscape-equidistant-v3.png') center/100% 100% no-repeat!important}
+  body[data-mode] .reels::before{content:none!important;display:none!important}
+}
+
+/* Until the approved Free-Game art is provided, the feature deliberately
+   uses the exact same verified board and control layout as the base game. */
+@media (min-width:621px){
+  body[data-mode="free"] main,body[data-mode="bonus"] main{background:url('assets/main-game-landscape-equidistant-v3.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] header,body[data-mode="bonus"] header,body[data-mode="free"] .coinBase,body[data-mode="bonus"] .coinBase{background-image:none!important;background-color:transparent!important}
+}
+
+/* User-supplied SPIN artwork: normal, hover, press, then the separate cloud
+   ring.  Each cleaned PNG has only its edge-connected white export matte
+   removed; the painted gold detail itself is unchanged. */
+@media (min-width:621px){
+  body[data-mode] footer #spin{opacity:1!important;background:transparent url('assets/spin-normal-clean.png') center/100% 100% no-repeat!important;filter:none!important;transform:none!important}
+  body[data-mode] footer #spin:not(:disabled):hover::before{content:''!important;display:block!important;position:absolute!important;z-index:70!important;inset:0!important;border:0!important;border-radius:50%!important;pointer-events:none!important;background:transparent url('assets/spin-hover-clean.png') center/100% 100% no-repeat!important;filter:none!important;opacity:1!important;animation:none!important}
+  body[data-mode] main.spinPressed footer #spin::before{content:''!important;display:block!important;position:absolute!important;z-index:71!important;inset:0!important;border:0!important;border-radius:50%!important;pointer-events:none!important;background:transparent url('assets/spin-press-clean-v2.png') center/100% 100% no-repeat!important;filter:none!important;opacity:1!important;animation:spinPressArt .42s ease-out both!important}
+  body[data-mode] main.spinPressed footer #spin::after{content:''!important;display:block!important;position:absolute!important;z-index:72!important;inset:-13%!important;border:0!important;border-radius:50%!important;pointer-events:none!important;background:transparent url('assets/spin-cloud-clean-v2.png') center/100% 100% no-repeat!important;box-shadow:none!important;filter:none!important;opacity:0!important;animation:spinCloudArt 1s cubic-bezier(.17,.75,.27,1) both!important}
+}
+@keyframes spinPressArt{0%{opacity:.7;transform:scale(.92)}45%{opacity:1;transform:scale(1.03)}100%{opacity:1;transform:scale(1)}}
+@keyframes spinCloudArt{0%{opacity:0;transform:scale(.72)}18%{opacity:.96;transform:scale(.92)}52%{opacity:1;transform:scale(1.18)}78%{opacity:.88;transform:scale(1)}100%{opacity:0;transform:scale(.76)}}
+
+/* SPIN has exactly three states: normal, hover, and the one-second click.
+   Once the click animation ends, both temporary layers are removed instead
+   of holding their final frame while the reels are still locked. */
+@media (min-width:621px){
+  body[data-mode] footer #spin::before,body[data-mode] footer #spin::after{content:none!important;display:none!important;opacity:0!important;animation:none!important}
+  body[data-mode] footer #spin:not(:disabled):hover::before{content:''!important;display:block!important;opacity:1!important;inset:0!important;background:transparent url('assets/spin-hover-clean.png') center/100% 100% no-repeat!important}
+  /* The press state keeps the same bright crest as hover.  The supplied
+     press export already contains a second button, so using it here made the
+     middle crest visibly darken/double during a click.  Only the cloud art
+     belongs in the separate press layer. */
+  body[data-mode] main.spinPressed footer #spin::before{content:''!important;display:block!important;opacity:1!important;inset:0!important;background:transparent url('assets/spin-hover-clean.png') center/100% 100% no-repeat!important;animation:spinPressArt .42s ease-out none!important}
+  body[data-mode] main.spinPressed footer #spin::after{content:''!important;display:block!important;opacity:0!important;inset:-13%!important;background:transparent url('assets/spin-cloud-clean-v2.png') center/100% 100% no-repeat!important;animation:spinCloudArt 1s cubic-bezier(.17,.75,.27,1) none!important}
+}
+
+/* Base-game art is now truly layered: use the supplied pure mountain scene,
+   then draw only the approved transparent board frame above it.  No part of
+   the former composite (old frame, characters, or painted old SPIN crest)
+   remains underneath. */
+@media (min-width:621px){
+  body[data-mode="base"] main{background:url('assets/base-game-background-current.png') center/cover no-repeat!important}
+  body[data-mode="base"] .game::before{content:none!important;display:none!important}
+  body[data-mode="base"] .reels{isolation:isolate!important;background:none!important;box-shadow:none!important}
+  body[data-mode="base"] .reels::before{content:''!important;display:block!important;position:absolute!important;inset:0!important;z-index:0!important;pointer-events:none!important;background:transparent url('assets/board-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .reels .cell{position:relative!important;z-index:1!important}
+}
+
+/* Larger, slightly left-shifted SPIN crest.  The authored normal crest stays
+   painted on the button while the press/cloud layers animate above it. */
+@media (min-width:621px){
+  body[data-mode] footer #spin{left:85.3%!important;top:72.6%!important;width:10.6%!important;height:15.8%!important;opacity:1!important;background:transparent url('assets/spin-normal-clean.png') center/100% 100% no-repeat!important}
+  body[data-mode] main.spinPressed footer #spin{opacity:1!important;background:transparent url('assets/spin-normal-clean.png') center/100% 100% no-repeat!important}
+}
+
+/* User-supplied win-score frame.  It is transparent outside the gold carving
+   and is placed at the top centre until a position guide is supplied. */
+@media (min-width:621px){
+  .winTicker{z-index:95!important;top:-16.5%!important;bottom:auto!important;left:29%!important;right:auto!important;width:42%!important;min-height:0!important;height:auto!important;aspect-ratio:1252/412!important;padding:0 10%!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;background:transparent url('assets/win-frame-transparent.png') center/100% 100% no-repeat!important;border:0!important;border-radius:0!important;box-shadow:none!important;box-sizing:border-box!important}
+  .winTicker small{font-size:10px!important;color:#f7dfa0!important;white-space:nowrap!important;flex:0 0 auto!important}.winTicker b{font-size:clamp(15px,1.7vw,22px)!important;color:#ffeaa2!important;text-shadow:0 2px 2px #1b0b02!important;white-space:nowrap!important;flex:0 0 auto!important}.winTicker span{display:none!important}
+}
+
+/* The direct Free-Game test entry is deliberately separate from SPIN. */
+@media (min-width:621px){
+  .baseEntry{position:absolute!important;z-index:90!important;left:.6%!important;top:2.2%!important;display:grid!important;place-items:center!important;gap:1px!important;width:10.4%!important;height:7.8%!important;padding:4px!important;border:2px solid #75d8e7!important;border-radius:11px!important;background:linear-gradient(145deg,#1d6170,#092a32 66%,#061519)!important;color:#dffcff!important;font:800 clamp(11px,1.25vw,16px)/1 Georgia,serif!important;text-shadow:0 2px 2px #062027!important;box-shadow:inset 0 0 0 2px #28626a,inset 0 0 13px #7be7f255,0 4px 10px #071519aa!important;cursor:pointer!important}
+  .baseEntry small{font:700 clamp(8px,.8vw,11px)/1 Arial,sans-serif!important;color:#a7eff5!important}
+  .baseEntry:hover{filter:brightness(1.18)!important;transform:translateY(-1px)!important;box-shadow:inset 0 0 0 2px #54aeb7,inset 0 0 16px #a2f5ff99,0 0 13px #74e5f099!important}
+  .baseEntry:active{transform:translateY(1px) scale(.97)!important}
+  /* Keep all three showcase entries available in the normal game.  They are
+     stacked in the left landscape gutter, never over the reel artwork. */
+  body[data-mode="base"] .baseEntry,body[data-mode="free"] .baseEntry,body[data-mode="bonus"] .baseEntry{display:grid!important}
+  .baseEntry{top:20.0%!important}
+  body[data-mode="free"] .freeEntry,body[data-mode="bonus"] .freeEntry,
+  body[data-mode="free"] .bonusEntry,body[data-mode="bonus"] .bonusEntry{display:none!important}
+  .freeEntry{position:absolute!important;z-index:90!important;left:.6%!important;top:2.2%!important;display:grid!important;place-items:center!important;gap:1px!important;width:10.4%!important;height:7.8%!important;padding:4px!important;border:2px solid #f7d36f!important;border-radius:11px!important;background:linear-gradient(145deg,#2b5b48,#0a2922 66%,#06150f)!important;color:#fff0b3!important;font:800 clamp(11px,1.25vw,16px)/1 Georgia,serif!important;text-shadow:0 2px 2px #1c0a02!important;box-shadow:inset 0 0 0 2px #73501f,inset 0 0 13px #ffe38c55,0 4px 10px #1b0e09aa!important;cursor:pointer!important}
+  .freeEntry small{font:700 clamp(8px,.8vw,11px)/1 Arial,sans-serif!important;color:#ffe397!important}
+  .freeEntry:hover{filter:brightness(1.18)!important;transform:translateY(-1px)!important;box-shadow:inset 0 0 0 2px #9b742f,inset 0 0 16px #ffe38c99,0 0 13px #f5c65f99!important}
+  .freeEntry:active{transform:translateY(1px) scale(.97)!important}
+  body[data-mode="free"] .freeEntry,body[data-mode="bonus"] .freeEntry{display:none!important}
+  .bonusEntry{position:absolute!important;z-index:90!important;left:.6%!important;top:11.1%!important;display:grid!important;place-items:center!important;gap:1px!important;width:10.4%!important;height:7.8%!important;padding:4px!important;border:2px solid #e8a968!important;border-radius:11px!important;background:linear-gradient(145deg,#633751,#29132f 66%,#120914)!important;color:#ffe4bb!important;font:800 clamp(11px,1.25vw,16px)/1 Georgia,serif!important;text-shadow:0 2px 2px #1c071c!important;box-shadow:inset 0 0 0 2px #6f3c61,inset 0 0 13px #ffca9b55,0 4px 10px #1b0715aa!important;cursor:pointer!important}
+  .bonusEntry small{font:700 clamp(8px,.8vw,11px)/1 Arial,sans-serif!important;color:#ffd0a5!important}
+  .bonusEntry:hover{filter:brightness(1.18)!important;transform:translateY(-1px)!important;box-shadow:inset 0 0 0 2px #a86479,inset 0 0 16px #ffc4a099,0 0 13px #e798bd99!important}
+  .bonusEntry:active{transform:translateY(1px) scale(.97)!important}
+  body[data-mode="free"] .bonusEntry,body[data-mode="bonus"] .bonusEntry{display:none!important}
+
+  /* A dedicated score frame sits immediately below the reel window. */
+  .winTicker{z-index:70!important;top:96%!important;bottom:auto!important;left:22%!important;right:22%!important;min-height:6.5%!important;padding:4px 12px!important;border:2px solid #d8b451!important;border-radius:10px!important;background:linear-gradient(90deg,#1b1009,#4d2b0e 17%,#21150a 50%,#4d2b0e 83%,#1b1009)!important;box-shadow:inset 0 0 0 2px #6d461b,inset 0 0 14px #000c,0 3px 8px #000a!important}
+  .winTicker small{font-size:10px!important;color:#f5d987!important}.winTicker b{font-size:19px!important;color:#ffe899!important;text-shadow:0 2px 2px #4b2306!important}.winTicker span{display:none!important}
+
+  /* Until a separate Free-Game frame is supplied, retain this same verified
+     board frame while switching only to the supplied Free-Game background. */
+  body[data-mode="free"] main{background:url('assets/free-game-background.jpg') center/cover no-repeat!important}
+  body[data-mode="free"] .game::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels{isolation:isolate!important;background:none!important;box-shadow:none!important}
+  body[data-mode="free"] .reels::before{content:''!important;display:block!important;position:absolute!important;inset:0!important;z-index:0!important;pointer-events:none!important;background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+}
+
+/* Final score-frame placement: this rule intentionally follows all older
+   ticker layouts so the supplied decorative frame cannot be pushed below
+   the visible game canvas. */
+@media (min-width:621px){
+  .winTicker{z-index:95!important;top:1.1%!important;bottom:auto!important;left:34%!important;right:auto!important;width:32%!important;min-height:0!important;height:auto!important;aspect-ratio:1252/412!important;padding:0 10%!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;background:transparent url('assets/win-frame-transparent.png') center/100% 100% no-repeat!important;border:0!important;border-radius:0!important;box-shadow:none!important;box-sizing:border-box!important}
+  .winTicker small{font-size:10px!important;color:#f7dfa0!important}.winTicker b{font-size:clamp(15px,1.7vw,22px)!important;color:#ffeaa2!important;text-shadow:0 2px 2px #1b0b02!important}.winTicker span{display:none!important}
+  .winTicker.isCounting{animation:roundWinPanelPulse .42s ease-in-out 2!important}
+  .winTicker.isCounting b{color:#fff5bc!important;text-shadow:0 0 6px #ffe16d,0 2px 2px #1b0b02!important}
+  .winTicker.isSettled{animation:roundWinPanelSettle .48s ease-out both!important}
+}
+@keyframes roundWinPanelPulse{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent);transform:translateY(0) scale(1)}50%{filter:brightness(1.22) drop-shadow(0 0 8px #ffd766aa);transform:translateY(-1px) scale(1.025)}}
+@keyframes roundWinPanelSettle{0%{filter:brightness(1.28) drop-shadow(0 0 10px #ffe181bb)}100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}}
+
+/* Final v153 corrections: the score plaque follows the supplied placement
+   guide, and a locked SPIN button is always its normal visible crest. */
+@media (min-width:621px){
+  .winTicker{top:-1%!important}
+  .winTicker small{font-size:10px!important;color:#f7dfa0!important;white-space:nowrap!important;flex:0 0 auto!important}
+  .winTicker b{font-size:clamp(15px,1.7vw,22px)!important;color:#ffeaa2!important;white-space:nowrap!important;flex:0 0 auto!important}
+  body[data-mode] main:not(.spinPressed) footer #spin:disabled{display:block!important;visibility:visible!important;opacity:1!important;background:transparent url('assets/spin-normal-clean.png') center/100% 100% no-repeat!important;color:transparent!important;filter:none!important;transform:none!important}
+  body[data-mode] main:not(.spinPressed) footer #spin:disabled::before,
+  body[data-mode] main:not(.spinPressed) footer #spin:disabled::after{content:none!important;display:none!important;opacity:0!important;animation:none!important}
+}
+
+/* Score fits inside the supplied plaque: one centred number, slightly smaller
+   than the original oversized treatment, with no label competing for space. */
+@media (min-width:621px){
+  .winTicker{justify-content:center!important;padding:0 13.5%!important;gap:0!important}
+  .winTicker b{display:block!important;font-size:clamp(13px,1.35vw,18px)!important;line-height:1!important;text-align:center!important}
+}
+
+/* Mode-scene replacements supplied by the project: each feature now uses one
+   dedicated scenic background instead of the earlier shared placeholders. */
+@media (min-width:621px){
+  body[data-mode="free"] main{background:url('assets/free-game-background-v2.png') center/cover no-repeat!important}
+  body[data-mode="bonus"] main{background:url('assets/awakening-background-v2.png') center/cover no-repeat!important}
+  body[data-mode="free"] #modeScene,body[data-mode="bonus"] #modeScene{background-image:none!important}
+}
+
+/* Free Game uses its own supplied score, multiplier and information frames.
+   The existing live values stay in their original elements, so no game logic
+   or controls are duplicated. */
+@media (min-width:621px){
+  body[data-mode="free"] .winTicker{
+    top:-7.6%!important;left:33%!important;width:33%!important;height:auto!important;
+    aspect-ratio:386/157!important;padding:0 9%!important;
+    background:transparent url('assets/free-win-frame.png') center/100% 100% no-repeat!important;
+  }
+  body[data-mode="free"] .winTicker b{font-size:clamp(14px,1.45vw,19px)!important}
+  body[data-mode="free"] .game>aside:first-child .feature:first-child{
+    position:absolute!important;z-index:96!important;left:84%!important;top:3.1%!important;
+    width:10.5%!important;height:14.8%!important;min-height:0!important;padding:16% 0 0!important;
+    display:flex!important;align-items:center!important;justify-content:flex-start!important;
+    background:transparent url('assets/free-multiplier-frame.png') center/100% 100% no-repeat!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .game>aside:first-child .feature:first-child small{display:none!important}
+  body[data-mode="free"] .game>aside:first-child .feature:first-child strong{font-size:clamp(15px,1.55vw,22px)!important;color:#fff0ab!important;text-shadow:0 2px 2px #4b2105!important}
+  body[data-mode="free"] .playHud{
+    left:25%!important;bottom:1.0%!important;width:50%!important;height:auto!important;
+    aspect-ratio:804/119!important;padding:0 5%!important;
+    background:transparent url('assets/free-info-frame.png') center/100% 100% no-repeat!important;
+  }
+  /* Free Game keeps the exact same real SPIN button geometry and three-state
+     artwork as the base mode. */
+  body[data-mode="free"] footer #spin{
+    left:84.35%!important;top:71.2%!important;width:12.5%!important;height:18.6%!important;
+  }
+}
+
+/* Multiplier balls are position-locked.  Their reveal, split, lock and
+   collection glow may alter opacity/brightness only: never translate, scale,
+   bounce, or inherit a transform from a parent after landing. */
+@media (min-width:621px){
+  body[data-mode] .reels .cell.orb,
+  body[data-mode] .reels .cell.orbReveal,
+  body[data-mode] .reels .cell.locked,
+  body[data-mode] .reels .cell.orb .orbSprite,
+  body[data-mode] .reels .cell.orbReveal .orbSprite,
+  body[data-mode] .reels .cell.locked .orbSprite{
+    transform:translate3d(0,0,0)!important;transition:none!important;animation:none!important;
+    transform-origin:50% 50%!important;
+  }
+  body[data-mode] .reels .cell.orbReveal .orbSprite{animation:orbLightOnly .36s ease-out both!important}
+  body[data-mode] .reels .cell.powerTarget.orb .orbSprite{animation:orbTargetLightOnly .55s ease-in-out infinite!important}
+}
+@keyframes orbLightOnly{from{opacity:0;filter:brightness(1)}to{opacity:1;filter:brightness(1.12) drop-shadow(0 0 8px #ffe07a)}}
+@keyframes orbTargetLightOnly{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:1;filter:brightness(1.28) drop-shadow(0 0 8px #ffd65f)}}
+
+/* Reel-centre calibration.  The six tracks follow the actual painted lanes
+   in the supplied board art, rather than an even CSS guess.  Each symbol is
+   centred between neighbouring gold dividers (or the outer frame) and grows
+   only into the deliberately clear space around it. */
+@media (min-width:621px){
+  body[data-mode] .reels{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:repeat(5,minmax(0,1fr))!important;
+    column-gap:0!important;row-gap:0!important;
+    padding:7.3% 5.5% 9.4%!important;
+  }
+  body[data-mode] .reels .cell{width:100%!important;height:100%!important;aspect-ratio:auto!important;display:grid!important;place-items:center!important}
+  body[data-mode] .reels .cell img{width:86%!important;height:86%!important;max-width:86%!important;max-height:86%!important;object-fit:contain!important}
+  body[data-mode] .reels .cell .orbSprite{width:86%!important;height:86%!important;max-width:86%!important;max-height:86%!important}
+}
+
+/* A travelling reel belt and a cascade copy use the exact same artwork scale
+   as a settled cell.  Motion is vertical only: never scale a stone in or out
+   while it falls, so it cannot look small and then pop larger on landing. */
+@media (min-width:621px){
+  body[data-mode] .reels .cell img,
+  body[data-mode] .reelStripTrack img,
+  body[data-mode] .reelClearTrack img,
+  body[data-mode] .cascadeStone img{width:86%!important;height:86%!important;max-width:86%!important;max-height:86%!important;object-fit:contain!important}
+  body[data-mode] .reels .cell .orbSprite,
+  body[data-mode] .reelStripTrack .orbSprite,
+  body[data-mode] .reelClearTrack .orbSprite,
+  body[data-mode] .cascadeStone .orbSprite{width:86%!important;height:86%!important;max-width:86%!important;max-height:86%!important;background-size:contain!important;background-position:center!important}
+  body[data-mode] .reels.spinning .cell.rolling img,
+  body[data-mode] .reels.spinning .cell.rolling .orbSprite{transform:none!important}
+  body[data-mode] .symbolArt.baize,
+  body[data-mode] .symbolArt.bifang{transform:none!important}
+}
+
+/* During the click cloud, keep the crest itself in the same bright artwork
+   used for hover.  The only added effect is the surrounding cloud halo. */
+@media (min-width:621px){
+  body[data-mode] main.spinPressed footer #spin::before{background:transparent url('assets/spin-hover-clean.png') center/100% 100% no-repeat!important;filter:none!important;opacity:1!important}
+}
+
+/* Original bottom information bar: clear like the supplied reference, but
+   rendered in this game's dark-jade and carved-gold visual language. */
+@media (min-width:621px){
+  .playHud{position:absolute!important;z-index:91!important;left:25.5%!important;bottom:2.15%!important;width:53%!important;height:9.7%!important;display:grid!important;grid-template-columns:1fr 1.18fr!important;align-items:stretch!important;overflow:hidden!important;border:1px solid #d7aa4c!important;border-radius:9px!important;background:linear-gradient(105deg,#061611eb,#102e27ef 46%,#06130fec)!important;box-shadow:inset 0 0 0 1px #3a2a13,inset 0 0 17px #000d,0 3px 9px #0009!important;font-family:Georgia,'Times New Roman',serif!important}
+  .playHud::before{content:''!important;position:absolute!important;inset:4px!important;border-top:1px solid #ffe3a55c!important;border-bottom:1px solid #7c511f88!important;pointer-events:none!important}
+  .hudAmount,.hudStake{position:relative!important;z-index:1!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-width:0!important}
+  .hudAmount{border-right:1px solid #c99a4177!important}
+  .playHud small{display:block!important;color:#d6bb7d!important;font:700 clamp(8px,.95vw,12px)/1 Arial,sans-serif!important;letter-spacing:.08em!important;text-shadow:0 1px #000!important}
+  .playHud b{display:block!important;margin-top:3px!important;color:#fff1bd!important;font:700 clamp(16px,2.05vw,26px)/1 Georgia,serif!important;text-shadow:0 2px 2px #140802,0 0 7px #d8a94466!important;white-space:nowrap!important}
+  .hudStakeControls{display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;margin-top:2px!important}
+  .hudStakeControls b{margin:0!important;min-width:68px!important;text-align:center!important}
+  .hudStakeControls button{width:28px!important;height:28px!important;min-height:0!important;padding:0!important;border:1px solid #d3aa52!important;border-radius:50%!important;background:radial-gradient(circle at 34% 28%,#367063,#11362f 56%,#061712)!important;color:#ffe7a1!important;font:700 21px/24px Arial,sans-serif!important;text-shadow:0 1px #000!important;box-shadow:inset 0 0 7px #9fe1bc33,0 2px 4px #0009!important;cursor:pointer!important}
+  .hudStakeControls button:hover:not(:disabled){filter:brightness(1.22)!important;box-shadow:0 0 8px #f0c75d99,inset 0 0 7px #b9ffd666!important}
+  .hudStakeControls button:disabled{opacity:.48!important;cursor:default!important;filter:none!important}
+}
+
+/* Keep the information strip below the reel border, not over the last row. */
+@media (min-width:621px){
+  .playHud{bottom:.3%!important;height:4.5%!important;border-radius:7px!important}
+  .playHud small{font-size:clamp(7px,.72vw,10px)!important}
+  .playHud b{margin-top:0!important;font-size:clamp(12px,1.35vw,17px)!important}
+  .hudStakeControls{gap:5px!important;margin-top:0!important}
+  .hudStakeControls b{min-width:53px!important}
+  .hudStakeControls button{width:20px!important;height:20px!important;font-size:15px!important;line-height:16px!important}
+}
+
+/* Empty targets travel with the reel as genuinely blank spaces.  Multiplier
+   balls then materialise only after the reel-stop sequence has completed. */
+.reelEmpty{display:block!important;width:100%!important;height:100%!important}
+@media (min-width:621px){
+  .reels .cell.orbReveal .orbSprite{animation:multiplierReveal .52s cubic-bezier(.14,.84,.24,1.06) both!important;filter:brightness(1.08) drop-shadow(0 0 9px #ffe07a)!important}
+}
+@keyframes multiplierReveal{0%{opacity:0;transform:translateY(-22px) scale(calc(var(--orb-scale,1) * .38))}55%{opacity:1;transform:translateY(3px) scale(calc(var(--orb-scale,1) * 1.08))}100%{opacity:1;transform:translateY(0) scale(var(--orb-scale,1))}}
+
+/* Multiplier-ball alignment: use the same geometric centre as every normal
+   stone in its column, including while the independent reveal animation runs. */
+@media (min-width:621px){
+  .reels .cell .orbSprite{display:block!important;justify-self:center!important;align-self:center!important;margin:0!important;transform-origin:50% 50%!important}
+  .reels .cell.orbReveal .orbSprite{transform-origin:50% 50%!important}
+}
+
+/* Equal visual-size calibration.  The supplied files have different amounts
+   of transparent canvas around the art, so use per-symbol scale only to make
+   the visible medallions consistent.  Five jade gems remain deliberately a
+   small step below the creature and special symbols. */
+@media (min-width:621px){
+  .symbolArt.eye{transform:scale(1.09)!important}
+  .symbolArt.dragon,.symbolArt.baize{transform:scale(1)!important}
+  .symbolArt.bifang,.symbolArt.fox,.symbolArt.qingqiu,.symbolArt.nuwa{transform:scale(.99)!important}
+  .symbolArt.fuxi{transform:scale(.97)!important}
+  .symbolArt.jp{transform:scale(1.18)!important}
+  .symbolArt.fire{transform:scale(1.095)!important}
+  .symbolArt.black{transform:scale(1.10)!important}
+  .symbolArt.jade{transform:scale(1.05)!important}
+  .symbolArt.gold{transform:scale(1.08)!important}
+  .symbolArt.green{transform:scale(1.12)!important}
+  .reels .cell .orbSprite{--orb-scale:1.04!important;transform:scale(var(--orb-scale))!important}
+  .reels .cell .orbSprite.rare{--orb-scale:1.08!important;transform:scale(var(--orb-scale))!important}
+  .reels .cell.orbReveal .orbSprite{animation:multiplierReveal .52s cubic-bezier(.14,.84,.24,1.06) both!important}
+}
+
+/* The painted board lanes have slightly different widths.  Do not size art by
+   a percentage of each lane: give every reel symbol the same physical size,
+   then retain only the intended small step for the five jade symbols. */
+@media (min-width:621px){
+  body[data-mode]{--reel-symbol-size:clamp(48px,6.2vw,64px)}
+  body[data-mode] .reels .cell img,
+  body[data-mode] .reelStripTrack img,
+  body[data-mode] .reelClearTrack img,
+  body[data-mode] .cascadeStone img{width:var(--reel-symbol-size)!important;height:var(--reel-symbol-size)!important;max-width:var(--reel-symbol-size)!important;max-height:var(--reel-symbol-size)!important}
+  body[data-mode] .reels .cell .orbSprite,
+  body[data-mode] .reelStripTrack .orbSprite,
+  body[data-mode] .reelClearTrack .orbSprite,
+  body[data-mode] .cascadeStone .orbSprite{width:var(--reel-symbol-size)!important;height:var(--reel-symbol-size)!important;max-width:var(--reel-symbol-size)!important;max-height:var(--reel-symbol-size)!important}
+  .symbolArt.jp{transform:scale(1.10)!important}
+}
+
+/* v173: final, non-conflicting desktop control and score calibration. */
+@media (min-width:621px){
+  /* During a click, retain the bright hover crest in the centre and place
+     only the supplied cloud ring around its outside edge. */
+  body[data-mode] main.spinPressed footer #spin::before{
+    content:''!important;display:block!important;position:absolute!important;
+    z-index:71!important;inset:0!important;opacity:1!important;
+    background:transparent url('assets/spin-hover-clean.png') center/100% 100% no-repeat!important;
+    filter:none!important;animation:none!important;
+  }
+  body[data-mode] main.spinPressed footer #spin::after{
+    content:''!important;display:block!important;position:absolute!important;
+    z-index:72!important;inset:-10%!important;opacity:0!important;
+    background:transparent url('assets/spin-cloud-clean-v2.png') center/100% 100% no-repeat!important;
+    filter:none!important;box-shadow:none!important;animation:spinCloudArt 1s cubic-bezier(.17,.75,.27,1) both!important;
+  }
+  /* Move the carved win plaque a little higher without changing its size. */
+  .winTicker{top:-3.5%!important}
+  /* The balance and stake figures deliberately share one exact numeral size. */
+  .hudAmount b,.hudStakeControls b{font-size:clamp(12px,1.35vw,17px)!important;line-height:1!important}
+}
+
+/* Multiplier conversion is a separate beat after all cascade-score counts. */
+@media (min-width:621px){
+  .winTicker.isMultiplying{animation:multiplierSettlement .72s ease-in-out both!important}
+  .winTicker.isMultiplying b{color:#fff3ab!important;text-shadow:0 0 10px #ffd458,0 2px 2px #1b0b02!important}
+}
+@keyframes multiplierSettlement{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent);transform:scale(1)}48%{filter:brightness(1.3) drop-shadow(0 0 11px #f6ce5da8);transform:scale(1.035)}}
+
+/* Current approved board and HUD artwork.  These final rules intentionally
+   replace, rather than layer over, the earlier board and generic panels. */
+@media (min-width:621px){
+  body[data-mode="base"] .reels::before{
+    background:transparent url('assets/board-current.png') center/100% 100% no-repeat!important;
+  }
+  .winTicker{
+    top:-3.5%!important;left:34%!important;width:32%!important;
+    aspect-ratio:581/119!important;
+    background:transparent url('assets/win-frame-current.png') center/100% 100% no-repeat!important;
+  }
+  /* The header balance is superseded by the authored lower information bar. */
+  body[data-mode="base"] header .balance{display:none!important}
+  .playHud{
+    left:23%!important;bottom:1.1%!important;width:54%!important;height:auto!important;
+    aspect-ratio:960/95!important;border:0!important;border-radius:0!important;
+    background:transparent url('assets/wallet-bet-frame-current.png') center/100% 100% no-repeat!important;
+    box-shadow:none!important;
+  }
+  .playHud::before{content:none!important;display:none!important}
+  .hudAmount{border-right:1px solid #c99a4177!important}
+}
+
+/* Larger, still centred round-win plaque. */
+@media (min-width:621px){
+  .winTicker{left:29%!important;width:42%!important}
+  .winTicker::before{content:none!important;display:none!important}
+  body[data-mode] footer #spin{left:84.35%!important;top:71.2%!important;width:12.5%!important;height:18.6%!important}
+  /* This is deliberately the last SPIN press rule: the authored cloud ring
+     remains visible above the enlarged crest for exactly one second. */
+  body[data-mode] main.spinPressed footer #spin::after{
+    content:''!important;display:block!important;position:absolute!important;
+    z-index:90!important;inset:-14%!important;pointer-events:none!important;
+    background:transparent url('assets/spin-cloud-clean-v2.png') center/100% 100% no-repeat!important;
+    opacity:0!important;filter:none!important;box-shadow:none!important;
+    animation:spinCloudArt 1s cubic-bezier(.17,.75,.27,1) both!important;
+  }
+}
+
+/* Round-win presentation: the supplied gold numeral artwork is kept on one
+   stable baseline.  Counting uses light only — no scale or vertical movement. */
+@media (min-width:621px){
+  .winTicker{gap:clamp(5px,.55vw,9px)!important;padding:0 10.5%!important}
+  .winTicker .winLabel{
+    display:block!important;flex:0 0 auto!important;white-space:nowrap!important;
+    color:#f8dfa1!important;font:900 clamp(10px,1.05vw,14px)/1 'Noto Serif TC',serif!important;
+    letter-spacing:.08em!important;text-shadow:0 1px 1px #140905!important;
+  }
+  #roundWin.roundWinValue{
+    display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;
+    flex:0 0 auto!important;min-width:clamp(98px,11.5vw,138px)!important;
+    height:clamp(27px,3.15vw,38px)!important;margin:0!important;padding:0!important;
+    color:#ffe8a1!important;font-size:clamp(26px,3.15vw,38px)!important;
+    line-height:1!important;letter-spacing:0!important;white-space:nowrap!important;
+    text-shadow:none!important;font-variant-numeric:tabular-nums!important;
+  }
+  #roundWin.roundWinValue .digitArt{
+    height:1em!important;display:inline-flex!important;align-items:center!important;
+    vertical-align:middle!important;transform:none!important;
+  }
+  #roundWin.roundWinValue .digitArt img{
+    height:1em!important;width:auto!important;max-height:1em!important;
+    margin:0 -.035em!important;object-fit:contain!important;
+    filter:drop-shadow(0 .055em .045em #1d0d01cc)!important;
+    transform:none!important;animation:none!important;transition:none!important;
+  }
+  .winTicker.isCounting{animation:roundWinPanelGlow .42s ease-in-out 2!important;transform:none!important}
+  .winTicker.isCounting #roundWin.roundWinValue{filter:brightness(1.16) drop-shadow(0 0 5px #ffd45c99)!important}
+  .winTicker.isSettled{animation:roundWinPanelGlow .48s ease-out both!important;transform:none!important}
+  .winTicker.isMultiplying{animation:multiplierSettlementGlow .72s ease-in-out both!important;transform:none!important}
+}
+
+/* The win plaque is intentionally numeral-only.  Keep its remaining value
+   exactly centred after removing the Chinese label. */
+@media (min-width:621px){
+  .winTicker{justify-content:center!important;padding:0!important}
+  #roundWin.roundWinValue{justify-content:center!important;min-width:0!important}
+}
+
+/* The value plaque belongs to the upper rail: its lower edge touches the
+   reel frame, while no part of the plaque enters the playable symbol area. */
+@media (min-width:621px){
+  .reelStage{--win-plaque-height:55px}
+  .winTicker{top:calc(-1 * var(--win-plaque-height))!important;height:var(--win-plaque-height)!important;min-height:0!important;box-sizing:border-box!important}
+}
+@keyframes roundWinPanelGlow{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}50%{filter:brightness(1.16) drop-shadow(0 0 7px #ffd76699)}}
+@keyframes multiplierSettlementGlow{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}48%{filter:brightness(1.24) drop-shadow(0 0 10px #f6ce5da8)}}
+
+/* Fuxi and Nuwa remain outside the six-reel window in all modes. Their size
+   and vertical anchor change per scene to match the supplied layout guides;
+   no character can overlap a symbol cell, the score plaque, or the SPIN crest. */
+@media (min-width:621px){
+  .deity{display:block!important;position:absolute!important;z-index:130!important;
+    height:auto!important;max-height:none!important;pointer-events:none!important;
+    filter:drop-shadow(0 5px 6px #25130588)!important;object-fit:contain!important}
+  .deityFuxi{left:-31.5%!important;bottom:-.3%!important;width:34%!important}
+  .deityNuwa{right:-31.5%!important;bottom:-.3%!important;width:34%!important}
+
+  /* Free Game characters sit a little lower and smaller, beneath the wolves. */
+  body[data-mode="free"] .deityFuxi{left:-29%!important;bottom:-.5%!important;width:30.5%!important;z-index:128!important}
+  body[data-mode="free"] .deityNuwa{right:-29%!important;bottom:-.5%!important;width:30.5%!important;z-index:128!important}
+
+  /* Awakening uses the same side character scale as the supplied rainbow
+     board guide, while the top ornaments and multiplier stay above them. */
+  body[data-mode="bonus"] .deityFuxi{left:-30.5%!important;bottom:-.3%!important;width:32.5%!important;z-index:128!important}
+  body[data-mode="bonus"] .deityNuwa{right:-30.5%!important;bottom:-.3%!important;width:32.5%!important;z-index:128!important}
+  body[data-mode="free"] .multiplierFeature,body[data-mode="bonus"] .multiplierFeature{z-index:220!important}
+}
+
+/* The total-multiplier medal is intentionally above both the board frame and
+   the right wolf ornament, matching the supplied feature-scene guide. */
+@media (min-width:621px){
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{
+    z-index:220!important;
+  }
+}
+
+/* v230 END-OF-FILE OVERRIDE: never move below another legacy layout rule. */
+@media (min-width:621px){
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{top:-11.6%!important}
+
+  body[data-mode="free"] .reels{
+    background-image:url('assets/free-board-frame-gold.png')!important;
+    background-position:center!important;background-size:100% 100%!important;
+    background-repeat:no-repeat!important;background-color:transparent!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="free"] .multiplierFeature,
+  body[data-mode="bonus"] .multiplierFeature{
+    display:flex!important;position:absolute!important;left:78.3%!important;top:13.8%!important;
+    width:10.8%!important;height:auto!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    background-image:url('assets/free-multiplier-frame.png')!important;background-position:center!important;
+    background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important;
+    border:0!important;box-shadow:none!important;pointer-events:none!important;z-index:150!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    margin:0!important;padding:0!important;text-align:center!important;color:#fff0ad!important;
+    font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;text-shadow:0 2px 2px #4b2105!important;
+  }
+}
+
+/* v240 FINAL ARTWORK LOCK — must remain physically last in this file. */
+@media (min-width:621px){
+  main{overflow:visible!important}
+  .game,.reelStage{overflow:visible!important}
+  .reels{position:relative!important;z-index:1!important;overflow:hidden!important;isolation:isolate!important;background-color:transparent!important;box-shadow:none!important}
+
+  /* Full-colour source PNGs; only their white background has transparent alpha. */
+  .reelStage .deity{
+    display:block!important;position:absolute!important;z-index:0!important;
+    bottom:0!important;width:auto!important;height:90%!important;max-width:none!important;
+    margin:0!important;padding:0!important;object-fit:contain!important;object-position:center bottom!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;
+    clip-path:none!important;mask:none!important;pointer-events:none!important;
+  }
+  .reelStage .deityFuxi{left:-34.5%!important;right:auto!important}
+  .reelStage .deityNuwa{right:-34.5%!important;left:auto!important}
+  .winTicker,.playHud,footer,.multiplierFeature,.roundsFeature{z-index:200!important}
+
+  body[data-mode="base"] .reels{background:transparent url('assets/board-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .reels{background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .reels{background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .reels::before,
+  body[data-mode="free"] .reels::before,
+  body[data-mode="bonus"] .reels::before{content:none!important;display:none!important;background:none!important}
+
+  body[data-mode="base"] main{background-image:url('assets/base-game-background-current.png')!important}
+  body[data-mode="free"] main{background-image:url('assets/free-game-background-v2.png')!important}
+  body[data-mode="bonus"] main{background-image:url('assets/awakening-background-final.png')!important}
+  body[data-mode="base"] .winTicker{background-image:url('assets/win-frame-transparent.png')!important}
+  body[data-mode="free"] .winTicker{background-image:url('assets/free-win-frame.png')!important}
+  body[data-mode="bonus"] .winTicker{background-image:url('assets/awakening-win-frame.png')!important}
+  body[data-mode="base"] .playHud{background-image:url('assets/wallet-bet-frame-current.png')!important}
+  body[data-mode="free"] .playHud{background-image:url('assets/free-info-frame.png')!important}
+  body[data-mode="bonus"] .playHud{background-image:url('assets/awakening-info-frame.png')!important}
+
+  /* Exterior fox ornaments only in the two bonus-capable modes. */
+  .boardWolf{display:none!important}
+  body[data-mode="free"] .reelStage .boardWolf,
+  body[data-mode="bonus"] .reelStage .boardWolf{
+    display:block!important;position:absolute!important;z-index:170!important;
+    top:-1.5%!important;width:17%!important;height:auto!important;max-width:none!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .reelStage .boardWolfLeft,
+  body[data-mode="bonus"] .reelStage .boardWolfLeft{left:-10.2%!important;right:auto!important;transform:none!important}
+  body[data-mode="free"] .reelStage .boardWolfRight,
+  body[data-mode="bonus"] .reelStage .boardWolfRight{right:-10.2%!important;left:auto!important;transform:scaleX(-1)!important}
+}
+
+/* v239 final art map — one approved art set for each of the three scenes.
+   This intentionally follows all earlier drafts so an obsolete background,
+   frame or panel cannot reappear through selector order. */
+@media (min-width:621px){
+  main{overflow:visible!important}
+  .reelStage{overflow:visible!important}
+  .reels{overflow:hidden!important;isolation:isolate!important}
+  .reels::before{content:''!important;display:block!important;position:absolute!important;
+    inset:0!important;z-index:0!important;pointer-events:none!important;
+    background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;
+    mix-blend-mode:normal!important;filter:none!important}
+  .reels .cell,.reels .reelStrip,.reels .reelClearStrip,.reels .cascadeViewport{z-index:1!important}
+
+  /* Base Game: teal mountain scene, teal 6 x 5 frame, jade win and HUD art. */
+  body[data-mode="base"] main{background:transparent url('assets/base-game-background-current.png') center/cover no-repeat!important}
+  body[data-mode="base"] .reels::before{background-image:url('assets/board-frame-transparent.png')!important}
+  body[data-mode="base"] .winTicker{background:transparent url('assets/win-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .playHud{background:transparent url('assets/wallet-bet-frame-current.png') center/100% 100% no-repeat!important}
+
+  /* Free Game: gold coin valley, gold board, gold information bar. */
+  body[data-mode="free"] main{background:transparent url('assets/free-game-background-v2.png') center/cover no-repeat!important}
+  body[data-mode="free"] .reels::before{background-image:url('assets/free-board-frame-gold.png')!important}
+  body[data-mode="free"] .winTicker{background:transparent url('assets/free-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .playHud{background:transparent url('assets/free-info-frame.png') center/100% 100% no-repeat!important}
+
+  /* Awakening: gold special-scene valley, rainbow-gold board and special HUD. */
+  body[data-mode="bonus"] main{background:transparent url('assets/awakening-background-final.png') center/cover no-repeat!important}
+  body[data-mode="bonus"] .reels::before{background-image:url('assets/awakening-board-frame-clean.png')!important}
+  body[data-mode="bonus"] .winTicker{background:transparent url('assets/awakening-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .playHud{background:transparent url('assets/awakening-info-frame.png') center/100% 100% no-repeat!important}
+
+  /* Character art stays unfiltered and is below the frame/symbol layer. */
+  .reelStage .deity{display:block!important;position:absolute!important;z-index:0!important;
+    bottom:0!important;height:90%!important;width:auto!important;max-width:none!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;
+    pointer-events:none!important;object-fit:contain!important}
+  /* Portraits are intentionally large, as selected: each is 90% of the
+     board height. Their inner silhouettes meet the outer frame while only
+     flowing sleeves may pass the viewport edge. */
+  .reelStage .deityFuxi{left:-34.5%!important;right:auto!important}
+  .reelStage .deityNuwa{right:-34.5%!important;left:auto!important}
+
+  /* Feature-only fox ornaments and multiplier remain above characters/frame. */
+  .boardWolf{display:none!important}
+  body[data-mode="free"] .reelStage .boardWolf,
+  body[data-mode="bonus"] .reelStage .boardWolf{display:block!important;position:absolute!important;z-index:170!important;
+    top:0!important;width:17%!important;height:auto!important;filter:none!important;opacity:1!important;mix-blend-mode:normal!important}
+  body[data-mode="free"] .reelStage .boardWolfLeft,
+  body[data-mode="bonus"] .reelStage .boardWolfLeft{left:-16.6%!important;right:auto!important;transform:none!important}
+  body[data-mode="free"] .reelStage .boardWolfRight,
+  body[data-mode="bonus"] .reelStage .boardWolfRight{right:-16.6%!important;left:auto!important;transform:scaleX(-1)!important}
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{z-index:220!important}
+}
+
+/* v238 final fox placement — the only active fox positioning rule.
+   Images are anchored to the board's outer top corners.  Their 243:259
+   artwork ratio makes width 17.0% equal to ~28% of this landscape board's
+   height.  Neither image enters the first or sixth playable reel. */
+@media (min-width:621px){
+  .boardWolf{display:none!important}
+  body[data-mode="free"] .reelStage .boardWolf,
+  body[data-mode="bonus"] .reelStage .boardWolf{
+    display:block!important;position:absolute!important;top:0!important;width:17%!important;
+    height:auto!important;max-width:none!important;z-index:170!important;pointer-events:none!important;
+    filter:none!important;opacity:1!important;mix-blend-mode:normal!important;
+  }
+  body[data-mode="free"] .reelStage .boardWolfLeft,
+  body[data-mode="bonus"] .reelStage .boardWolfLeft{left:-16.6%!important;right:auto!important;transform:none!important}
+  body[data-mode="free"] .reelStage .boardWolfRight,
+  body[data-mode="bonus"] .reelStage .boardWolfRight{right:-16.6%!important;left:auto!important;transform:scaleX(-1)!important}
+  body[data-mode="base"] .reelStage .boardWolf{display:none!important}
+  .reels .cascadeViewport{overflow:hidden!important;clip-path:inset(0)!important}
+}
+
+/* v236 final scene-layer lock: characters enrich the side scenery without
+   covering reels; wolves remain above them; the cumulative multiplier is
+   always the top scene layer in Free / Awakening modes. */
+@media (min-width:621px){
+  .reelStage .deity{z-index:130!important;pointer-events:none!important}
+  body[data-mode="free"] .reelStage .deity,
+  body[data-mode="bonus"] .reelStage .deity{z-index:128!important}
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{z-index:220!important}
+}
+
+/* v227 FINAL FEATURE LAYOUT LOCK — this block intentionally follows every
+   historic draft selector, so each game mode has identical HUD geometry. */
+@media (min-width:621px){
+  body[data-mode="base"] .game>aside:first-child>.feature{display:none!important}
+
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{
+    left:29%!important;right:auto!important;top:-9.5%!important;
+    width:42%!important;height:11.4%!important;min-height:0!important;
+    aspect-ratio:auto!important;margin:0!important;padding:0 12%!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    gap:0!important;overflow:hidden!important;box-shadow:none!important;
+  }
+  .winTicker::before{content:none!important;display:none!important}
+  .winTicker span{display:none!important}
+  #roundWin.roundWinValue,
+  body[data-mode="free"] #roundWin.roundWinValue,
+  body[data-mode="bonus"] #roundWin.roundWinValue{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:100%!important;min-width:0!important;height:100%!important;margin:0!important;
+    padding:0!important;text-align:center!important;line-height:1!important;
+    font-size:clamp(18px,2.15vw,28px)!important;
+  }
+  #roundWin.roundWinValue .digitArt{height:.84em!important;align-items:center!important}
+  #roundWin.roundWinValue .digitArt img{height:1em!important;margin:0 -.025em!important}
+
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature{
+    left:1.2%!important;top:58.5%!important;width:16.2%!important;height:25.5%!important;
+    min-height:0!important;aspect-ratio:auto!important;padding:0!important;
+    display:block!important;background:transparent url('assets/free-games-label.png') center bottom/100% auto no-repeat!important;
+    overflow:visible!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature strong,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature strong,
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature #free,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature #free{
+    position:absolute!important;left:0!important;top:0!important;width:100%!important;height:27%!important;
+    min-height:0!important;margin:0!important;padding:0!important;display:flex!important;
+    align-items:center!important;justify-content:center!important;text-align:center!important;
+    font-size:clamp(17px,2vw,28px)!important;line-height:1!important;overflow:visible!important;
+  }
+
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="free"] .multiplierFeature{
+    display:flex!important;left:78.3%!important;top:13.8%!important;width:10.8%!important;
+    height:auto!important;aspect-ratio:1/1!important;padding:15.5% 0 0!important;
+  }
+  body[data-mode="free"] .multiplierFeature #multi{display:block!important;text-align:center!important}
+
+  body[data-mode="free"] .playHud,
+  body[data-mode="bonus"] .playHud{
+    left:23%!important;bottom:1.1%!important;width:54%!important;height:auto!important;
+    aspect-ratio:960/95!important;padding:0 4%!important;
+  }
+  body[data-mode="free"] .hudAmount,body[data-mode="free"] .hudStake,
+  body[data-mode="bonus"] .hudAmount,body[data-mode="bonus"] .hudStake{
+    width:100%!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+  }
+  body[data-mode="free"] .hudStakeControls,body[data-mode="bonus"] .hudStakeControls{
+    width:100%!important;justify-content:center!important;
+  }
+
+  body[data-mode="bonus"] .game::before{display:none!important}
+  body[data-mode="bonus"] .reels{
+    background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="bonus"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="bonus"] .reels .cell{position:relative!important;z-index:1!important}
+
+  /* v231 final mode-position lock */
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{top:-11.6%!important}
+
+  body[data-mode="free"] .reels{
+    background-image:url('assets/free-board-frame-gold.png')!important;
+    background-position:center!important;background-size:100% 100%!important;
+    background-repeat:no-repeat!important;background-color:transparent!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{
+    display:flex!important;position:absolute!important;left:78.3%!important;top:13.8%!important;
+    width:10.8%!important;height:auto!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    background-image:url('assets/free-multiplier-frame.png')!important;background-position:center!important;
+    background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important;
+    border:0!important;box-shadow:none!important;pointer-events:none!important;z-index:150!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    margin:0!important;padding:0!important;text-align:center!important;color:#fff0ad!important;
+    font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;text-shadow:0 2px 2px #4b2105!important;
+  }
+}
+
+/* v241 FINAL ARTWORK LOCK — physically last, overrides all historical drafts. */
+@media (min-width:621px){
+  main{overflow:visible!important}
+  .game,.reelStage{overflow:visible!important}
+  .reels{position:relative!important;z-index:1!important;overflow:hidden!important;isolation:isolate!important;background-color:transparent!important;box-shadow:none!important}
+  .reelStage .deity{
+    display:block!important;position:absolute!important;z-index:0!important;
+    bottom:0!important;width:auto!important;height:90%!important;max-width:none!important;
+    margin:0!important;padding:0!important;object-fit:contain!important;object-position:center bottom!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;
+    clip-path:none!important;mask:none!important;pointer-events:none!important;
+  }
+  .reelStage .deityFuxi{left:-34.5%!important;right:auto!important}
+  .reelStage .deityNuwa{right:-34.5%!important;left:auto!important}
+  .winTicker,.playHud,footer,.multiplierFeature,.roundsFeature{z-index:200!important}
+  body[data-mode="base"] .reels{background:transparent url('assets/board-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .reels{background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .reels{background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .reels::before,body[data-mode="free"] .reels::before,body[data-mode="bonus"] .reels::before{content:none!important;display:none!important;background:none!important}
+  body[data-mode="base"] main{background:transparent url('assets/base-game-background-current.png') center/cover no-repeat!important}
+  body[data-mode="free"] main{background:transparent url('assets/free-game-background-v2.png') center/cover no-repeat!important}
+  body[data-mode="bonus"] main{background:transparent url('assets/awakening-background-final.png') center/cover no-repeat!important}
+  body[data-mode="base"] .winTicker{background:transparent url('assets/win-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .winTicker{background:transparent url('assets/free-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .winTicker{background:transparent url('assets/awakening-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .playHud{background:transparent url('assets/wallet-bet-frame-current.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .playHud{background:transparent url('assets/free-info-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .playHud{background:transparent url('assets/awakening-info-frame.png') center/100% 100% no-repeat!important}
+  .boardWolf{display:none!important}
+  body[data-mode="free"] .reelStage .boardWolf,body[data-mode="bonus"] .reelStage .boardWolf{
+    display:block!important;position:absolute!important;z-index:170!important;top:-1.5%!important;width:17%!important;height:auto!important;max-width:none!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .reelStage .boardWolfLeft,body[data-mode="bonus"] .reelStage .boardWolfLeft{left:-10.2%!important;right:auto!important;transform:none!important}
+  body[data-mode="free"] .reelStage .boardWolfRight,body[data-mode="bonus"] .reelStage .boardWolfRight{right:-10.2%!important;left:auto!important;transform:scaleX(-1)!important}
+}
+
+/* v230 END: do not place another feature-layout rule after this block. */
+@media (min-width:621px){
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{top:-11.6%!important}
+
+  body[data-mode="free"] .reels{
+    background-image:url('assets/free-board-frame-gold.png')!important;
+    background-position:center!important;background-size:100% 100%!important;
+    background-repeat:no-repeat!important;background-color:transparent!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{
+    display:flex!important;position:absolute!important;left:78.3%!important;top:13.8%!important;
+    width:10.8%!important;height:auto!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    background-image:url('assets/free-multiplier-frame.png')!important;background-position:center!important;
+    background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important;
+    border:0!important;box-shadow:none!important;pointer-events:none!important;z-index:150!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    margin:0!important;padding:0!important;text-align:center!important;color:#fff0ad!important;
+    font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;text-shadow:0 2px 2px #4b2105!important;
+  }
+}
+
+/* v230 FINAL POSITION LOCK — keep this directly after the previous final
+   block.  It overrides all early landscape and feature experiments. */
+@media (min-width:621px){
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{top:-11.6%!important}
+
+  body[data-mode="free"] .reels{
+    background-image:url('assets/free-board-frame-gold.png')!important;
+    background-position:center!important;background-size:100% 100%!important;
+    background-repeat:no-repeat!important;background-color:transparent!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="free"] .multiplierFeature,
+  body[data-mode="bonus"] .multiplierFeature{
+    display:flex!important;position:absolute!important;left:78.3%!important;top:13.8%!important;
+    width:10.8%!important;height:auto!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    background-image:url('assets/free-multiplier-frame.png')!important;background-position:center!important;
+    background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important;
+    border:0!important;box-shadow:none!important;pointer-events:none!important;z-index:150!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    margin:0!important;padding:0!important;text-align:center!important;color:#fff0ad!important;
+    font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;text-shadow:0 2px 2px #4b2105!important;
+  }
+}
+
+/* v227 mode HUD alignment.  All three modes share one physical score-plaque
+   box; only the supplied frame art changes.  The old base left multiplier
+   panel is deliberately not part of the base-game HUD. */
+@media (min-width:621px){
+  body[data-mode="base"] .game>aside:first-child>.feature{display:none!important}
+
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{
+    left:29%!important;right:auto!important;top:-9.5%!important;
+    width:42%!important;height:11.4%!important;min-height:0!important;
+    aspect-ratio:auto!important;margin:0!important;padding:0 12%!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    gap:0!important;overflow:hidden!important;box-shadow:none!important;
+  }
+  .winTicker::before{content:none!important;display:none!important}
+  .winTicker span{display:none!important}
+  #roundWin.roundWinValue,
+  body[data-mode="free"] #roundWin.roundWinValue,
+  body[data-mode="bonus"] #roundWin.roundWinValue{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:100%!important;min-width:0!important;height:100%!important;margin:0!important;
+    padding:0!important;text-align:center!important;line-height:1!important;
+    font-size:clamp(18px,2.15vw,28px)!important;
+  }
+  #roundWin.roundWinValue .digitArt{height:.84em!important;align-items:center!important}
+  #roundWin.roundWinValue .digitArt img{height:1em!important;margin:0 -.025em!important}
+
+  /* The supplied Free-Games label remains clear of both the panel and the
+     live counter.  The counter occupies its own upper band, not the letters. */
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature{
+    left:1.2%!important;top:58.5%!important;width:16.2%!important;height:25.5%!important;
+    min-height:0!important;aspect-ratio:auto!important;padding:0!important;
+    display:block!important;background:transparent url('assets/free-games-label.png') center bottom/100% auto no-repeat!important;
+    overflow:visible!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature strong,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature strong,
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature #free,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature #free{
+    position:absolute!important;left:0!important;top:0!important;width:100%!important;height:27%!important;
+    min-height:0!important;margin:0!important;padding:0!important;display:flex!important;
+    align-items:center!important;justify-content:center!important;text-align:center!important;
+    font-size:clamp(17px,2vw,28px)!important;line-height:1!important;overflow:visible!important;
+  }
+
+  /* Free total multiplier belongs beside the upper-right reel corner, rather
+     than over the score plaque or within the playable board. */
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="free"] .multiplierFeature{
+    display:flex!important;left:78.3%!important;top:13.8%!important;width:10.8%!important;
+    height:auto!important;aspect-ratio:1/1!important;padding:15.5% 0 0!important;
+  }
+  body[data-mode="free"] .multiplierFeature #multi{display:block!important;text-align:center!important}
+
+  /* The Free information strip uses the same HUD width as base / Awakening.
+     Its two live values are centred inside their individual carved halves. */
+  body[data-mode="free"] .playHud,
+  body[data-mode="bonus"] .playHud{
+    left:23%!important;bottom:1.1%!important;width:54%!important;height:auto!important;
+    aspect-ratio:960/95!important;padding:0 4%!important;
+  }
+  body[data-mode="free"] .hudAmount,body[data-mode="free"] .hudStake,
+  body[data-mode="bonus"] .hudAmount,body[data-mode="bonus"] .hudStake{
+    width:100%!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+  }
+  body[data-mode="free"] .hudStakeControls,body[data-mode="bonus"] .hudStakeControls{
+    width:100%!important;justify-content:center!important;
+  }
+
+  /* Awakening uses its board as the real reel background, not a pseudo-element
+     that can be hidden by an older rule.  This guarantees it remains visible
+     beneath the 6 x 5 cells. */
+  body[data-mode="bonus"] .game::before{display:none!important}
+  body[data-mode="bonus"] .reels{
+    background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="bonus"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="bonus"] .reels .cell{position:relative!important;z-index:1!important}
+}
+
+/* v226 feature artwork lock.  This is intentionally the final cascade layer:
+   no legacy feature panel or scenery can sit above the user-supplied art. */
+@media (min-width:621px){
+  body[data-mode="free"] .game>aside:first-child,
+  body[data-mode="bonus"] .game>aside:first-child{position:static!important;display:block!important;width:0!important;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+  body[data-mode="free"] .game>aside:first-child>.modeLabel,
+  body[data-mode="bonus"] .game>aside:first-child>.modeLabel,
+  body[data-mode="free"] .game>aside:first-child>p,
+  body[data-mode="bonus"] .game>aside:first-child>p,
+  body[data-mode="free"] .game>aside:first-child>.eventLog,
+  body[data-mode="bonus"] .game>aside:first-child>.eventLog{display:none!important}
+
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature{
+    display:flex!important;position:absolute!important;z-index:150!important;left:1%!important;top:64%!important;
+    width:15.5%!important;height:auto!important;min-height:0!important;aspect-ratio:1.98/1!important;
+    margin:0!important;padding:0 0 .3%!important;box-sizing:border-box!important;
+    align-items:center!important;justify-content:flex-end!important;flex-direction:column!important;
+    background:transparent url('assets/free-games-label.png') center top/100% auto no-repeat!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature small,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature small{display:none!important}
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature #free,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature #free{
+    display:flex!important;visibility:visible!important;position:relative!important;z-index:2!important;
+    width:100%!important;height:28%!important;margin:0!important;padding:0!important;
+    align-items:center!important;justify-content:center!important;overflow:visible!important;
+    color:#ffe7a2!important;font:900 clamp(19px,2.4vw,33px)/1 Georgia,serif!important;
+    text-shadow:0 2px 2px #3a1704!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature #free .digitArt,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature #free .digitArt{display:inline-flex!important;height:1em!important;transform:none!important}
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature #free .digitArt img,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature #free .digitArt img{display:block!important;height:1em!important;width:auto!important;max-width:none!important;transform:none!important}
+
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature{
+    display:flex!important;position:absolute!important;z-index:150!important;left:84%!important;top:3.4%!important;
+    width:10.8%!important;height:auto!important;min-height:0!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:15.5% 0 0!important;box-sizing:border-box!important;
+    align-items:center!important;justify-content:center!important;
+    background:transparent url('assets/free-multiplier-frame.png') center/100% 100% no-repeat!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature small{display:none!important}
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature #multi{display:block!important;color:#fff0ad!important;font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;text-shadow:0 2px 2px #4b2105!important}
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{display:none!important}
+
+  body[data-mode="free"] main>footer #spin,
+  body[data-mode="bonus"] main>footer #spin{left:84.35%!important;top:71.2%!important;width:12.5%!important;height:18.6%!important}
+  /* The two feature backgrounds already contain their own coin scenes; hide
+     the base-mode FREE GAMES footer so it cannot duplicate the new left HUD. */
+  body[data-mode="free"] .coinBase,
+  body[data-mode="bonus"] .coinBase{display:none!important}
+
+  body[data-mode="bonus"] main{background:transparent url('assets/awakening-background-final.png') center/cover no-repeat!important}
+  body[data-mode="bonus"] .reels{background:transparent!important;box-shadow:none!important}
+  body[data-mode="bonus"] .reels::before{background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important;mix-blend-mode:normal!important;filter:none!important}
+  body[data-mode="bonus"] .winTicker{top:-7.6%!important;left:33%!important;width:33%!important;height:auto!important;aspect-ratio:484/186!important;padding:0 9%!important;background:transparent url('assets/awakening-win-frame.png') center/100% 100% no-repeat!important;box-shadow:none!important;filter:none!important}
+  body[data-mode="bonus"] .playHud{left:25%!important;bottom:1%!important;width:50%!important;height:auto!important;aspect-ratio:825/125!important;padding:0 5%!important;background:transparent url('assets/awakening-info-frame.png') center/100% 100% no-repeat!important;box-shadow:none!important}
+}
+
+/* Final Awakening scene assets supplied by the designer.  These rules are
+   deliberately last: the old violet scene, old frame and old info strip are
+   fully replaced rather than layered underneath the new artwork. */
+@media (min-width:621px){
+  body[data-mode="bonus"] main{background:transparent url('assets/awakening-background-final.png') center/cover no-repeat!important}
+  body[data-mode="bonus"] .reels::before{background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important;mix-blend-mode:normal!important;filter:none!important}
+  body[data-mode="bonus"] .winTicker{
+    top:-7.6%!important;left:33%!important;width:33%!important;height:auto!important;
+    aspect-ratio:484/186!important;padding:0 9%!important;
+    background:transparent url('assets/awakening-win-frame.png') center/100% 100% no-repeat!important;
+    box-shadow:none!important;filter:none!important;
+  }
+  body[data-mode="bonus"] .playHud{
+    left:25%!important;bottom:1.0%!important;width:50%!important;height:auto!important;
+    aspect-ratio:825/125!important;padding:0 5%!important;
+    background:transparent url('assets/awakening-info-frame.png') center/100% 100% no-repeat!important;
+    box-shadow:none!important;
+  }
+}
+
+/* Feature HUD — the supplied FREE GAMES art is a label only; the live round
+   counter sits directly beneath it and uses the same gold digit artwork as
+   every other game number.  Keeping these panels absolute to .game prevents
+   the old sidebar from pushing or covering the reel board. */
+@media (min-width:621px){
+  body[data-mode="free"] .game>aside:first-child,
+  body[data-mode="bonus"] .game>aside:first-child{
+    position:static!important;display:block!important;margin:0!important;
+    width:auto!important;min-width:0!important;padding:0!important;
+    background:transparent!important;border:0!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.modeLabel,
+  body[data-mode="bonus"] .game>aside:first-child>.modeLabel,
+  body[data-mode="free"] .game>aside:first-child>p,
+  body[data-mode="bonus"] .game>aside:first-child>p,
+  body[data-mode="free"] .game>aside:first-child>.eventLog,
+  body[data-mode="bonus"] .game>aside:first-child>.eventLog{
+    display:none!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature{
+    position:absolute!important;z-index:125!important;left:1.0%!important;top:64.0%!important;
+    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;
+    width:15.5%!important;min-height:0!important;aspect-ratio:1.98/1!important;
+    margin:0!important;padding:0 0 .4%!important;
+    background:transparent url('assets/free-games-label.png') center top/100% auto no-repeat!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;
+    pointer-events:none!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature small,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature small{display:none!important}
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature strong,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature strong{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    width:100%!important;min-height:22%!important;margin:0!important;
+    color:#ffe7a2!important;font:900 clamp(18px,2.25vw,31px)/1 Georgia,serif!important;
+    text-shadow:0 2px 2px #3a1704!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature .digitArt,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature .digitArt{height:1em!important;transform:none!important}
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature .digitArt img,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature .digitArt img{height:1em!important;width:auto!important;transform:none!important}
+
+  /* The total-multiplier medallion belongs only to Free Games until the
+     separate Awakening artwork is supplied.  No legacy x1 box remains left. */
+  body[data-mode="free"] .multiplierFeature{
+    position:absolute!important;z-index:125!important;left:84.0%!important;top:3.4%!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    width:10.8%!important;aspect-ratio:1/1!important;min-height:0!important;margin:0!important;
+    padding:15.5% 0 0!important;background:transparent url('assets/free-multiplier-frame.png') center/100% 100% no-repeat!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature strong{color:#fff0ad!important;font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;text-shadow:0 2px 2px #4b2105!important}
+  body[data-mode="bonus"] .multiplierFeature{display:none!important}
+
+  /* Both feature modes use the same right-hand SPIN crest geometry as the
+     normal game.  The footer is full-stage in these modes, so no control can
+     overlap the lower-right reel cells. */
+  body[data-mode="free"] main>footer #spin,
+  body[data-mode="bonus"] main>footer #spin{
+    left:84.35%!important;top:71.2%!important;width:12.5%!important;height:18.6%!important;
+  }
+}
+
+/* Supplied SPIN state artwork: normal, hover, cloud-ring, then press frame.
+   These selectors deliberately come last so no legacy crest can reappear. */
+@media (min-width:621px){
+  body[data-mode] footer #spin{
+    background:transparent url('assets/spin-normal-user.png') center/100% 100% no-repeat!important;
+    outline:none!important;
+  }
+  body[data-mode] footer #spin:focus,body[data-mode] footer #spin:focus-visible{outline:none!important}
+  body[data-mode] footer #spin:not(:disabled):hover::before{
+    content:''!important;display:block!important;position:absolute!important;z-index:91!important;
+    inset:-13%!important;background:transparent url('assets/spin-hover-user.png') center/100% 100% no-repeat!important;
+    opacity:1!important;filter:none!important;animation:none!important;pointer-events:none!important;
+  }
+  body[data-mode] main.spinPressed footer #spin::before{
+    content:''!important;display:block!important;position:absolute!important;z-index:92!important;
+    inset:-13%!important;background:transparent url('assets/spin-hover-user.png') center/100% 100% no-repeat!important;
+    opacity:1!important;filter:none!important;animation:spinPressArt .42s ease-out both!important;pointer-events:none!important;
+  }
+  body[data-mode] main.spinPressed footer #spin::after{
+    content:''!important;display:block!important;position:absolute!important;z-index:93!important;
+    inset:-30%!important;background:transparent url('assets/spin-cloud-user.png') center/100% 100% no-repeat!important;
+    opacity:0!important;filter:none!important;box-shadow:none!important;pointer-events:none!important;
+    animation:spinCloudArt 1s cubic-bezier(.17,.75,.27,1) both!important;
+  }
+}
+
+/* Temporary Free-Game hold screen.  It deliberately contains no new artwork:
+   the final supplied scene illustration can be dropped into this same panel. */
+#modal.featureIntro{z-index:260;background:radial-gradient(circle at 50% 38%,#d69b3a44 0%,#07110ee8 58%,#020605f4 100%);cursor:pointer;animation:featureIntroVeil .45s ease-out both}
+#modal.featureIntro>div{min-width:min(430px,88vw);padding:34px 48px;border:2px solid #eac35f;border-radius:18px;background:linear-gradient(145deg,#173c31ee,#071c18f4);box-shadow:0 0 0 2px #5c3d16,0 0 36px #f4c85e55,inset 0 0 22px #000d}
+#modal.featureIntro h2{margin:0;color:#ffe6a0;font:900 clamp(28px,4vw,48px)/1.1 Georgia,'Noto Serif TC',serif;letter-spacing:.11em;text-shadow:0 3px 2px #291306,0 0 14px #e9bd55}
+#modal.featureIntro strong{margin:13px 0 7px;color:#fff0b7;font-size:clamp(34px,5vw,58px)}
+#modal.featureIntro p{margin:0 auto;color:#f7e3aa;font-size:16px;letter-spacing:.08em}
+#modal.featureIntro button{margin-top:20px;border:1px solid #f0ce71;background:linear-gradient(#38675b,#15362f);color:#ffefbd;animation:featureIntroPrompt 1.15s ease-in-out infinite}
+@keyframes featureIntroVeil{from{opacity:0}to{opacity:1}}@keyframes featureIntroPrompt{0%,100%{filter:brightness(1);transform:translateY(0)}50%{filter:brightness(1.25);transform:translateY(-2px)}}
+
+/* Multiplier balls use only their authored artwork.  Never add a "rare" tag,
+   numeric badge, or any other text on top of the ball. */
+.cell.orb.rare::after,.orbSprite::after,.multiplierCollect .orbSprite::after{content:none!important;display:none!important}
+
+/* Supplied gold numeral artwork replaces Arabic digits everywhere the game
+   presents a number.  Punctuation and surrounding labels remain live text. */
+.digitArt{display:inline-flex!important;align-items:baseline!important;vertical-align:-.08em!important;line-height:1!important;white-space:nowrap!important}
+.digitArt img{display:block!important;height:1em!important;width:auto!important;max-width:none!important;margin:0 -.025em!important;object-fit:contain!important;filter:drop-shadow(0 .04em .04em #1a0a00aa)!important}
+
+/* Reel-belt artwork keeps one immutable physical size throughout a clear or
+   landing.  Only its parent track translates vertically; no child scales,
+   fades, or inherits the end-of-drop bounce used by older cell effects. */
+@media (min-width:621px){
+  body[data-mode] .reelStripTrack img,
+  body[data-mode] .reelClearTrack img,
+  body[data-mode] .cascadeStone img,
+  body[data-mode] .reelStripTrack .orbSprite,
+  body[data-mode] .reelClearTrack .orbSprite,
+  body[data-mode] .cascadeStone .orbSprite{
+    animation:none!important;transition:none!important;
+  }
+  body[data-mode] .reelStripTrack img,
+  body[data-mode] .reelClearTrack img,
+  body[data-mode] .cascadeStone img{transform:none!important}
+}
+
+/* One symbol must keep its exact calibrated silhouette while it moves from a
+   stopped cell into a reel strip or a cascade stone and back again.  Earlier
+   rules calibrated only the stopped-cell art, so the same image visibly
+   changed size at the start and end of a fall. */
+@media (min-width:621px){
+  body[data-mode] .symbolArt{--symbol-motion-scale:1}
+  body[data-mode] .symbolArt.eye{--symbol-motion-scale:1.09}
+  body[data-mode] .symbolArt.dragon,body[data-mode] .symbolArt.baize{--symbol-motion-scale:1}
+  body[data-mode] .symbolArt.bifang,body[data-mode] .symbolArt.fox,
+  body[data-mode] .symbolArt.qingqiu,body[data-mode] .symbolArt.nuwa{--symbol-motion-scale:.99}
+  body[data-mode] .symbolArt.fuxi{--symbol-motion-scale:.97}
+  body[data-mode] .symbolArt.jp{--symbol-motion-scale:1.10}
+  body[data-mode] .symbolArt.fire{--symbol-motion-scale:1.095}
+  body[data-mode] .symbolArt.black{--symbol-motion-scale:1.10}
+  body[data-mode] .symbolArt.jade{--symbol-motion-scale:1.05}
+  body[data-mode] .symbolArt.gold{--symbol-motion-scale:1.08}
+  body[data-mode] .symbolArt.green{--symbol-motion-scale:1.12}
+
+  body[data-mode] .reels .cell img.symbolArt,
+  body[data-mode] .reelStripTrack img.symbolArt,
+  body[data-mode] .reelClearTrack img.symbolArt,
+  body[data-mode] .cascadeStone img.symbolArt{
+    width:var(--reel-symbol-size)!important;height:var(--reel-symbol-size)!important;
+    min-width:var(--reel-symbol-size)!important;min-height:var(--reel-symbol-size)!important;
+    max-width:var(--reel-symbol-size)!important;max-height:var(--reel-symbol-size)!important;
+    transform:scale(var(--symbol-motion-scale))!important;
+    transform-origin:50% 50%!important;
+  }
+  /* Multiplier art has the same size in a static cell and during movement;
+     its separate reveal is allowed to glow but never changes its base size. */
+  body[data-mode] .reels .cell .orbSprite,
+  body[data-mode] .reelStripTrack .orbSprite,
+  body[data-mode] .reelClearTrack .orbSprite,
+  body[data-mode] .cascadeStone .orbSprite{
+    --orb-scale:1!important;transform:scale(1)!important;transform-origin:50% 50%!important;
+  }
+}
+
+/* Stable landing: movement belongs only to the travelling strip / cascade
+   copy.  The fixed grid cells never rebound, translate, or resize after the
+   stone arrives.  A winning group may brighten, but it must not shake. */
+@media (min-width:621px){
+  body[data-mode] .reels .cell,
+  body[data-mode] .reels .cell.cascadeLanding,
+  body[data-mode] .reels .cell.reelLanding,
+  body[data-mode] .reels .cell.reelClearing,
+  body[data-mode] .reels .cell.reelCleared{
+    transition:none!important;
+  }
+  body[data-mode] .reels .cell.win{
+    animation:stableWinFlash .52s ease-in-out 2!important;
+    transform:translate3d(0,0,0)!important;
+  }
+}
+@keyframes stableWinFlash{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.28) drop-shadow(0 0 7px #ffd56a)}
+}
+
+/* The board itself never moves.  Earlier iterations left an inherited
+   `will-change`/transform path on a few special cells, which could make one
+   artwork appear to nudge at the end of a reel or tumble.  Motion is owned
+   exclusively by reelStripTrack and cascadeStone. */
+@media (min-width:621px){
+  body[data-mode] .reels .cell,
+  body[data-mode] .reels .cell > img,
+  body[data-mode] .reels .cell > .orbSprite{
+    transform:translate3d(0,0,0)!important;
+    transform-origin:50% 50%!important;
+    transition:none!important;
+  }
+  body[data-mode] .reels .cell.win,
+  body[data-mode] .reels .cell.special,
+  body[data-mode] .reels .cell.powerTarget{
+    transform:translate3d(0,0,0)!important;
+  }
+}
+
+/* No residual stone movement after a reel has stopped.  Feature symbols and
+   multiplier balls may illuminate, but their centre point and scale stay
+   fixed.  This removes the last small bounce visible after a landing. */
+@media (min-width:621px){
+  body[data-mode] .reels .cell.orbReveal .orbSprite{
+    animation:stableOrbReveal .36s ease-out both!important;
+  }
+  body[data-mode] .reels .cell.powerTarget{
+    animation:stableTargetGlow .55s ease-in-out infinite!important;
+  }
+  body[data-mode] .reels .cell.special{
+    animation:stableTargetGlow .42s ease-in-out 3!important;
+    transform:translate3d(0,0,0)!important;
+  }
+}
+@keyframes stableOrbReveal{
+  from{opacity:0;transform:scale(1)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes stableTargetGlow{
+  0%,100%{transform:translate3d(0,0,0);filter:brightness(1)}
+  50%{transform:translate3d(0,0,0);filter:brightness(1.38) drop-shadow(0 0 9px #ffd65f)}
+}
+
+/* The belt slots are placed from measured cell rectangles (not CSS grid
+   fractions), so their visual centres match the permanent cells exactly at
+   the handoff frame. */
+@media (min-width:621px){
+  body[data-mode] .reelStripTrack,
+  body[data-mode] .reelClearTrack{display:block!important}
+  body[data-mode] .reelSymbolSlot{
+    position:absolute!important;left:0!important;width:100%!important;
+    display:grid!important;place-items:center!important;margin:0!important;padding:0!important;
+  }
+}
+
+/* A landing reel is now the permanent visible belt.  It contains only five
+   final symbols, starts one reel-height above the window and stops at zero.
+   Keeping this same DOM belt in place removes the old moving-copy → fixed
+   grid handoff that could nudge individual symbols by a pixel. */
+@media (min-width:621px){
+  body[data-mode] .reelStripTrack{
+    height:200%!important;
+    transform:translate3d(0,var(--reel-start-y,-100%),0)!important;
+    transition:none!important;
+  }
+  body[data-mode] .reelStrip.falling .reelStripTrack{
+    transform:translate3d(0,0,0)!important;
+    transition:transform var(--reel-duration,.68s) cubic-bezier(.16,.78,.24,1)!important;
+  }
+  body[data-mode] .reelStrip.clearing .reelStripTrack{
+    transform:translate3d(0,var(--clear-travel,100%),0)!important;
+    transition:transform .68s cubic-bezier(.16,.78,.24,1)!important;
+  }
+}
+
+/* render() is used later for score and feature bookkeeping.  It may rewrite
+   cell classes, but must never reveal a second stationary copy below a
+   resident stopped reel belt. */
+@media (min-width:621px){
+  body[data-mode] .reels .cell[data-resident-reel="1"]>*{opacity:0!important}
+  body[data-mode] .reels .cell[data-resident-cascade="1"]>*{opacity:0!important}
+  body[data-mode] .cascadeStone.settledCascade{
+    transform:translate3d(0,0,0)!important;
+    transition:none!important;
+  }
+}
+
+/* Final round-win typography pass.  This intentionally comes last so no
+   historic layout rule can change the plaque's stable text baseline. */
+@media (min-width:621px){
+  .winTicker{gap:clamp(5px,.55vw,9px)!important;padding:0 10.5%!important}
+  .winTicker .winLabel{display:block!important;flex:0 0 auto!important;white-space:nowrap!important;color:#f8dfa1!important;font:900 clamp(10px,1.05vw,14px)/1 'Noto Serif TC',serif!important;letter-spacing:.08em!important;text-shadow:0 1px 1px #140905!important}
+  #roundWin.roundWinValue{display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;min-width:clamp(98px,11.5vw,138px)!important;height:clamp(27px,3.15vw,38px)!important;margin:0!important;padding:0!important;color:#ffe8a1!important;font-size:clamp(26px,3.15vw,38px)!important;line-height:1!important;letter-spacing:0!important;white-space:nowrap!important;text-shadow:none!important;font-variant-numeric:tabular-nums!important}
+  #roundWin.roundWinValue .digitArt{height:1em!important;display:inline-flex!important;align-items:center!important;vertical-align:middle!important;transform:none!important;font-size:inherit!important;line-height:1!important}
+  #roundWin.roundWinValue .digitArt img{height:1em!important;width:auto!important;max-height:none!important;margin:0 -.035em!important;object-fit:contain!important;filter:drop-shadow(0 .055em .045em #1d0d01cc)!important;transform:none!important;animation:none!important;transition:none!important;font-size:inherit!important;line-height:1!important}
+  .winTicker.isCounting{animation:roundWinPanelGlow .42s ease-in-out 2!important;transform:none!important}
+  .winTicker.isCounting #roundWin.roundWinValue{filter:brightness(1.16) drop-shadow(0 0 5px #ffd45c99)!important}
+  .winTicker.isSettled{animation:roundWinPanelGlow .48s ease-out both!important;transform:none!important}
+  .winTicker.isMultiplying{animation:multiplierSettlementGlow .72s ease-in-out both!important;transform:none!important}
+}
+@keyframes roundWinPanelGlow{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}50%{filter:brightness(1.16) drop-shadow(0 0 7px #ffd76699)}}
+@keyframes multiplierSettlementGlow{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}48%{filter:brightness(1.24) drop-shadow(0 0 10px #f6ce5da8)}}
+
+/* v228 — definitive mode layout. Must stay at the end of this stylesheet. */
+@media (min-width:621px){
+  body[data-mode="base"] .game>aside:first-child>.feature{display:none!important}
+
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{
+    left:29%!important;right:auto!important;top:-9.5%!important;
+    width:42%!important;height:11.4%!important;min-height:0!important;
+    aspect-ratio:auto!important;margin:0!important;padding:0 12%!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    gap:0!important;overflow:hidden!important;box-shadow:none!important;
+  }
+  .winTicker::before{content:none!important;display:none!important}
+  .winTicker span{display:none!important}
+  #roundWin.roundWinValue{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:100%!important;min-width:0!important;height:100%!important;margin:0!important;
+    padding:0!important;text-align:center!important;line-height:1!important;
+    font-size:clamp(18px,2.15vw,28px)!important;
+  }
+  #roundWin.roundWinValue .digitArt{height:.84em!important;align-items:center!important}
+  #roundWin.roundWinValue .digitArt img{height:1em!important;margin:0 -.025em!important}
+
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature{
+    left:1.2%!important;top:58.5%!important;width:16.2%!important;height:25.5%!important;
+    min-height:0!important;aspect-ratio:auto!important;padding:0!important;
+    display:block!important;background:transparent url('assets/free-games-label.png') center bottom/100% auto no-repeat!important;
+    overflow:visible!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature strong,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature strong,
+  body[data-mode="free"] .game>aside:first-child>.roundsFeature #free,
+  body[data-mode="bonus"] .game>aside:first-child>.roundsFeature #free{
+    position:absolute!important;left:0!important;top:0!important;width:100%!important;height:27%!important;
+    min-height:0!important;margin:0!important;padding:0!important;display:flex!important;
+    align-items:center!important;justify-content:center!important;text-align:center!important;
+    font-size:clamp(17px,2vw,28px)!important;line-height:1!important;overflow:visible!important;
+  }
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="free"] .multiplierFeature{
+    display:flex!important;left:78.3%!important;top:13.8%!important;width:10.8%!important;
+    height:auto!important;aspect-ratio:1/1!important;padding:15.5% 0 0!important;
+  }
+  body[data-mode="free"] .multiplierFeature #multi{display:block!important;text-align:center!important}
+
+  body[data-mode="free"] .playHud,
+  body[data-mode="bonus"] .playHud{
+    left:23%!important;bottom:1.1%!important;width:54%!important;height:auto!important;
+    aspect-ratio:960/95!important;padding:0 4%!important;
+  }
+  body[data-mode="free"] .hudAmount,body[data-mode="free"] .hudStake,
+  body[data-mode="bonus"] .hudAmount,body[data-mode="bonus"] .hudStake{
+    width:100%!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+  }
+  body[data-mode="free"] .hudStakeControls,body[data-mode="bonus"] .hudStakeControls{width:100%!important;justify-content:center!important}
+
+  body[data-mode="bonus"] .game::before{display:none!important}
+  body[data-mode="bonus"] .reels{
+    background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="bonus"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="bonus"] .reels .cell{position:relative!important;z-index:1!important}
+
+  /* v231 final mode-position lock */
+  .winTicker,
+  body[data-mode="free"] .winTicker,
+  body[data-mode="bonus"] .winTicker{top:-11.6%!important}
+  body[data-mode="free"] .reels{
+    background-image:url('assets/free-board-frame-gold.png')!important;
+    background-position:center!important;background-size:100% 100%!important;
+    background-repeat:no-repeat!important;background-color:transparent!important;
+    isolation:isolate!important;box-shadow:none!important;
+  }
+  body[data-mode="free"] .reels::before{content:none!important;display:none!important}
+  body[data-mode="free"] .reels .cell{position:relative!important;z-index:1!important}
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{
+    display:flex!important;position:absolute!important;left:78.3%!important;top:13.8%!important;
+    width:10.8%!important;height:auto!important;aspect-ratio:1/1!important;
+    margin:0!important;padding:0!important;align-items:center!important;justify-content:center!important;
+    background-image:url('assets/free-multiplier-frame.png')!important;background-position:center!important;
+    background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important;
+    border:0!important;box-shadow:none!important;pointer-events:none!important;z-index:150!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    margin:0!important;padding:0!important;text-align:center!important;color:#fff0ad!important;
+    font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;text-shadow:0 2px 2px #4b2105!important;
+  }
+}

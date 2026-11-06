@@ -1,0 +1,1076 @@
+/*
+ * Final artwork lock. Loaded after the historic stylesheet so one unambiguous
+ * visual rule set controls the three game scenes.
+ */
+@media (min-width:621px){
+  main{overflow:visible!important}
+  .game,.reelStage{overflow:visible!important}
+  .reels{position:relative!important;z-index:1!important;overflow:hidden!important;isolation:isolate!important;background-color:transparent!important;box-shadow:none!important}
+
+  /* Original character colours are retained; only the source white backdrop is transparent. */
+  .reelStage .deity{
+    display:block!important;position:absolute!important;z-index:0!important;
+    bottom:0!important;width:auto!important;height:90%!important;max-width:none!important;
+    margin:0!important;padding:0!important;object-fit:contain!important;object-position:center bottom!important;
+    opacity:1!important;filter:none!important;mix-blend-mode:normal!important;
+    clip-path:none!important;mask:none!important;pointer-events:none!important;
+  }
+  .reelStage .deityFuxi{left:-34.5%!important;right:auto!important}
+  /* Keep Nuwa's five-colour stone wholly inside the visible scene. */
+  /* Her visible five-colour stone finishes just inside the scene's right edge. */
+  .reelStage .deityNuwa{right:-32%!important;left:auto!important}
+
+  /* Feature scenes deliberately inherit the exact same character scale and
+     placement as the verified base-game scene. */
+  body[data-mode="free"] .reelStage .deity,
+  body[data-mode="bonus"] .reelStage .deity{
+    /* Override the legacy per-mode width rules that were still shrinking
+       these two scenes.  These are intentionally the same base values. */
+    height:90%!important;width:auto!important;bottom:0!important;
+    max-width:none!important;display:block!important;z-index:0!important;
+  }
+  body[data-mode="free"] .reelStage .deityFuxi,
+  body[data-mode="bonus"] .reelStage .deityFuxi{left:-34.5%!important;right:auto!important}
+  body[data-mode="free"] .reelStage .deityNuwa,
+  body[data-mode="bonus"] .reelStage .deityNuwa{right:-32%!important;left:auto!important}
+
+  /* Total multiplier: feature-only, in the supplied upper-right medallion.
+     It sits above the wolf ornament and never occupies playable reel space. */
+  body[data-mode="base"] .game>aside:first-child>.multiplierFeature{display:none!important}
+  body[data-mode="free"] .game>aside:first-child>.multiplierFeature,
+  body[data-mode="bonus"] .game>aside:first-child>.multiplierFeature{
+    display:flex!important;position:absolute!important;z-index:230!important;
+    /* Match the approved layout: sit at the board's upper-right corner,
+       directly above the right fox head — never out on the far page edge. */
+    left:72.5%!important;top:11.5%!important;width:10.8%!important;height:auto!important;
+    min-height:0!important;aspect-ratio:1/1!important;margin:0!important;
+    padding:0!important;box-sizing:border-box!important;
+    align-items:center!important;justify-content:center!important;
+    background:transparent url('assets/free-multiplier-frame.png') center/100% 100% no-repeat!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;
+    filter:none!important;opacity:1!important;pointer-events:none!important;
+  }
+  body[data-mode="free"] .multiplierFeature small,
+  body[data-mode="bonus"] .multiplierFeature small{display:none!important}
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    display:flex!important;position:absolute!important;left:0!important;top:22%!important;
+    width:100%!important;height:58%!important;margin:0!important;padding:0!important;
+    align-items:center!important;justify-content:center!important;text-align:center!important;
+    color:#fff0ad!important;font:900 clamp(14px,1.55vw,22px)/1 Georgia,serif!important;
+    text-shadow:0 2px 2px #4b2105!important;
+  }
+  .baseEntry,.freeEntry,.bonusEntry{
+    position:absolute!important;z-index:1000!important;pointer-events:auto!important;
+    touch-action:manipulation!important;cursor:pointer!important;
+  }
+  .winTicker,.playHud,footer,.multiplierFeature,.roundsFeature{z-index:200!important}
+
+  /* The approved frame, background and HUD asset for each scene. */
+  body[data-mode="base"] .reels{background:transparent url('assets/board-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .reels{background:transparent url('assets/free-board-frame-gold.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .reels{background:transparent url('assets/awakening-board-frame-clean.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .reels::before,
+  body[data-mode="free"] .reels::before,
+  body[data-mode="bonus"] .reels::before{content:none!important;display:none!important;background:none!important}
+
+  body[data-mode="base"] main{background:transparent url('assets/base-game-background-current.png') center/cover no-repeat!important}
+  body[data-mode="free"] main{background:transparent url('assets/free-game-background-v2.png') center/cover no-repeat!important}
+  body[data-mode="bonus"] main{background:transparent url('assets/awakening-background-final.png') center/cover no-repeat!important}
+  body[data-mode="base"] .winTicker{background:transparent url('assets/win-frame-transparent.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .winTicker{background:transparent url('assets/free-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .winTicker{background:transparent url('assets/awakening-win-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="base"] .playHud{background:transparent url('assets/wallet-bet-frame-current.png') center/100% 100% no-repeat!important}
+  body[data-mode="free"] .playHud{background:transparent url('assets/free-info-frame.png') center/100% 100% no-repeat!important}
+  body[data-mode="bonus"] .playHud{background:transparent url('assets/awakening-info-frame.png') center/100% 100% no-repeat!important}
+
+  /* One shared win-panel geometry for every scene.  The feature scenes used
+     to inherit narrower legacy rules, which made the same number overflow
+     their supplied art. */
+  .reelStage .winTicker,
+  body[data-mode="free"] .reelStage .winTicker,
+  body[data-mode="bonus"] .reelStage .winTicker{
+    z-index:220!important;
+    top:-16.5%!important;bottom:auto!important;
+    left:29%!important;right:auto!important;
+    width:42%!important;height:auto!important;
+    min-height:0!important;aspect-ratio:1252/412!important;
+    margin:0!important;padding:0 10%!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    gap:0!important;overflow:visible!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;
+    box-sizing:border-box!important;
+  }
+  #roundWin.roundWinValue{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    flex:0 0 auto!important;min-width:0!important;height:clamp(22px,2.45vw,30px)!important;
+    margin:0!important;padding:0!important;
+    width:auto!important;text-align:center!important;
+    font-size:clamp(20px,2.45vw,30px)!important;
+    line-height:1!important;
+    white-space:nowrap!important;color:#ffeaa2!important;
+    text-shadow:0 2px 2px #1b0b02,0 0 5px #d8a94488!important;
+  }
+  #roundWin.roundWinValue .digitArt{height:1em!important;display:inline-flex!important;align-items:center!important;line-height:1!important}
+  #roundWin.roundWinValue .digitArt img{height:1em!important;width:auto!important;max-height:none!important;margin:0 -.025em!important;transform:none!important;animation:none!important;transition:none!important}
+  /* The legacy feature sheets carry a body[data-mode] selector, so match
+     that specificity here instead of letting their oversized digits win. */
+  body[data-mode="free"] #roundWin.roundWinValue,
+  body[data-mode="bonus"] #roundWin.roundWinValue{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    flex:0 0 auto!important;min-width:0!important;height:clamp(22px,2.45vw,30px)!important;
+    margin:0!important;padding:0!important;width:auto!important;
+    font-size:clamp(20px,2.45vw,30px)!important;line-height:1!important;
+  }
+  body[data-mode="free"] #roundWin.roundWinValue .digitArt,
+  body[data-mode="bonus"] #roundWin.roundWinValue .digitArt{height:1em!important;display:inline-flex!important;align-items:center!important;line-height:1!important}
+  body[data-mode="free"] #roundWin.roundWinValue .digitArt img,
+  body[data-mode="bonus"] #roundWin.roundWinValue .digitArt img{height:1em!important;width:auto!important;max-height:none!important;margin:0 -.025em!important;transform:none!important;animation:none!important;transition:none!important}
+  .reelStage .winTicker #chainInfo{display:none!important}
+
+}
+
+/* The portfolio guide is a base-game reference only.  Feature scenes keep
+   their upper-right area clear for the multiplier and round presentation. */
+body[data-mode="free"] .guideEntry,
+body[data-mode="bonus"] .guideEntry{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Final HUD containment: every label/value stays inside its own third of the
+   supplied information frame, including long balances such as 27,000.50. */
+@media (min-width:621px){
+  body[data-mode] .playHud{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  body[data-mode] .playHud .hudAmount,
+  body[data-mode] .playHud .hudCurrent,
+  body[data-mode] .playHud .hudStake{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    padding:0 3%!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+  }
+  body[data-mode] .playHud small{
+    width:100%!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    text-overflow:clip!important;
+    text-align:center!important;
+  }
+  body[data-mode] .playHud .hudAmount b,
+  body[data-mode] .playHud .hudCurrent b,
+  body[data-mode] .playHud .hudStakeControls b{
+    width:auto!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    font-size:clamp(13px,1.28vw,17px)!important;
+    text-align:center!important;
+  }
+  body[data-mode] .playHud .hudStakeControls{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    justify-content:center!important;
+  }
+  body[data-mode] .playHud .digitArt{
+    display:inline-flex!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+    justify-content:center!important;
+  }
+  body[data-mode] .playHud .digitArt img{
+    height:.82em!important;
+    max-height:.82em!important;
+    flex:0 1 auto!important;
+  }
+}
+
+/* Multiplier medals are <img> elements after matte cleanup.  Do not let the
+   older CSS sprite background sit behind the transparent pixels. */
+body[data-mode] .orbSprite{
+  background-image:none!important;
+  background-color:transparent!important;
+  background-blend-mode:normal!important;
+  mix-blend-mode:normal!important;
+}
+
+/* 伏羲分裂：先在即將生成新倍率球的格子顯示紫色法陣，
+   然後才由 JavaScript 將新的倍率球寫入同一個格子。假光圈只作用於
+   pseudo-element，絕不動到 cell 本身，避免造成盤面位移。 */
+@media (min-width:621px){
+  #reels .cell.fuxiPowerTarget::before,
+  #reels .cell.fuxiPowerTarget::after{
+    content:''!important;display:block!important;position:absolute!important;
+    left:50%!important;top:50%!important;pointer-events:none!important;
+    border-radius:50%!important;z-index:12!important;transform:translate(-50%,-50%)!important;
+  }
+  #reels .cell.fuxiPowerTarget::before{
+    width:68%!important;height:68%!important;border:3px solid #d480ff!important;
+    box-shadow:0 0 8px 3px #8d2be6,0 0 20px 6px #d685ff99,inset 0 0 10px #f5c9ff!important;
+    background:radial-gradient(circle,#c566ff55 0 30%,transparent 62%)!important;
+    animation:fuxiPurpleRing .72s ease-in-out infinite!important;
+  }
+  #reels .cell.fuxiPowerTarget::after{
+    width:88%!important;height:88%!important;border:1px solid #efd0ffbb!important;
+    box-shadow:0 0 14px #ba55ff!important;animation:fuxiPurpleHalo 1s linear infinite!important;
+  }
+}
+@keyframes fuxiPurpleRing{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(.78)!important}50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)!important}}
+@keyframes fuxiPurpleHalo{0%{opacity:.85;transform:translate(-50%,-50%) scale(.7)!important}100%{opacity:0;transform:translate(-50%,-50%) scale(1.25)!important}}
+
+/* 女媧鎖定：倍率球本體不變，最上層只覆一片半透明冰封晶殼。 */
+@media (min-width:621px){
+  #reels .cell.orb.locked::before{
+    content:''!important;display:block!important;position:absolute!important;
+    inset:3%!important;z-index:8!important;pointer-events:none!important;
+    border:2px solid #d9fbffef!important;border-radius:50%!important;
+    background:
+      linear-gradient(138deg,#ffffffbc 0 7%,#d4f9ff5c 7% 22%,transparent 22% 48%,#9addf85c 48% 63%,transparent 63% 78%,#efffff9b 78% 100%),
+      linear-gradient(28deg,transparent 0 29%,#c8f5ff45 29% 33%,transparent 33% 68%,#eaffff7a 68% 72%,transparent 72%),
+      radial-gradient(circle at 31% 24%,#ffffffd9 0 5%,#d7fbff6d 6% 14%,transparent 15% 100%)!important;
+    box-shadow:inset 0 0 13px 4px #a4eaff9c,inset 0 0 3px 1px #ffffffcc,0 0 12px 3px #78ddff99!important;
+    clip-path:polygon(20% 3%,72% 0,97% 25%,93% 76%,72% 97%,23% 94%,2% 69%,5% 27%)!important;
+  }
+  /* Separate angular fracture facets make the seal read as a real ice shell,
+     while remaining an overlay so the authored multiplier art stays intact. */
+  #reels .cell.orb.locked::after{
+    content:''!important;display:block!important;position:absolute!important;
+    inset:7%!important;z-index:9!important;pointer-events:none!important;
+    border-radius:50%!important;opacity:.82!important;
+    background:linear-gradient(116deg,transparent 0 28%,#ffffffa8 29% 30%,transparent 31% 52%,#a5edff9c 53% 55%,transparent 56% 100%)!important;
+    clip-path:polygon(50% 0,73% 21%,100% 42%,78% 56%,91% 90%,50% 77%,16% 100%,25% 57%,0 36%,31% 23%)!important;
+    filter:drop-shadow(0 0 2px #e8ffff)!important;
+    animation:nuwaIceShimmer 2.1s ease-in-out infinite!important;
+  }
+  #reels .cell.orb.locked .orbSprite{position:relative!important;z-index:3!important}
+  /* Clearing and incoming reel belts hide ordinary fixed-cell artwork.  A
+     frozen multiplier is intentionally not ordinary artwork: it remains in
+     its original grid slot while every surrounding symbol advances. */
+  #reels .cell.locked.reelClearing > *,
+  #reels .cell.locked.reelCleared > *,
+  #reels .cell.locked.reelLanding > *{opacity:1!important}
+}
+@keyframes nuwaIceShimmer{0%,100%{opacity:.56}50%{opacity:.92}}
+
+/* The total multiplier is a number inside a circular medal.  Center the
+   rendered value itself (rather than a padded full-width text box) so short
+   and long values share the same visual centre in both feature scenes. */
+@media (min-width:621px){
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    display:inline-flex!important;
+    position:absolute!important;
+    left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+    width:auto!important;height:auto!important;min-width:0!important;
+    margin:0!important;padding:0!important;
+    transform:translate(-50%,-50%)!important;
+    transform-origin:50% 50%!important;
+    align-items:center!important;justify-content:center!important;
+    line-height:1!important;text-align:center!important;white-space:nowrap!important;
+  }
+}
+
+/* Final information-bar typography lock.  This stays at EOF deliberately so
+   old scene-specific rules cannot make one accounting value larger than the
+   other two. */
+@media (min-width:621px){
+  body[data-mode] .playHud small{
+    font-size:clamp(9px,.86vw,11px)!important;
+    line-height:1!important;
+  }
+  body[data-mode] .playHud .hudAmount b,
+  body[data-mode] .playHud .hudCurrent b,
+  body[data-mode] .playHud .hudStakeControls b{
+    font-size:clamp(15px,1.5vw,19px)!important;
+    line-height:1!important;
+    min-height:1em!important;
+    margin:0!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  body[data-mode] .playHud .digitArt{height:1em!important;line-height:1!important;align-items:center!important;vertical-align:middle!important}
+  body[data-mode] .playHud .digitArt img{height:1em!important;max-height:1em!important;width:auto!important;margin:0 -.025em!important}
+}
+
+/* Multiplier geometry: the authored ball uses the exact same measured symbol
+   box as every other reel icon.  This replaces percentage-based variants
+   (68/86/91%) which produced different centres in static, strip and tumble
+   layers and could clip a ball at a reel boundary. */
+@media (min-width:621px){
+  body[data-mode] #reels .cell .orbSprite,
+  body[data-mode] #reels .reelStripTrack .orbSprite,
+  body[data-mode] #reels .reelClearTrack .orbSprite,
+  body[data-mode] #reels .cascadeStone .orbSprite{
+    position:static!important;
+    display:block!important;
+    width:var(--reel-symbol-size)!important;
+    height:var(--reel-symbol-size)!important;
+    min-width:var(--reel-symbol-size)!important;
+    min-height:var(--reel-symbol-size)!important;
+    max-width:var(--reel-symbol-size)!important;
+    max-height:var(--reel-symbol-size)!important;
+    box-sizing:border-box!important;
+    margin:0!important;
+    place-self:center!important;
+    object-fit:contain!important;
+    object-position:50% 50%!important;
+    background:none!important;
+    clip-path:none!important;
+    transform:none!important;
+    transform-origin:50% 50%!important;
+  }
+}
+
+/* Supplied game-guide sheets are presented in an independent modal.  It has
+   no gameplay state, so opening/closing it cannot affect spin sequencing. */
+.guideModal{position:fixed!important;inset:0!important;z-index:1000!important;display:grid!important;place-items:center!important;padding:24px!important;background:#000c!important}
+#guideModal.hidden{display:none!important}
+.guidePanel{position:relative!important;width:min(94vw,850px)!important;max-height:92vh!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:12px!important;padding:20px!important;box-sizing:border-box!important;overflow:auto!important;border:2px solid #e7ba52!important;border-radius:16px!important;background:linear-gradient(145deg,#14362f,#061710)!important;box-shadow:0 18px 55px #000!important}
+.guidePanel h2{margin:0!important;color:#ffe5a2!important;font:700 clamp(22px,3vw,32px)/1.1 Georgia,'Noto Serif TC',serif!important;text-shadow:0 2px 5px #100700!important}
+.guideTabs{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:8px!important}
+.guideTabs button,#guideBtn{border:1px solid #e7bd59!important;background:linear-gradient(#2d6558,#0b2b25)!important;color:#fff0bc!important;box-shadow:inset 0 1px #fff4c144,0 2px 6px #0009!important}
+.guideTabs button[aria-selected="true"]{background:linear-gradient(#e4b54f,#8a4d10)!important;color:#fff9dc!important}
+#guideArt{display:block!important;width:100%!important;max-width:800px!important;height:auto!important;object-fit:contain!important;border:1px solid #d8a743!important;background:#000!important}
+.guideClose{position:absolute!important;right:10px!important;top:8px!important;width:34px!important;height:34px!important;padding:0!important;border-radius:50%!important;border:1px solid #efc768!important;background:#5e2d12!important;color:#fff4c7!important;font:700 24px/30px Arial!important;cursor:pointer!important}
+@media (max-width:620px){.guideModal{padding:10px!important}.guidePanel{width:98vw!important;max-height:96vh!important;padding:16px 8px!important}.guideTabs button{font-size:12px!important;padding:8px!important}.guideClose{right:5px!important;top:5px!important}}
+
+/* Keep the guide where reviewers can always see it: the fourth item in the
+   left-side game-entry stack, never inside the crowded lower control bar. */
+@media (min-width:621px){
+  .guideEntry{position:absolute!important;z-index:1001!important;left:.6%!important;top:28.9%!important;display:grid!important;place-items:center!important;gap:1px!important;width:10.4%!important;height:7.8%!important;padding:4px!important;border:2px solid #75d8e7!important;border-radius:11px!important;background:linear-gradient(145deg,#28586b,#092531 66%,#06131a)!important;color:#e1faff!important;font:800 clamp(11px,1.25vw,16px)/1 Georgia,'Noto Serif TC',serif!important;text-shadow:0 2px 2px #062027!important;box-shadow:inset 0 0 0 2px #2a6377,inset 0 0 13px #82eaf855,0 4px 10px #071519aa!important;cursor:pointer!important}
+  .guideEntry small{font:700 clamp(7px,.72vw,10px)/1 Arial,sans-serif!important;color:#a9f0fb!important;white-space:nowrap!important}
+  .guideEntry:hover{filter:brightness(1.18)!important;transform:translateY(-1px)!important;box-shadow:inset 0 0 0 2px #56afc1,inset 0 0 16px #a5f6ff99,0 0 13px #74e5f099!important}
+  .guideEntry:active{transform:translateY(1px) scale(.97)!important}
+}
+
+/* The lower information bar is one accounting control.  Labels share one
+   size, and every live amount (credit / total win / bet) shares one exact
+   numeral height and baseline in all three modes. */
+@media (min-width:621px){
+  body[data-mode] .playHud small{
+    font-size:clamp(9px,.86vw,11px)!important;
+    line-height:1!important;
+  }
+  body[data-mode] .playHud .hudAmount b,
+  body[data-mode] .playHud .hudCurrent b,
+  body[data-mode] .playHud .hudStakeControls b{
+    font-size:clamp(15px,1.5vw,19px)!important;
+    line-height:1!important;
+    min-height:1em!important;
+    margin:0!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  body[data-mode] .playHud .digitArt{height:1em!important;line-height:1!important;align-items:center!important;vertical-align:middle!important}
+  body[data-mode] .playHud .digitArt img{height:1em!important;max-height:1em!important;width:auto!important;margin:0 -.025em!important}
+}
+
+/* Total Win is an accounting value, not a win-flash target.  Keep its supplied
+   numeral art at one stable gold treatment through every update and mode. */
+#totalWinHud,#totalWinHud .digitArt,#totalWinHud .digitArt img{
+  color:#fff1bd!important;opacity:1!important;filter:none!important;
+  mix-blend-mode:normal!important;animation:none!important;transition:none!important;
+}
+
+/* Multiplier balls use the same visual footprint and centre as a standard
+   board symbol.  Apply the identical geometry to stationary, reel and tumble
+   layers so a ball cannot look smaller or drift between animation states. */
+body[data-mode] #reels .cell .orbSprite,
+body[data-mode] #reels .reelStripTrack .orbSprite,
+body[data-mode] #reels .reelClearTrack .orbSprite,
+body[data-mode] #reels .cascadeStone .orbSprite{
+  display:block!important;width:91%!important;height:91%!important;
+  max-width:91%!important;max-height:91%!important;margin:0!important;
+  justify-self:center!important;align-self:center!important;object-fit:contain!important;
+  object-position:50% 50%!important;background:none!important;
+  transform:translate3d(0,0,0)!important;transform-origin:50% 50%!important;
+}
+
+/* Feature-mode lower information plaque: the original portrait-art export is
+   taller than the legacy HUD geometry.  Give the frame its intended height,
+   then keep the label and value as one centered visual unit in each half. */
+@media (min-width:621px){
+  body[data-mode="free"] .playHud,
+  body[data-mode="bonus"] .playHud{
+    left:22.5%!important;
+    bottom:1.05%!important;
+    width:55%!important;
+    height:auto!important;
+    aspect-ratio:960/118!important;
+    padding:0 5.8%!important;
+    grid-template-columns:1fr 1fr!important;
+    align-items:center!important;
+    overflow:visible!important;
+  }
+  body[data-mode="free"] .hudAmount,
+  body[data-mode="free"] .hudStake,
+  body[data-mode="bonus"] .hudAmount,
+  body[data-mode="bonus"] .hudStake{
+    height:100%!important;
+    padding:2% 0 1%!important;
+    box-sizing:border-box!important;
+    justify-content:center!important;
+    gap:2px!important;
+  }
+  body[data-mode="free"] .playHud small,
+  body[data-mode="bonus"] .playHud small{
+    font-size:clamp(8px,.72vw,11px)!important;
+    line-height:1!important;
+  }
+  body[data-mode="free"] .playHud b,
+  body[data-mode="bonus"] .playHud b{
+    margin:0!important;
+    font-size:clamp(15px,1.42vw,21px)!important;
+    line-height:.95!important;
+  }
+  body[data-mode="free"] .hudStakeControls,
+  body[data-mode="bonus"] .hudStakeControls{
+    margin:0!important;
+    gap:5px!important;
+    line-height:1!important;
+  }
+  body[data-mode="free"] .hudStakeControls button,
+  body[data-mode="bonus"] .hudStakeControls button{
+    width:21px!important;height:21px!important;
+    font-size:15px!important;line-height:18px!important;
+  }
+}
+
+/* Gentle living motion for the two side deities.  The board and their exact
+   layout coordinates stay untouched; only the painted character layer moves. */
+.reelStage .deityFuxi{transform-origin:50% 100%!important;animation:fuxiIdle 5.6s ease-in-out infinite!important}
+.reelStage .deityNuwa{transform-origin:50% 100%!important;animation:nuwaIdle 6.2s ease-in-out infinite!important}
+@keyframes fuxiIdle{0%,100%{transform:translate3d(0,0,0) rotate(-.2deg)}50%{transform:translate3d(0,-5px,0) rotate(.35deg)}}
+@keyframes nuwaIdle{0%,100%{transform:translate3d(0,0,0) rotate(.2deg)}50%{transform:translate3d(0,-5px,0) rotate(-.35deg)}}
+
+/* Shared Set-style information bar: virtual credits, this-spin win and bet
+   are always three equal columns.  Only the surrounding authored frame
+   changes between Base, Free and Awakening. */
+@media (min-width:621px){
+  .playHud,
+  body[data-mode="free"] .playHud,
+  body[data-mode="bonus"] .playHud{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    align-items:center!important;
+  }
+  .playHud .hudAmount,.playHud .hudCurrent,.playHud .hudStake{
+    min-width:0!important;height:100%!important;margin:0!important;padding:2% 0 1%!important;
+    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+    gap:2px!important;box-sizing:border-box!important;
+  }
+  .playHud .hudAmount,.playHud .hudCurrent{border-right:1px solid #d5ad5977!important}
+  .playHud small{font-size:clamp(8px,.72vw,11px)!important;line-height:1!important}
+  .playHud b{margin:0!important;font-size:clamp(14px,1.32vw,20px)!important;line-height:1!important;white-space:nowrap!important}
+  .playHud .hudStakeControls{margin:0!important;gap:4px!important;line-height:1!important}
+}
+/* 神明施放倍率球時維持原地。只讓手中與盤面的法器旋轉，避免
+   角色本體有任何上跳、位移或縮放。 */
+.reelStage .deity.deityCasting{animation:none!important;transform:translate3d(0,0,0) scale(1)!important;filter:brightness(1.18) drop-shadow(0 0 12px #ffe58b)!important}
+
+/* A temporary visual-only multiplier.  It rotates out of the held artefact,
+   travels to the preselected blank reel slot, then the original game logic
+   reveals the same authored ball in that slot. */
+.deityOrbLaunch{position:fixed;z-index:450!important;display:grid;place-items:center;pointer-events:none;opacity:0;transform:translate3d(0,0,0) scale(.16) rotate(-120deg);transform-origin:50% 50%;will-change:transform,opacity;filter:drop-shadow(0 0 5px #fff0a0)}
+.deityOrbLaunch .orbSprite{display:block!important;width:100%!important;height:100%!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;background-color:transparent!important;mix-blend-mode:normal!important;clip-path:none!important;filter:drop-shadow(0 2px 5px #ffd15a)!important}
+.deityOrbLaunch.flying{opacity:1;transform:translate3d(var(--orb-launch-x),var(--orb-launch-y),0) scale(1) rotate(360deg);transition:transform .56s cubic-bezier(.16,.82,.23,1),opacity .12s ease-out}
+
+/* Multiplier creation ritual: two copies of the same held artefact rotate
+   together.  The board copy is geometrically centred in its already-blank
+   cell, then hands off to the actual multiplier without any travel offset. */
+.deityFocus{position:fixed!important;z-index:450!important;pointer-events:none!important;
+  display:block!important;background-position:center!important;background-size:contain!important;
+  background-repeat:no-repeat!important;background-color:transparent!important;
+  transform-origin:50% 50%!important;will-change:transform,opacity;filter:drop-shadow(0 0 7px #ffe58b)!important}
+/* This opaque circular backing hides the original painted held object beneath
+   the animated copy.  It is clipped to the artefact itself: no white box,
+   no extra hand, and no exposed duplicate five-colour stone / yin-yang disk. */
+.deityFocus.handFocus{background-size:88%!important;background-color:#e4bd58!important;
+  border-radius:50%!important;box-shadow:0 0 14px 5px #f6d66d88!important}
+.deityFocus.spinning{animation:deityFocusSpin .56s linear infinite!important}
+.deityFocus.boardFocus{z-index:451!important;filter:drop-shadow(0 0 10px #fff0a2)!important}
+.deityFocus.transforming{opacity:0!important;transform:scale(.72) rotate(540deg)!important;transition:transform .10s ease-in,opacity .10s ease-in!important}
+@keyframes deityFocusSpin{from{transform:rotate(0deg) scale(.94)}50%{transform:rotate(180deg) scale(1.08)}to{transform:rotate(360deg) scale(.94)}}
+
+/* 女媧、伏羲是方形角色特殊符號，不套用一般圓形符石的外圈或
+   額外高光框；直接保留使用者提供的原始方形角色美術。 */
+body[data-mode] #reels .cell.nuwa,
+body[data-mode] #reels .cell.fuxi{
+  background:transparent!important;
+  border-color:transparent!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+body[data-mode] #reels .cell.nuwa::after,
+body[data-mode] #reels .cell.fuxi::after{display:none!important}
+body[data-mode] #reels .cell .symbolArt.nuwa,
+body[data-mode] #reels .cell .symbolArt.fuxi,
+body[data-mode] .reelStripTrack .symbolArt.nuwa,
+body[data-mode] .reelStripTrack .symbolArt.fuxi,
+body[data-mode] .reelClearTrack .symbolArt.nuwa,
+body[data-mode] .reelClearTrack .symbolArt.fuxi,
+body[data-mode] .cascadeStone .symbolArt.nuwa,
+body[data-mode] .cascadeStone .symbolArt.fuxi{
+  width:80%!important;height:80%!important;max-width:80%!important;max-height:80%!important;
+  object-fit:contain!important;border-radius:0!important;clip-path:none!important;
+  mix-blend-mode:normal!important;filter:drop-shadow(0 2px 3px #160c04)!important;
+  transform:scale(1)!important;
+}
+
+/* Keep scene changes geometricly still.  The prior scale-in made the bonus
+   reel board look as if it suddenly enlarged. */
+body.sceneShift main{animation:sceneArrivalStill .82s ease-out!important}
+@keyframes sceneArrivalStill{0%{transform:none;filter:brightness(1.22) saturate(1.14)}100%{transform:none;filter:brightness(1) saturate(1)}}
+
+/* Feature score plaques use the exact same measurable box as the verified
+   base-game plaque.  Their supplied PNGs contain transparent top/bottom
+   export padding, so enlarge only the background's vertical crop—not the
+   panel geometry or its score text. */
+@media (min-width:621px){
+  .reelStage .winTicker,
+  body[data-mode="free"] .reelStage .winTicker,
+  body[data-mode="bonus"] .reelStage .winTicker{
+    top:-16.5%!important;left:29%!important;right:auto!important;
+    width:42%!important;height:auto!important;aspect-ratio:1252/412!important;
+  }
+  body[data-mode="free"] .reelStage .winTicker,
+  body[data-mode="bonus"] .reelStage .winTicker{
+    background-size:100% 220%!important;background-position:center!important;
+  }
+}
+
+/* Board motion lock.  The project contains older visual experiments that
+   animate .cell, .win, .special, .dropping and .powerTarget independently.
+   Those effects compete with the real reel belts and make a stationary board
+   look as if it is jumping.  A symbol may now move only as part of a complete
+   reel strip, clear strip, or cascade stone; all settled board layers remain
+   geometrically fixed. */
+@media (min-width:621px){
+  #reels{
+    transform:none!important;transition:none!important;animation:none!important;
+    will-change:auto!important;
+  }
+  #reels .cell,
+  #reels .cell::before,
+  #reels .cell::after,
+  #reels .cell.win,
+  #reels .cell.special,
+  #reels .cell.powerTarget,
+  #reels .cell.dropping,
+  #reels .cell.reelLanding,
+  #reels .cell.reelClearing,
+  #reels .cell.reelCleared,
+  #reels .cell.cascadeLanding{
+    transform:translate3d(0,0,0)!important;
+    transition:none!important;animation:none!important;will-change:auto!important;
+  }
+  #reels .cell > img,
+  #reels .cell > .orbSprite,
+  #reels .reelStripTrack img,
+  #reels .reelStripTrack .orbSprite,
+  #reels .reelClearTrack img,
+  #reels .reelClearTrack .orbSprite,
+  #reels .cascadeStone img,
+  #reels .cascadeStone .orbSprite{
+    transform:none!important;transition:none!important;animation:none!important;
+    transform-origin:50% 50%!important;will-change:auto!important;
+  }
+  /* Motion is clipped once by .reelViewport below.  Never clip an individual
+     belt a second time: that creates a false upper boundary at row one. */
+  #reels .reelStripTrack,
+  #reels .reelClearTrack{will-change:transform!important}
+  #reels .cascadeStone{animation:none!important;will-change:transform!important}
+  #reels .cascadeStone.falling{
+    transition:transform .68s cubic-bezier(.14,.78,.24,1)!important;
+  }
+  #reels .cascadeStone.settledCascade{
+    transform:translate3d(0,0,0)!important;transition:none!important;
+  }
+}
+
+/* The top and bottom inner rails have equal visual clearance.  The previous
+   top inset was too shallow, so row one could overlap the painted upper rail
+   while all animation clipping still used that incorrect boundary.  This is
+   deliberately one shared grid geometry for Base, Free and Awakening. */
+@media (min-width:621px){
+  body[data-mode] .reels{
+    padding:9.4% 5.5% 9.4%!important;
+  }
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    left:0!important;top:0!important;width:100%!important;height:100%!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    text-align:center!important;line-height:1!important;padding:0!important;margin:0!important;
+  }
+}
+
+/* Single measured clipping window: every moving reel, clear belt, cascade
+   stone and multiplier reveal lives here.  Decorative frame art and scenic
+   objects stay outside, so no animation can show through a painted rail. */
+@media (min-width:621px){
+  /* The reel frame is a fixed stage in every mode.  Feature entry may change
+     artwork, but never its box, transform or interpolation. */
+  body[data-mode] .reelStage,
+  body[data-mode] #reels{
+    transform:none!important;
+    transition:none!important;
+    animation:none!important;
+  }
+  /* Defensive final lock for Awakening: older scene styles target `main`,
+     not the board itself.  If a stale sceneShift class survives a modal or
+     auto-spin, it can no longer scale, filter or interpolate the whole board. */
+  body[data-mode="bonus"] main,
+  body[data-mode="bonus"].sceneShift main{
+    transform:none!important;
+    transition:none!important;
+    animation:none!important;
+    filter:none!important;
+  }
+  /* The base board image itself must remain visible in full.  Only the
+     measured reelViewport owns clipping; it matches the inner gold rails,
+     not the outer board bitmap. */
+  body[data-mode] #reels{overflow:visible!important}
+  #reels .reelViewport{
+    position:absolute!important;z-index:25!important;overflow:clip!important;
+    overflow-clip-margin:0!important;clip-path:inset(0)!important;
+    contain:paint!important;isolation:isolate!important;pointer-events:none!important;
+  }
+  /* The viewport is the one and only moving-symbol mask.  A legacy
+     `overflow:hidden` on each travelling strip was masking its content again
+     at the first-row top, which made new stones appear from the wrong lower
+     line even though the viewport itself was correctly measured. */
+  #reels .reelViewport .reelStrip,
+  #reels .reelViewport .reelClearStrip,
+  #reels .reelViewport .cascadeStone{
+    overflow:visible!important;clip-path:none!important;pointer-events:none!important;
+  }
+
+  /* A deity symbol used to retain the legacy square-cell aspect ratio while
+     ordinary symbols used the fixed 6 x 5 grid cell.  That made CSS Grid
+     recalculate the bonus board whenever a 女媧／伏羲 symbol appeared.  Every
+     cell now occupies the identical, immutable grid slot; only the artwork
+     inside it differs. */
+  body[data-mode] #reels{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:repeat(5,minmax(0,1fr))!important;
+    min-width:0!important;min-height:0!important;
+  }
+  body[data-mode] #reels .cell,
+  body[data-mode] #reels .cell.nuwa,
+  body[data-mode] #reels .cell.fuxi{
+    width:100%!important;height:100%!important;
+    min-width:0!important;min-height:0!important;
+    aspect-ratio:auto!important;
+    justify-self:stretch!important;align-self:stretch!important;
+  }
+
+  /* Feature boards must never take their height from a cell, a travelling
+     strip, or a multiplier.  Free Game was still left at its legacy `auto`
+     height, so the frame visibly stretched and compressed as the grid was
+     rebuilt.  Both feature modes now use the same fixed stage-derived reel
+     box; only their supplied board artwork differs. */
+  body[data-mode="free"] #reels,
+  body[data-mode="bonus"] #reels{
+    height:97.42%!important;
+    min-height:0!important;
+    max-height:97.42%!important;
+    flex:0 0 97.42%!important;
+    box-sizing:border-box!important;
+    grid-auto-rows:minmax(0,1fr)!important;
+    align-content:stretch!important;
+    align-self:stretch!important;
+    overflow:visible!important;
+  }
+
+  /* Winning stones may glow, but no part of the glow animation is allowed to
+     own layout or a transform.  The previous inherited filter/pulse paths
+     made the bright frame look like the symbol itself had shifted. */
+  body[data-mode] #reels .cell.win,
+  body[data-mode] #reels .cell.win::before,
+  body[data-mode] #reels .cell.win::after{
+    transform:none!important;
+    filter:none!important;
+    transition:none!important;
+    animation:none!important;
+  }
+  body[data-mode] #reels .cell.win::before{
+    content:''!important;
+    position:absolute!important;
+    inset:7%!important;
+    display:block!important;
+    pointer-events:none!important;
+    border-radius:50%!important;
+    box-shadow:0 0 0 2px #ffe477cc,0 0 14px 5px #ffd35eaa!important;
+    opacity:0!important;
+    animation:fixedWinGlow .52s ease-in-out 2!important;
+  }
+  @keyframes fixedWinGlow{
+    0%,100%{opacity:0!important}
+    50%{opacity:1!important}
+  }
+}
+
+/* Keep this after all legacy feature rules: #multi is the actual glyph box,
+   so its geometric centre is the centre of the multiplier medal. */
+@media (min-width:621px){
+  body[data-mode="free"] .multiplierFeature #multi,
+  body[data-mode="bonus"] .multiplierFeature #multi{
+    display:inline-flex!important;
+    position:absolute!important;
+    left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+    width:auto!important;height:auto!important;min-width:0!important;
+    margin:0!important;padding:0!important;
+    transform:translate(-50%,-50%)!important;
+    transform-origin:50% 50%!important;
+    align-items:center!important;justify-content:center!important;
+    line-height:1!important;text-align:center!important;white-space:nowrap!important;
+  }
+}
+
+/* Final information-bar typography lock.  The three live accounting values
+   must share the same numeral height regardless of game mode or digit count. */
+@media (min-width:621px){
+  body[data-mode] .playHud small{font-size:clamp(9px,.86vw,11px)!important;line-height:1!important}
+  body[data-mode] .playHud .hudAmount b,
+  body[data-mode] .playHud .hudCurrent b,
+  body[data-mode] .playHud .hudStakeControls b{
+    font-size:clamp(15px,1.5vw,19px)!important;line-height:1!important;
+    min-height:1em!important;margin:0!important;display:inline-flex!important;
+    align-items:center!important;justify-content:center!important;
+  }
+  body[data-mode] .playHud .digitArt{height:1em!important;line-height:1!important;align-items:center!important;vertical-align:middle!important}
+  body[data-mode] .playHud .digitArt img{height:1em!important;max-height:1em!important;width:auto!important;margin:0 -.025em!important}
+}
+
+/* The supplied 2x medals have a visibly smaller painted circle inside their
+   PNG canvas than the other authored multiplier values.  Keep their DOM box
+   identical to every other ball, then compensate only the artwork by a small
+   centred scale so 2x has the same visual diameter in settled, reel and
+   tumble layers. */
+@media (min-width:621px){
+  body[data-mode] #reels .cell .orbSprite.value2,
+  body[data-mode] #reels .reelStripTrack .orbSprite.value2,
+  body[data-mode] #reels .reelClearTrack .orbSprite.value2,
+  body[data-mode] #reels .cascadeStone .orbSprite.value2{
+    transform:scale(1.13)!important;
+    transform-origin:50% 50%!important;
+  }
+}
+
+/* Awakening HUD is outside the board, not a sixth-row overlay.  Its bottom
+   edge is anchored to the scene floor so the full painted lower rail remains
+   visible above it. */
+@media (min-width:621px){
+  body[data-mode="bonus"] .playHud{
+    bottom:-0.8%!important;
+    top:auto!important;
+    transform:none!important;
+    z-index:200!important;
+  }
+}
+
+/* Game guide belongs in the upper-right scene gutter.  Feature modes reserve
+   their top corner for the total-multiplier medal, so the guide shifts below
+   that one object without touching the board. */
+@media (min-width:621px){
+  .guideEntry{left:auto!important;right:.6%!important;top:2.2%!important}
+  body[data-mode="free"] .guideEntry,
+  body[data-mode="bonus"] .guideEntry{top:13.0%!important}
+}
+
+/* The accounting bar is informational, not a win-effect layer.  Its three
+   values must retain one stable gold treatment while credit, bet and total
+   win update; no mode or counting animation may tint them. */
+@media (min-width:621px){
+  body[data-mode] .playHud .hudAmount b,
+  body[data-mode] .playHud .hudCurrent b,
+  body[data-mode] .playHud .hudStakeControls b,
+  body[data-mode] .playHud #balanceHud,
+  body[data-mode] .playHud #totalWinHud,
+  body[data-mode] .playHud #betHud{
+    color:#ffe7a2!important;
+    opacity:1!important;
+    filter:none!important;
+    mix-blend-mode:normal!important;
+    animation:none!important;
+    transition:none!important;
+  }
+  body[data-mode] .playHud .digitArt,
+  body[data-mode] .playHud .digitArt img{
+    opacity:1!important;
+    filter:drop-shadow(0 .04em .04em #1a0a00aa)!important;
+    mix-blend-mode:normal!important;
+    animation:none!important;
+    transition:none!important;
+  }
+}
+
+/* Final HUD containment override (must remain last). */
+@media (min-width:621px){
+  body[data-mode] .playHud{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  body[data-mode] .playHud .hudAmount,
+  body[data-mode] .playHud .hudCurrent,
+  body[data-mode] .playHud .hudStake{
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    padding:0 3%!important;box-sizing:border-box!important;overflow:hidden!important;
+    align-items:center!important;justify-content:center!important;text-align:center!important;
+  }
+  body[data-mode] .playHud small{
+    width:100%!important;max-width:100%!important;overflow:hidden!important;
+    white-space:nowrap!important;text-overflow:clip!important;text-align:center!important;
+  }
+  body[data-mode] .playHud .hudAmount b,
+  body[data-mode] .playHud .hudCurrent b,
+  body[data-mode] .playHud .hudStakeControls b{
+    width:auto!important;max-width:100%!important;min-width:0!important;
+    overflow:hidden!important;white-space:nowrap!important;
+    font-size:clamp(13px,1.28vw,17px)!important;text-align:center!important;
+  }
+  body[data-mode] .playHud .hudStakeControls{
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    padding:0!important;box-sizing:border-box!important;overflow:hidden!important;
+    justify-content:center!important;
+  }
+  body[data-mode] .playHud .digitArt{
+    display:inline-flex!important;max-width:100%!important;overflow:hidden!important;
+    justify-content:center!important;
+  }
+  body[data-mode] .playHud .digitArt img{
+    height:.82em!important;max-height:.82em!important;flex:0 1 auto!important;
+  }
+}
+
+/* Base-board geometry lock.
+   The historic sheets changed #reels from an absolutely-filled board to a
+   content-sized relative grid.  Rebuilding the 30 cells during SPIN could
+   therefore resize the base frame for one frame.  Keep the verified stage
+   box as the sole size source; symbols and animation layers may never
+   participate in sizing the painted frame. */
+@media (min-width:621px){
+  body[data-mode="base"] .reelStage{
+    width:63.7%!important;
+    height:79%!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-width:none!important;
+    max-height:none!important;
+    contain:layout!important;
+    transform:none!important;
+    transition:none!important;
+    animation:none!important;
+  }
+  body[data-mode="base"] #reels{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-width:100%!important;
+    max-height:100%!important;
+    box-sizing:border-box!important;
+    grid-auto-rows:minmax(0,1fr)!important;
+    align-content:stretch!important;
+    align-self:stretch!important;
+    flex:none!important;
+    transform:none!important;
+    transition:none!important;
+    animation:none!important;
+  }
+}
+
+/* Base HUD placement: the fixed reel stage ends at 97.1% of the scene.
+   Keep the information plaque entirely below that painted lower rail instead
+   of letting its upper edge overlap the board frame. */
+@media (min-width:621px){
+  body[data-mode="base"] .playHud{
+    top:auto!important;
+    bottom:-2.0%!important;
+    transform:none!important;
+    z-index:200!important;
+  }
+}
+
+/* Painted-diameter calibration for the supplied 2x and 150x files.
+   Their transparent canvases have different aspect ratios in the four-node
+   (frame A) and eight-node (frame B) exports.  Compensate each canvas
+   separately so the visible medal—not its invisible padding—matches every
+   other multiplier ball. */
+@media (min-width:621px){
+  /* The painted centres are offset inside the source canvases.  Translate
+     the visible medal back to the cell centre before applying its size
+     compensation; transform-origin remains the geometric centre. */
+  body[data-mode] #reels .orbSprite.value2.frameA{transform:translate(-3.75%,-6.90%) scale(1.35)!important}
+  body[data-mode] #reels .orbSprite.value2.frameB{transform:translate(-3.80%,-2.80%) scale(1.16)!important}
+  body[data-mode] #reels .orbSprite.value150.frameA{transform:translate(3.60%,-2.95%) scale(1.30)!important}
+  body[data-mode] #reels .orbSprite.value150.frameB{transform:translate(3.05%,8.05%) scale(1.42)!important}
+}
+
+/* 10x and 50x were exported on unusually tall transparent canvases, making
+   their painted medals look smaller than neighbouring values.  Calibrate the
+   four-node and eight-node exports independently while keeping the common
+   reel layout box untouched. */
+@media (min-width:621px){
+  body[data-mode] #reels .orbSprite.value10.frameA{transform:translate(.40%,-.40%) scale(1.24)!important}
+  body[data-mode] #reels .orbSprite.value10.frameB{transform:translate(-.60%,-.40%) scale(1.16)!important}
+  body[data-mode] #reels .orbSprite.value50.frameA{transform:translate(2.00%,-1.35%) scale(1.28)!important}
+  body[data-mode] #reels .orbSprite.value50.frameB{transform:translate(.40%,2.00%) scale(1.09)!important}
+}
+
+/* Unified accounting typography for base, free and awakening modes.  Credit,
+   total win and bet share the same label row, number row, baseline and digit
+   artwork height; the stake buttons no longer change the number's alignment. */
+@media (min-width:621px){
+  body[data-mode] .playHud .hudAmount,
+  body[data-mode] .playHud .hudCurrent,
+  body[data-mode] .playHud .hudStake{
+    display:grid!important;
+    grid-template-rows:.9em 1.28em!important;
+    align-content:center!important;
+    align-items:center!important;
+    justify-items:center!important;
+    row-gap:1px!important;
+    line-height:1!important;
+  }
+  body[data-mode] .playHud small{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    height:.9em!important;
+    margin:0!important;
+    padding:0!important;
+    line-height:.9!important;
+  }
+  body[data-mode] .playHud .hudAmount b,
+  body[data-mode] .playHud .hudCurrent b,
+  body[data-mode] .playHud .hudStakeControls b,
+  body[data-mode] .playHud #balanceHud,
+  body[data-mode] .playHud #totalWinHud,
+  body[data-mode] .playHud #betHud{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    height:1.28em!important;
+    min-height:1.28em!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:clamp(15px,1.42vw,19px)!important;
+    line-height:1!important;
+    vertical-align:middle!important;
+  }
+  body[data-mode] .playHud .hudStakeControls{
+    align-self:center!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    height:1.28em!important;
+    min-height:1.28em!important;
+    margin:0!important;
+    line-height:1!important;
+  }
+  body[data-mode] .playHud .digitArt{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    height:.92em!important;
+    line-height:1!important;
+    vertical-align:middle!important;
+  }
+  body[data-mode] .playHud .digitArt img{
+    display:block!important;
+    width:auto!important;
+    height:.92em!important;
+    min-height:.92em!important;
+    max-height:.92em!important;
+    margin:0 -.025em!important;
+    transform:none!important;
+  }
+
+  /* The supplied 9 has much more transparent canvas above and below its
+     painted glyph than digits 0–8.  Enlarge only its visible artwork so a 9
+     has the same cap height while retaining the common numeric baseline. */
+  body[data-mode] .playHud .digitArt img[src$="digit-9.png"]{
+    transform:scale(1.37)!important;
+    transform-origin:50% 50%!important;
+  }
+  body[data-mode] .playHud small{
+    font-size:clamp(10px,.96vw,13px)!important;
+    font-weight:800!important;
+    letter-spacing:.04em!important;
+  }
+
+  .freeEntry small,.bonusEntry small{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:1px!important;
+    line-height:1!important;
+  }
+  .freeEntry .forceHint,.bonusEntry .forceHint{
+    display:block!important;
+    color:inherit!important;
+    font-size:.88em!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+}
+
+/* Label clipping correction.  The enlarged Chinese captions need their own
+   full-height row; the previous .9em row cropped the top/bottom strokes. */
+@media (min-width:621px){
+  body[data-mode] .playHud .hudAmount,
+  body[data-mode] .playHud .hudCurrent,
+  body[data-mode] .playHud .hudStake{
+    grid-template-rows:1.15em 1.28em!important;
+    row-gap:2px!important;
+    padding-top:1%!important;
+    padding-bottom:1%!important;
+  }
+  body[data-mode] .playHud small{
+    height:1.15em!important;
+    min-height:1.15em!important;
+    overflow:visible!important;
+    line-height:1.1!important;
+  }
+}
+
+/* Per-glyph optical calibration.  The source numeral PNGs have different
+   transparent margins, so equal img heights did not produce equal painted
+   heights or a common baseline.  These transforms normalize the visible
+   gold glyphs without changing the value container or accounting layout. */
+@media (min-width:621px){
+  body[data-mode] .playHud .hudAmount,
+  body[data-mode] .playHud .hudCurrent,
+  body[data-mode] .playHud .hudStake{
+    transform:translateY(-3px)!important;
+  }
+  body[data-mode] .playHud .digitArt{
+    overflow:visible!important;
+  }
+  body[data-mode] .playHud .digitArt img[src$="digit-0.png"]{transform:translateY(-.9%) scale(.91)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-1.png"]{transform:translateY(-5.1%) scale(.98)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-2.png"]{transform:translateY(-5.3%) scale(.97)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-3.png"]{transform:translateY(-4.9%) scale(1.01)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-4.png"]{transform:translateY(-.5%) scale(.99)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-5.png"]{transform:translateY(4.2%) scale(1.11)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-6.png"]{transform:translateY(-.7%) scale(.89)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-7.png"]{transform:translateY(4.9%) scale(1.03)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-8.png"]{transform:translateY(5.6%) scale(1.11)!important}
+  body[data-mode] .playHud .digitArt img[src$="digit-9.png"]{transform:translateY(18.5%) scale(1.37)!important}
+}

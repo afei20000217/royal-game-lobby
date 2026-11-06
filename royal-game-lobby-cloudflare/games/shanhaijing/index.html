@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>山海經：神啟之境</title>
+  <link rel="stylesheet" href="style.css?v=282">
+  <link rel="stylesheet" href="artwork-lock.css?v=349">
+</head>
+<body data-mode="base">
+  <a class="lobby-return" href="/" aria-label="返回皇家遊戲大廳">← 返回大廳</a>
+  <audio id="bgm" autoplay loop preload="auto" playsinline>
+    <source src="assets/dragon-blade-bgm.m4r" type="audio/mp4">
+  </audio>
+  <audio id="reelSfx" loop preload="auto" playsinline>
+    <source src="assets/reel-spin.m4a" type="audio/mp4">
+  </audio>
+  <audio id="spinClickSfx" preload="auto" playsinline>
+    <!-- Embed the supplied click sample so local file:// previews and static
+         hosts cannot mislabel or block the uncommon .m4r extension. -->
+    <source src="data:audio/mp4;base64,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" type="audio/mp4">
+    <source src="assets/spin-click.m4r" type="audio/mp4">
+  </audio>
+  <main>
+    <div id="modeScene" aria-hidden="true"></div>
+    <button id="baseEntry" class="baseEntry" aria-label="回到一般遊戲">一般遊戲<small>主遊戲</small></button>
+    <button id="freeEntry" class="freeEntry" aria-label="強制直接進入免費遊戲">免費遊戲<small><span class="roundHint">15 回合</span><span class="forceHint">（強開）</span></small></button>
+    <button id="bonusEntry" class="bonusEntry" aria-label="強制直接進入神啟之境">神啟之境<small><span class="roundHint">15 回合</span><span class="forceHint">（強開）</span></small></button>
+    <button id="guideBtn" class="guideEntry" type="button" aria-haspopup="dialog" aria-controls="guideModal">遊戲說明<small>賠率・符號・倍率</small></button>
+    <header>
+      <span class="heroBadge" aria-hidden="true">10×</span>
+      <div class="titlePanel"><small>SHAN HAI JING · 獨立虛擬幣試玩</small><h1>山海經：神啟之境</h1></div>
+      <div class="balance"><small>試玩餘額（非飛飛幣）</small><b id="balance">10,000.00</b></div>
+    </header>
+    <div id="eventBanner" class="eventBanner">主遊戲：任意位置 8 個相同符號即可得獎</div>
+    <section class="game">
+      <aside>
+        <div id="modeLabel" class="modeLabel" aria-live="polite"></div>
+        <div class="feature"><small>總倍率</small><strong id="multi">x1</strong></div>
+        <div class="feature"><small>剩餘回合</small><strong id="free">0</strong></div>
+        <p id="message">任意位置 8 個相同符號即可得獎。得獎符號會消除，並由上方依序掉落新符號。</p>
+        <div class="eventLog"><small>本局事件</small><ol id="eventLog"><li>等待轉動</li></ol></div>
+      </aside>
+      <div class="reelStage">
+        <div class="reels" id="reels" aria-label="遊戲盤面"></div>
+        <img class="deity deityFuxi" src="assets/deity-fuxi.png?v=248" alt="伏羲">
+        <img class="deity deityNuwa" src="assets/deity-nuwa.png?v=248" alt="女媧">
+        <div class="winTicker" aria-live="polite"><b id="roundWin" class="roundWinValue">0.00</b><span id="chainInfo">等待轉動</span></div>
+      </div>
+      <aside class="rules"><b>玩法</b><p>6 輪 × 5 列</p><p>Pay Anywhere</p><p>Tumble 連消</p><p>4 九尾狐：免費・4 青丘：覺醒</p></aside>
+    </section>
+    <footer>
+      <button id="betDown" aria-label="減少下注">−</button>
+      <div class="bet"><small>下注</small><b id="bet">100.00</b></div>
+      <button id="betUp" aria-label="增加下注">＋</button>
+      <button id="spin">SPIN</button>
+      <button id="auto">AUTO ×10</button>
+      <button id="rulesBtn">玩法</button>
+      <div class="demoLinks"><button id="ante">特別投注：關</button><button id="buyFeature">購買免費遊戲（100×）</button></div>
+    </footer>
+    <section class="playHud" aria-label="當前餘額、總贏分與投注額">
+      <div class="hudAmount"><small>當前餘額</small><b id="balanceHud">1,600.00</b></div>
+      <div class="hudCurrent"><small>總贏分</small><b id="totalWinHud">0.00</b></div>
+      <div class="hudStake"><small>投注額</small><div class="hudStakeControls"><button id="hudBetDown" type="button" aria-label="降低投注額">−</button><b id="betHud">100.00</b><button id="hudBetUp" type="button" aria-label="提高投注額">＋</button></div></div>
+    </section>
+    <div class="coinBase" aria-hidden="true"><span><i>15</i> FREE<br>GAMES</span></div>
+  </main>
+  <div id="modal" class="hidden" role="dialog" aria-modal="true"><div><img id="modalArt" class="hidden" alt=""><h2 id="modalTitle">BIG WIN</h2><strong id="modalWin">0.00</strong><p id="modalText"></p><button onclick="closeModal()">繼續</button></div></div>
+  <section id="guideModal" class="guideModal hidden" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="guidePanel">
+      <button id="guideClose" class="guideClose" type="button" aria-label="關閉遊戲說明">×</button>
+      <h2 id="guideTitle">遊戲說明</h2>
+      <div class="guideTabs" role="tablist" aria-label="遊戲說明分頁">
+        <button type="button" role="tab" aria-selected="true" data-guide="gameplay">基本玩法</button>
+        <button type="button" role="tab" aria-selected="false" data-guide="modes">模式說明</button>
+        <button type="button" role="tab" aria-selected="false" data-guide="paytable">賠率表</button>
+        <button type="button" role="tab" aria-selected="false" data-guide="symbols">特殊符號</button>
+        <button type="button" role="tab" aria-selected="false" data-guide="multipliers">倍率特色</button>
+      </div>
+      <img id="guideArt" src="assets/guide-gameplay.png" alt="遊戲說明：基本玩法與贏分公式">
+    </div>
+  </section>
+  <script src="game.js?v=345"></script>
+</body>
+</html>
