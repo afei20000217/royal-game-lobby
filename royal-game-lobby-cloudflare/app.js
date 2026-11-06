@@ -3,6 +3,8 @@ const nicknameDialog = document.querySelector("#nickname-dialog");
 const profileDialog = document.querySelector("#profile-dialog");
 const playerWidget = document.querySelector("#player-widget");
 const authButton = document.querySelector("#auth-button");
+const currencyDisplay = document.querySelector("#currency-display");
+const currencyAmount = document.querySelector("#currency-amount");
 const userLabel = document.querySelector("#user-label");
 const playerName = document.querySelector("#player-name");
 const playerAvatarSmall = document.querySelector("#player-avatar-small");
@@ -89,12 +91,15 @@ function updateAccountUI() {
     userLabel.hidden = true;
     userLabel.textContent = currentUser.nickname || currentUser.username;
     playerName.textContent = currentUser.nickname || currentUser.username;
+    currencyDisplay.hidden = false;
+    currencyAmount.textContent = formatCurrency(currentUser.flyCoins);
   } else {
     authButton.textContent = "登入";
     authButton.setAttribute("aria-label", "登入");
     userLabel.hidden = true;
     userLabel.textContent = "";
     playerName.textContent = "訪客玩家";
+    currencyDisplay.hidden = true;
   }
   const avatar = currentUser?.avatar || "";
   if (avatar) {
@@ -107,12 +112,17 @@ function updateAccountUI() {
   updateProfileUI();
 }
 
+function formatCurrency(amount) {
+  return new Intl.NumberFormat("zh-TW").format(Number(amount ?? 0));
+}
+
 function updateProfileUI() {
   profileNickname.textContent = currentUser?.nickname || (currentUser ? "尚未設定暱稱" : "訪客玩家");
   profileAccount.textContent = currentUser ? `帳號：${currentUser.username}` : "訪客模式";
   profileJoined.textContent = currentUser?.createdAt
     ? new Intl.DateTimeFormat("zh-TW", { dateStyle: "medium" }).format(new Date(Number(currentUser.createdAt) * 1000))
     : currentUser ? "資料尚未提供" : "登入後顯示";
+  document.querySelector("#profile-fly-coins").textContent = currentUser ? `${formatCurrency(currentUser.flyCoins)} 元` : "登入後顯示";
   profileLogin.hidden = Boolean(currentUser);
   avatarChange.hidden = !currentUser;
   avatarRemove.hidden = !currentUser || !currentUser.avatar;

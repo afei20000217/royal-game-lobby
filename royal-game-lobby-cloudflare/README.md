@@ -1,6 +1,6 @@
 # 皇家遊戲大廳（Cloudflare Pages + D1）
 
-這個版本包含公開大廳、帳號／密碼註冊、登入、玩家資訊編輯，以及登出。玩家資訊框位於大廳左上角的首頁按鈕下方。玩家可編輯暱稱、台灣地區、民國生日與性別，也可拖曳並縮放裁切大頭照，照片會壓縮後保存至玩家帳號。暱稱由資料庫唯一性限制避免重複。瀏覽器使用每位玩家獨立 salt，以 PBKDF2-HMAC-SHA-256（600,000 次）處理密碼；伺服器僅接收衍生驗證值，經 SHA-256 再雜湊後存入 D1。登入 session 使用隨機、不透明 token，僅以雜湊值存入資料庫，瀏覽器 cookie 設為 HttpOnly、Secure、SameSite=Lax。
+這個版本包含公開大廳、帳號／密碼註冊、登入、玩家資訊編輯、飛飛幣餘額顯示，以及登出。玩家資訊框位於大廳左上角的首頁按鈕下方。玩家可編輯暱稱、台灣地區、民國生日與性別，也可拖曳並縮放裁切大頭照，照片會壓縮後保存至玩家帳號。新玩家建立帳號時獲得 10,000 元飛飛幣，餘額保存在 D1。暱稱由資料庫唯一性限制避免重複。瀏覽器使用每位玩家獨立 salt，以 PBKDF2-HMAC-SHA-256（600,000 次）處理密碼；伺服器僅接收衍生驗證值，經 SHA-256 再雜湊後存入 D1。登入 session 使用隨機、不透明 token，僅以雜湊值存入資料庫，瀏覽器 cookie 設為 HttpOnly、Secure、SameSite=Lax。
 
 ## 部署前設定
 
@@ -8,8 +8,9 @@
 2. 在 Cloudflare 建立 D1 資料庫，將 [`migrations/0001_auth.sql`](migrations/0001_auth.sql) 的 SQL 貼到資料庫 Console 執行一次。
 3. 既有網站需在同一個 D1 資料庫執行 [`migrations/0002_player_profile.sql`](migrations/0002_player_profile.sql)，新增個人資料欄位並啟用暱稱唯一限制。
 4. 既有網站需在同一個 D1 資料庫執行 [`migrations/0003_player_avatar.sql`](migrations/0003_player_avatar.sql)，新增玩家照片欄位。
-5. 在 Pages 專案的 **Settings → Bindings → Add → D1 database binding**，設定變數名稱為 `DB`，選取剛建立的資料庫，然後重新部署。
-6. 等部署完成後，開啟 Cloudflare Pages 提供的 `*.pages.dev` 網址。
+5. 既有網站需在同一個 D1 資料庫執行 [`migrations/0004_fly_coins.sql`](migrations/0004_fly_coins.sql)，新增飛飛幣餘額欄位；既有玩家也會獲得 10,000 元初始餘額。
+6. 在 Pages 專案的 **Settings → Bindings → Add → D1 database binding**，設定變數名稱為 `DB`，選取剛建立的資料庫，然後重新部署。
+7. 等部署完成後，開啟 Cloudflare Pages 提供的 `*.pages.dev` 網址。
 
 Cloudflare Pages Functions 會從專案根目錄內的 `functions/` 目錄自動部署。使用 Git 整合後，推送新提交會觸發新的部署。
 

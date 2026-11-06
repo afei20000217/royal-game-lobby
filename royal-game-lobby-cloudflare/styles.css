@@ -127,6 +127,11 @@ button, input { font: inherit; }
 .crop-actions > button:first-child { padding: 10px 14px; border: 1px solid rgba(239,190,105,.36); border-radius: 9px; color: #f5d89f; background: rgba(0,0,0,.22); cursor: pointer; }
 .crop-actions .gold-button { margin: 0; padding: 10px 14px; letter-spacing: .04em; }
 .crop-actions button:disabled { opacity: .6; cursor: wait; }
+.currency-display { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid rgba(239,190,105,.42); border-radius: 999px; color: #ffe8b4; background: rgba(30,8,11,.62); box-shadow: inset 0 0 12px rgba(237,167,59,.08); }
+.currency-display[hidden] { display: none; }
+.currency-icon { color: #ffd878; font-size: 19px; line-height: 1; text-shadow: 0 0 10px rgba(255,193,72,.6); }
+.currency-copy { display: grid; gap: 1px; font-size: 9px; letter-spacing: .08em; }
+.currency-copy strong { color: #fff0c7; font: 600 13px/1.2 Arial, "Noto Sans TC", sans-serif; letter-spacing: .04em; }
 @media (max-width: 640px) {
   .player-widget { top: 76px; left: 12px; width: 148px; gap: 7px; padding: 10px; }
   .player-photo-frame { width: 58px; height: 58px; }
@@ -135,4 +140,8 @@ button, input { font: inherit; }
   .player-exp-label { font-size: 8px; }
   .profile-identity { flex-wrap: wrap; }
   .avatar-actions { grid-template-columns: auto auto; margin-left: 0; }
+  .currency-display { gap: 5px; padding: 6px 9px; }
+  .currency-icon { font-size: 16px; }
+  .currency-copy { font-size: 8px; }
+  .currency-copy strong { font-size: 11px; }
 }
