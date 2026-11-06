@@ -10,6 +10,7 @@ const bagDialog = document.querySelector("#bag-dialog");
 const shopButton = document.querySelector("#shop-button");
 const bagButton = document.querySelector("#bag-button");
 const mailButton = document.querySelector("#mail-button");
+const adminButton = document.querySelector("#admin-button");
 const mailUnread = document.querySelector("#mail-unread");
 const mailDialog = document.querySelector("#mail-dialog");
 const mailWorkspace = document.querySelector("#mail-workspace");
@@ -17,8 +18,18 @@ const mailList = document.querySelector("#mail-list");
 const mailReader = document.querySelector("#mail-reader");
 const mailStatus = document.querySelector("#mail-status");
 const mailComposeForm = document.querySelector("#mail-compose-form");
-const mailBroadcastForm = document.querySelector("#mail-broadcast-form");
-const mailBroadcastTab = document.querySelector("#mail-broadcast-tab");
+const adminDialog = document.querySelector("#admin-dialog");
+const adminStatus = document.querySelector("#admin-status");
+const adminPlayersView = document.querySelector("#admin-players-view");
+const adminBroadcastForm = document.querySelector("#admin-broadcast-form");
+const adminSearchForm = document.querySelector("#admin-search-form");
+const adminSearch = document.querySelector("#admin-search");
+const adminPlayerRows = document.querySelector("#admin-player-rows");
+const adminPlayerForm = document.querySelector("#admin-player-form");
+const adminPlayerCount = document.querySelector("#admin-player-count");
+const adminPageLabel = document.querySelector("#admin-page-label");
+const adminAvatarPreview = document.querySelector("#admin-avatar-preview");
+const adminAvatarNote = document.querySelector("#admin-avatar-note");
 const buyNikoButton = document.querySelector("#buy-niko-button");
 const shopMessage = document.querySelector("#shop-message");
 const bagItemsElement = document.querySelector("#bag-items");
@@ -70,6 +81,9 @@ let cropPointer = null;
 let inventoryItems = [];
 let activeMailView = "inbox";
 let activeMailItems = [];
+let adminPlayerPage = 1;
+let adminPlayerTotal = 0;
+let selectedAdminPlayerId = null;
 const BAG_CAPACITY = 100;
 const ITEM_DETAILS = {
   "niko-cat": { name: "尼可", image: "/game-art/niko.jpg", description: "把尼可帶回包包收藏吧。" }
@@ -125,8 +139,8 @@ function updateAccountUI() {
     currencyDisplay.hidden = false;
     currencyAmount.textContent = formatCurrency(currentUser.flyCoins);
     memberCenterButton.hidden = false;
+    adminButton.hidden = !currentUser.isAdmin;
     document.querySelector("#member-account-value").textContent = currentUser.username;
-    mailBroadcastTab.hidden = !currentUser.isAdmin;
   } else {
     authButton.textContent = "登入";
     authButton.setAttribute("aria-label", "登入");
@@ -135,11 +149,12 @@ function updateAccountUI() {
     playerName.textContent = "訪客玩家";
     currencyDisplay.hidden = true;
     memberCenterButton.hidden = true;
+    adminButton.hidden = true;
     memberCenterDialog.close();
     mailDialog.close();
     mailUnread.hidden = true;
     mailUnread.textContent = "0";
-    mailBroadcastTab.hidden = true;
+    adminDialog.close();
     inventoryItems = [];
     updateBagUI();
   }
@@ -318,11 +333,9 @@ async function loadMail(view) {
   const isList = view === "inbox" || view === "sent";
   mailWorkspace.hidden = !isList;
   mailComposeForm.hidden = view !== "compose";
-  mailBroadcastForm.hidden = view !== "broadcast";
   showMessage(mailStatus, "");
   if (!isList) {
     if (view === "compose") mailComposeForm.elements.recipient.focus();
-    if (view === "broadcast") mailBroadcastForm.elements.subject.focus();
     return;
   }
   mailList.replaceChildren();
@@ -356,9 +369,141 @@ async function refreshMailBadge() {
   } catch { /* Keep the lobby usable when mailbox refresh is temporarily unavailable. */ }
 }
 
+function populateAdminBirthdaySelects() {
+  const form = adminPlayerForm;
+  if (form.elements.region.options.length === 1) regions.forEach((region) => form.elements.region.add(option(region)));
+  if (form.elements.year.options.length === 1) {
+    for (let year = 80; year <= Number(rocYear); year += 1) form.elements.year.add(option(year, `民國${year}年`));
+    for (let month = 1; month <= 12; month += 1) form.elements.month.add(option(month, `${month}月`));
+  }
+}
+
+function refreshAdminBirthdayDays(selected = "") {
+  const year = Number(adminPlayerForm.elements.year.value || rocYear) + 1911;
+  const month = Number(adminPlayerForm.elements.month.value || 1);
+  const days = new Date(year, month, 0).getDate();
+  adminPlayerForm.elements.day.replaceChildren(option("", "--"));
+  for (let day = 1; day <= days; day += 1) adminPlayerForm.elements.day.add(option(day, `${day}日`));
+  if (selected && Number(selected) <= days) adminPlayerForm.elements.day.value = selected;
+}
+
+function setAdminView(view) {
+  if (!currentUser?.isAdmin) return;
+  document.querySelectorAll("[data-admin-view]").forEach((button) => {
+    button.setAttribute("aria-selected", String(button.dataset.adminView === view));
+  });
+  adminPlayersView.hidden = view !== "players";
+  adminBroadcastForm.hidden = view !== "broadcast";
+  showMessage(adminStatus, "");
+  if (view === "players") loadAdminPlayers();
+  else adminBroadcastForm.elements.subject.focus();
+}
+
+async function openAdmin() {
+  if (!currentUser?.isAdmin) return;
+  adminDialog.showModal();
+  populateAdminBirthdaySelects();
+  adminPlayerForm.hidden = true;
+  selectedAdminPlayerId = null;
+  adminSearch.value = "";
+  adminPlayerPage = 1;
+  setAdminView("players");
+}
+
+async function loadAdminPlayers() {
+  if (!currentUser?.isAdmin) return;
+  adminPlayerRows.replaceChildren();
+  const loading = document.createElement("tr");
+  const loadingCell = document.createElement("td");
+  loadingCell.colSpan = 4;
+  loadingCell.textContent = "載入玩家資料…";
+  loading.append(loadingCell);
+  adminPlayerRows.append(loading);
+  try {
+    const params = new URLSearchParams({ q: adminSearch.value.trim(), page: String(adminPlayerPage) });
+    const result = await api(`/api/auth/admin/players?${params}`);
+    adminPlayerTotal = result.total;
+    adminPlayerRows.replaceChildren();
+    adminPlayerCount.textContent = `共 ${formatCurrency(adminPlayerTotal)} 位玩家`;
+    const pageCount = Math.max(1, Math.ceil(adminPlayerTotal / result.pageSize));
+    adminPageLabel.textContent = `第 ${result.page} / ${pageCount} 頁`;
+    document.querySelector("#admin-prev").disabled = result.page <= 1;
+    document.querySelector("#admin-next").disabled = result.page >= pageCount;
+    if (!result.players.length) {
+      const emptyRow = document.createElement("tr");
+      const emptyCell = document.createElement("td");
+      emptyCell.colSpan = 4;
+      emptyCell.textContent = "沒有符合的玩家資料。";
+      emptyRow.append(emptyCell);
+      adminPlayerRows.append(emptyRow);
+      return;
+    }
+    for (const player of result.players) {
+      const row = document.createElement("tr");
+      row.className = "admin-player-row";
+      row.tabIndex = 0;
+      row.setAttribute("aria-label", `編輯玩家 ${String(player.player_number).padStart(8, "0")} ${player.username}`);
+      const number = document.createElement("td");
+      number.textContent = String(player.player_number).padStart(8, "0");
+      const identity = document.createElement("td");
+      const account = document.createElement("strong");
+      account.textContent = player.username;
+      const nickname = document.createElement("small");
+      nickname.textContent = player.nickname || "未設定暱稱";
+      identity.append(account, nickname);
+      const region = document.createElement("td");
+      region.textContent = player.region || "—";
+      const coins = document.createElement("td");
+      coins.textContent = formatCurrency(player.fly_coins);
+      row.append(number, identity, region, coins);
+      row.addEventListener("click", () => loadAdminPlayer(player.id));
+      row.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); loadAdminPlayer(player.id); } });
+      adminPlayerRows.append(row);
+    }
+    if (selectedAdminPlayerId && result.players.some((player) => player.id === selectedAdminPlayerId)) {
+      adminPlayerRows.querySelectorAll(".admin-player-row").forEach((row, index) => {
+        if (result.players[index]?.id === selectedAdminPlayerId) row.classList.add("selected");
+      });
+    }
+  } catch (error) {
+    adminPlayerRows.replaceChildren();
+    showMessage(adminStatus, error.message, true);
+  }
+}
+
+async function loadAdminPlayer(id) {
+  try {
+    const { player } = await api(`/api/auth/admin/player?id=${encodeURIComponent(id)}`);
+    selectedAdminPlayerId = player.id;
+    const form = adminPlayerForm;
+    form.elements.id.value = player.id;
+    form.elements.playerNumber.value = player.playerNumber;
+    form.elements.account.value = player.username;
+    form.elements.nickname.value = player.nickname || "";
+    form.elements.region.value = player.region || "";
+    form.elements.year.value = player.birthday?.year || "";
+    form.elements.month.value = player.birthday?.month || "";
+    refreshAdminBirthdayDays(player.birthday?.day || "");
+    form.elements.gender.value = player.gender || "";
+    form.elements.flyCoins.value = player.flyCoins;
+    form.elements.isAdmin.checked = player.isAdmin;
+    form.elements.removeAvatar.checked = false;
+    adminAvatarPreview.hidden = !player.avatar;
+    if (player.avatar) adminAvatarPreview.src = player.avatar;
+    else adminAvatarPreview.removeAttribute("src");
+    adminAvatarNote.textContent = player.avatar ? "目前已設定大頭照" : "尚無大頭照";
+    adminPlayerForm.querySelector(".admin-player-meta").textContent = `加入時間：${new Intl.DateTimeFormat("zh-TW", { dateStyle: "medium", timeStyle: "short" }).format(new Date(player.createdAt * 1000))}`;
+    adminPlayerForm.hidden = false;
+    showMessage(adminStatus, "");
+    adminPlayerRows.querySelectorAll(".admin-player-row").forEach((row) => row.classList.toggle("selected", row.cells[0]?.textContent === player.playerNumber));
+  } catch (error) {
+    showMessage(adminStatus, error.message, true);
+  }
+}
+
 function updateProfileUI() {
   profileNickname.textContent = currentUser?.nickname || (currentUser ? "尚未設定暱稱" : "訪客玩家");
-  profileAccount.textContent = currentUser ? `帳號：${currentUser.username}` : "訪客模式";
+  profileAccount.textContent = currentUser ? `玩家序號：${currentUser.playerNumber}　帳號：${currentUser.username}` : "訪客模式";
   profileJoined.textContent = currentUser?.createdAt
     ? new Intl.DateTimeFormat("zh-TW", { dateStyle: "medium" }).format(new Date(Number(currentUser.createdAt) * 1000))
     : currentUser ? "資料尚未提供" : "登入後顯示";
@@ -435,11 +580,11 @@ document.querySelectorAll("[data-close]").forEach((button) => {
 shopButton.addEventListener("click", openShop);
 bagButton.addEventListener("click", openBag);
 mailButton.addEventListener("click", openMail);
+adminButton.addEventListener("click", openAdmin);
 document.querySelectorAll("[data-mail-view]").forEach((button) => button.addEventListener("click", () => {
-  const view = button.dataset.mailView;
-  if (view === "broadcast" && !currentUser?.isAdmin) return;
-  loadMail(view);
+  loadMail(button.dataset.mailView);
 }));
+document.querySelectorAll("[data-admin-view]").forEach((button) => button.addEventListener("click", () => setAdminView(button.dataset.adminView)));
 mailComposeForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const button = mailComposeForm.querySelector('[type="submit"]');
@@ -461,23 +606,71 @@ mailComposeForm.addEventListener("submit", async (event) => {
     button.disabled = false;
   }
 });
-mailBroadcastForm.addEventListener("submit", async (event) => {
+adminSearchForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  adminPlayerPage = 1;
+  selectedAdminPlayerId = null;
+  adminPlayerForm.hidden = true;
+  loadAdminPlayers();
+});
+document.querySelector("#admin-prev").addEventListener("click", () => {
+  if (adminPlayerPage > 1) { adminPlayerPage -= 1; loadAdminPlayers(); }
+});
+document.querySelector("#admin-next").addEventListener("click", () => {
+  if (adminPlayerPage * 50 < adminPlayerTotal) { adminPlayerPage += 1; loadAdminPlayers(); }
+});
+adminPlayerForm.elements.year.addEventListener("change", () => refreshAdminBirthdayDays());
+adminPlayerForm.elements.month.addEventListener("change", () => refreshAdminBirthdayDays());
+adminPlayerForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = adminPlayerForm.querySelector('[type="submit"]');
+  button.disabled = true;
+  showMessage(adminStatus, "");
+  try {
+    const form = adminPlayerForm.elements;
+    const result = await api("/api/auth/admin/player/update", { method: "POST", body: {
+      id: form.id.value,
+      account: form.account.value,
+      nickname: form.nickname.value,
+      region: form.region.value,
+      year: form.year.value,
+      month: form.month.value,
+      day: form.day.value,
+      gender: form.gender.value,
+      flyCoins: Number(form.flyCoins.value),
+      isAdmin: form.isAdmin.checked,
+      removeAvatar: form.removeAvatar.checked
+    } });
+    if (currentUser.id === result.player.id) {
+      currentUser = result.player;
+      updateAccountUI();
+    }
+    showMessage(adminStatus, "玩家資料已更新。");
+    await loadAdminPlayers();
+    await loadAdminPlayer(result.player.id);
+    showMessage(adminStatus, "玩家資料已更新。");
+  } catch (error) {
+    showMessage(adminStatus, error.message, true);
+  } finally {
+    button.disabled = false;
+  }
+});
+adminBroadcastForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!currentUser?.isAdmin || !confirm("這則公告會寄到所有玩家的收件匣，確定發布嗎？")) return;
-  const button = mailBroadcastForm.querySelector('[type="submit"]');
+  const button = adminBroadcastForm.querySelector('[type="submit"]');
   button.disabled = true;
-  showMessage(mailStatus, "");
+  showMessage(adminStatus, "");
   try {
     await api("/api/auth/mail/broadcast", { method: "POST", body: {
-      subject: mailBroadcastForm.elements.subject.value,
-      body: mailBroadcastForm.elements.body.value
+      subject: adminBroadcastForm.elements.subject.value,
+      body: adminBroadcastForm.elements.body.value
     } });
-    mailBroadcastForm.reset();
-    showMessage(mailStatus, "全體公告已發布。");
-    await loadMail("inbox");
-    showMessage(mailStatus, "全體公告已發布。");
+    adminBroadcastForm.reset();
+    showMessage(adminStatus, "全體公告已發布到玩家信箱。");
+    refreshMailBadge().catch(() => {});
   } catch (error) {
-    showMessage(mailStatus, error.message, true);
+    showMessage(adminStatus, error.message, true);
   } finally {
     button.disabled = false;
   }

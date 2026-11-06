@@ -25,6 +25,7 @@
         <button id="shop-button" class="top-button store-button" type="button">商城</button>
         <button id="bag-button" class="top-button store-button" type="button">包包 <span id="bag-count">0/100</span></button>
         <button id="mail-button" class="top-button store-button" type="button">信箱<span id="mail-unread" class="mail-unread" hidden>0</span></button>
+        <button id="admin-button" class="top-button store-button" type="button" hidden>管理後台</button>
         <button id="auth-button" class="top-button" type="button">登入</button>
       </div>
     </header>
@@ -129,7 +130,6 @@
       <button type="button" data-mail-view="inbox" aria-selected="true">收件匣</button>
       <button type="button" data-mail-view="sent" aria-selected="false">寄件匣</button>
       <button type="button" data-mail-view="compose" aria-selected="false">寫信</button>
-      <button id="mail-broadcast-tab" type="button" data-mail-view="broadcast" aria-selected="false" hidden>全體公告</button>
     </nav>
     <p id="mail-status" class="mail-status" role="status" aria-live="polite"></p>
     <section id="mail-workspace" class="mail-workspace">
@@ -147,12 +147,54 @@
       <textarea id="mail-body" name="body" maxlength="2000" required placeholder="輸入信件內容，最多 2,000 個字"></textarea>
       <div class="mail-form-actions"><button class="gold-button" type="submit">寄出信件</button></div>
     </form>
-    <form id="mail-broadcast-form" class="mail-form" hidden novalidate>
-      <p class="mail-admin-note">此信會寄到所有玩家的收件匣，並以「系統公告」顯示。</p>
-      <label for="broadcast-subject">公告主旨</label>
-      <input id="broadcast-subject" name="subject" maxlength="80" required placeholder="最多 80 個字" />
-      <label for="broadcast-body">公告內容</label>
-      <textarea id="broadcast-body" name="body" maxlength="2000" required placeholder="輸入要通知所有玩家的內容"></textarea>
+  </dialog>
+
+  <dialog id="admin-dialog" class="dialog admin-dialog" aria-labelledby="admin-title">
+    <button class="dialog-close" type="button" data-close="admin-dialog" aria-label="關閉">×</button>
+    <h2 id="admin-title">系統管理後台</h2>
+    <p class="dialog-intro">管理玩家資料與平台公告。玩家密碼採安全雜湊保存，不會在後台顯示。</p>
+    <nav class="admin-tabs" aria-label="管理功能">
+      <button type="button" data-admin-view="players" aria-selected="true">玩家管理</button>
+      <button type="button" data-admin-view="broadcast" aria-selected="false">全體公告</button>
+    </nav>
+    <p id="admin-status" class="admin-status" role="status" aria-live="polite"></p>
+    <section id="admin-players-view" class="admin-players-view">
+      <form id="admin-search-form" class="admin-search">
+        <input id="admin-search" type="search" maxlength="80" placeholder="搜尋玩家序號、帳號或暱稱" aria-label="搜尋玩家" />
+        <button type="submit">搜尋</button>
+        <span id="admin-player-count"></span>
+      </form>
+      <div class="admin-layout">
+        <div class="admin-list-wrap">
+          <table class="admin-player-table">
+            <thead><tr><th>序號</th><th>帳號／暱稱</th><th>地區</th><th>飛飛幣</th></tr></thead>
+            <tbody id="admin-player-rows"><tr><td colspan="4">載入玩家資料…</td></tr></tbody>
+          </table>
+          <div class="admin-pagination"><button id="admin-prev" type="button">上一頁</button><span id="admin-page-label">第 1 頁</span><button id="admin-next" type="button">下一頁</button></div>
+        </div>
+        <form id="admin-player-form" class="admin-player-form" hidden>
+          <h3>玩家資料</h3>
+          <input name="id" type="hidden" />
+          <label>玩家序號<input name="playerNumber" readonly /></label>
+          <label>帳號<input name="account" maxlength="24" required /></label>
+          <label>暱稱<input name="nickname" maxlength="24" /></label>
+          <label>地區<select name="region"><option value="">未設定</option></select></label>
+          <div class="admin-birthday"><label>生日（民國年）<select name="year"><option value="">未設定</option></select></label><label>月<select name="month"><option value="">--</option></select></label><label>日<select name="day"><option value="">--</option></select></label></div>
+          <label>性別<select name="gender"><option value="">未設定</option><option>男</option><option>女</option></select></label>
+          <label>飛飛幣<input name="flyCoins" type="number" min="0" max="2147483647" step="1" required /></label>
+          <label class="admin-check"><input name="isAdmin" type="checkbox" /> 管理員權限</label>
+          <div class="admin-avatar-line"><img id="admin-avatar-preview" alt="玩家大頭照預覽" hidden /><span id="admin-avatar-note">尚無大頭照</span><label class="admin-check"><input name="removeAvatar" type="checkbox" /> 移除大頭照</label></div>
+          <p id="admin-player-meta" class="admin-player-meta"></p>
+          <button class="gold-button" type="submit">儲存玩家資料</button>
+        </form>
+      </div>
+    </section>
+    <form id="admin-broadcast-form" class="mail-form admin-broadcast-form" hidden novalidate>
+      <p class="mail-admin-note">公告會寄到所有玩家（包含管理員）的收件匣，並以「系統公告」顯示。</p>
+      <label for="admin-broadcast-subject">公告主旨</label>
+      <input id="admin-broadcast-subject" name="subject" maxlength="80" required placeholder="最多 80 個字" />
+      <label for="admin-broadcast-body">公告內容</label>
+      <textarea id="admin-broadcast-body" name="body" maxlength="2000" required placeholder="輸入要通知所有玩家的內容"></textarea>
       <div class="mail-form-actions"><button class="gold-button" type="submit">發布全體公告</button></div>
     </form>
   </dialog>
