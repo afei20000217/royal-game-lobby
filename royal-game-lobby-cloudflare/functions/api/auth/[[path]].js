@@ -182,6 +182,10 @@ async function adminUpdatePlayer(request, env) {
   const flyCoins = Number(body.flyCoins);
   if (!Number.isSafeInteger(flyCoins) || flyCoins < 0 || flyCoins > 2147483647) return json({ error: "飛飛幣需為 0 到 2,147,483,647 的整數。" }, 400);
   if (typeof body.isAdmin !== "boolean" || typeof body.removeAvatar !== "boolean") return json({ error: "管理欄位資料不正確。" }, 400);
+  const resettingPassword = body.passwordLength !== null && body.passwordLength !== undefined;
+  if (resettingPassword && (!validPasswordLength(body.passwordLength) || typeof body.passwordSalt !== "string" || !SALT_PATTERN.test(body.passwordSalt) || typeof body.passwordVerifier !== "string" || !VERIFIER_PATTERN.test(body.passwordVerifier))) {
+    return json({ error: "新密碼需為 10–128 個字元，且安全處理資料必須有效。" }, 400);
+  }
   if (body.id === admin.id && !body.isAdmin) return json({ error: "不能移除自己目前使用的管理員權限。" }, 409);
   const existing = await env.DB.prepare("SELECT id, is_admin FROM users WHERE id = ?").bind(body.id).first();
   if (!existing) return json({ error: "找不到這位玩家。" }, 404);
@@ -190,10 +194,16 @@ async function adminUpdatePlayer(request, env) {
     if (Number(admins?.count || 0) <= 1) return json({ error: "平台至少需要保留一位管理員。" }, 409);
   }
   try {
-    await env.DB.prepare("UPDATE users SET username = ?, nickname = ?, region = ?, birthday_year_roc = ?, birthday_month = ?, birthday_day = ?, gender = ?, fly_coins = ?, is_admin = ?, avatar_data_url = CASE WHEN ? = 1 THEN NULL ELSE avatar_data_url END WHERE id = ?")
-      .bind(account, nickname, region, birthdayEmpty ? null : yearRaw, birthdayEmpty ? null : monthRaw, birthdayEmpty ? null : dayRaw, gender, flyCoins, body.isAdmin ? 1 : 0, body.removeAvatar ? 1 : 0, body.id).run();
+    const passwordHash = resettingPassword ? `v2:${await sha256(body.passwordVerifier)}` : null;
+    await env.DB.prepare("UPDATE users SET username = ?, nickname = ?, region = ?, birthday_year_roc = ?, birthday_month = ?, birthday_day = ?, gender = ?, fly_coins = ?, is_admin = ?, avatar_data_url = CASE WHEN ? = 1 THEN NULL ELSE avatar_data_url END, password_salt = CASE WHEN ? = 1 THEN ? ELSE password_salt END, password_hash = CASE WHEN ? = 1 THEN ? ELSE password_hash END, password_iterations = CASE WHEN ? = 1 THEN ? ELSE password_iterations END WHERE id = ?")
+      .bind(account, nickname, region, birthdayEmpty ? null : yearRaw, birthdayEmpty ? null : monthRaw, birthdayEmpty ? null : dayRaw, gender, flyCoins, body.isAdmin ? 1 : 0, body.removeAvatar ? 1 : 0, resettingPassword ? 1 : 0, body.passwordSalt, resettingPassword ? 1 : 0, passwordHash, resettingPassword ? 1 : 0, PASSWORD_ITERATIONS, body.id).run();
   } catch {
     return json({ error: "帳號或暱稱已被其他玩家使用。" }, 409);
+  }
+  if (resettingPassword) {
+    const token = cookieValue(request, COOKIE);
+    if (token) await env.DB.prepare("DELETE FROM sessions WHERE user_id = ? AND token_hash <> ?").bind(body.id, await sha256(token)).run();
+    else await env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(body.id).run();
   }
   const updated = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.id = ?").bind(body.id).first();
   return json({ ok: true, player: publicUser(updated) });
