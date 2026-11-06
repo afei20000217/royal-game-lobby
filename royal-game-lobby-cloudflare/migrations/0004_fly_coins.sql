@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN fly_coins INTEGER NOT NULL DEFAULT 10000 CHECK (fly_coins >= 0);
