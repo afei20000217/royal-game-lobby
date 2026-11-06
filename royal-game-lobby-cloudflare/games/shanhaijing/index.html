@@ -4,10 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>山海經：神啟之境</title>
+  <link rel="stylesheet" href="/page-loader.css">
+  <script src="/page-loader.js" defer></script>
   <link rel="stylesheet" href="style.css?v=282">
   <link rel="stylesheet" href="artwork-lock.css?v=349">
 </head>
 <body data-mode="base">
+  <section class="page-loader" data-page-loader data-page="game" aria-hidden="false" aria-live="polite">
+    <img class="page-loader-art" src="/game-art/shanhaijing.png" alt="">
+    <div class="page-loader-panel">
+      <span class="page-loader-kicker">ROYAL GAME LOBBY</span>
+      <strong class="page-loader-title">山海經：神啟之境</strong>
+      <span class="page-loader-caption" data-loader-caption>正在載入遊戲資源…</span>
+      <div class="page-loader-track" role="progressbar" aria-label="遊戲載入進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-loader-bar></span></div>
+      <span class="page-loader-percent" data-loader-percent>0%</span>
+    </div>
+  </section>
   <a class="lobby-return" href="/" aria-label="返回皇家遊戲大廳">← 返回大廳</a>
   <audio id="bgm" autoplay loop preload="auto" playsinline>
     <source src="assets/dragon-blade-bgm.m4r" type="audio/mp4">
@@ -80,6 +92,6 @@
       <img id="guideArt" src="assets/guide-gameplay.png" alt="遊戲說明：基本玩法與贏分公式">
     </div>
   </section>
-  <script src="game.js?v=345"></script>
+  <script src="game.js?v=346"></script>
 </body>
 </html>

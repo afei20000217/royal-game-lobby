@@ -279,12 +279,14 @@ function multiplierMarkup(symbol){
 }
 
 function preloadArt(){
-  [...new Set([...Object.values(SYMBOLS).map(symbol=>symbol.file),'03.png'])].forEach(file=>{
+  const files=[...new Set([...Object.values(SYMBOLS).map(symbol=>symbol.file),'03.png'])];
+  const tasks=files.map(file=>{
     /* Decode before a spin begins.  The sixth reel must never pause just to
        decode a symbol that happens to first appear in its final landing row. */
     const image=new Image();image.decoding='async';image.src=`assets/${file}`;
-    image.decode?.().catch(()=>{});
+    return (image.decode?image.decode().catch(()=>{}):new Promise(resolve=>{image.onload=image.onerror=resolve;}));
   });
+  return Promise.all(tasks);
 }
 
 function weightPick(table){
@@ -1486,7 +1488,7 @@ function returnToBaseGame(){
   releaseStoppedReelStrips();releaseSettledCascadeDisplay();
   enter('base');board=makeBoard();render();resetRoundWinDisplay();ui();
 }
-preloadArt();board=makeOpeningShowcaseBoard();render();ui();cleanSpinMatte();cleanSpinGlowMatte();cleanBoardMatte();
+window.gameAssetsReady=preloadArt();board=makeOpeningShowcaseBoard();render();ui();cleanSpinMatte();cleanSpinGlowMatte();cleanBoardMatte();
 function adjustBet(delta){if(spinning||gameMode!=='base')return;bet=Math.max(100,Math.min(500,bet+delta));ui();}
 /* The three portfolio entrances are actual buttons. Capture their click in
    the target phase so the scenic main-stage handler cannot steal it. */
