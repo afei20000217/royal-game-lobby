@@ -12,7 +12,10 @@ button, input { font: inherit; }
 .top-button { min-width: 94px; padding: 10px 20px; border: 1px solid rgba(255,217,141,.76); border-radius: 999px; color: #fff0ca; background: rgba(30,8,11,.56); box-shadow: inset 0 0 16px rgba(237,167,59,.08), 0 5px 24px rgba(0,0,0,.22); cursor: pointer; letter-spacing: .14em; transition: background .2s, box-shadow .2s, transform .2s; }
 .top-button:hover { background: rgba(99,35,26,.72); box-shadow: 0 0 22px rgba(255,195,88,.28); transform: translateY(-1px); }
 .topbar-start { display: flex; align-items: center; gap: clamp(14px, 2vw, 26px); min-width: 0; }
-.player-widget { display: flex; align-items: center; gap: 11px; width: clamp(235px, 25vw, 300px); padding: 9px 12px; border: 1px solid rgba(239,190,105,.48); border-radius: 12px; color: #fff2d2; background: linear-gradient(145deg, rgba(47,12,18,.78), rgba(17,7,11,.82)); box-shadow: inset 0 0 18px rgba(235,166,61,.045), 0 8px 24px rgba(0,0,0,.25); backdrop-filter: blur(9px); }
+.player-widget { display: flex; align-items: center; gap: 11px; width: clamp(235px, 25vw, 300px); padding: 9px 12px; border: 1px solid rgba(239,190,105,.48); border-radius: 12px; color: #fff2d2; background: linear-gradient(145deg, rgba(47,12,18,.78), rgba(17,7,11,.82)); box-shadow: inset 0 0 18px rgba(235,166,61,.045), 0 8px 24px rgba(0,0,0,.25); backdrop-filter: blur(9px); cursor: pointer; font-family: inherit; text-align: left; transition: border-color .2s, box-shadow .2s, transform .2s; }
+.player-widget:hover, .player-widget:focus-visible { border-color: rgba(255,217,141,.9); box-shadow: inset 0 0 18px rgba(235,166,61,.08), 0 0 20px rgba(255,195,88,.2); }
+.player-widget:hover { transform: translateY(-1px); }
+.player-widget:focus-visible { outline: 2px solid #ffdf9c; outline-offset: 3px; }
 .player-photo-frame { display: grid; width: 58px; height: 58px; flex: 0 0 auto; padding: 4px; place-items: center; border: 1px solid #d6a94e; border-radius: 9px; background: linear-gradient(145deg, rgba(255,223,147,.22), rgba(99,49,26,.2)); box-shadow: 0 0 0 2px rgba(193,138,60,.16), inset 0 0 10px rgba(255,223,147,.13); }
 .player-photo { width: 100%; height: 100%; border: 1px solid rgba(255,219,155,.25); border-radius: 5px; background: rgba(8,6,8,.5); }
 .player-widget-info { display: grid; min-width: 0; flex: 1; gap: 4px; }
@@ -22,6 +25,19 @@ button, input { font: inherit; }
 .player-exp-label { display: flex; justify-content: space-between; gap: 8px; color: rgba(235,211,177,.65); font-size: 9px; }
 .player-exp-track { height: 5px; overflow: hidden; border: 1px solid rgba(241,197,127,.2); border-radius: 999px; background: rgba(5,4,6,.72); }
 .player-exp-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #b9792e, #ffe08a); box-shadow: 0 0 8px rgba(255,200,92,.45); }
+.profile-dialog { max-height: min(88svh, 680px); overflow-y: auto; }
+.profile-identity { display: flex; align-items: center; gap: 14px; margin: 22px 0 18px; padding: 14px; border: 1px solid rgba(239,190,105,.22); border-radius: 14px; background: rgba(0,0,0,.16); }
+.profile-identity .player-photo-frame { width: 64px; height: 64px; }
+.profile-identity-copy { display: grid; justify-items: start; gap: 6px; min-width: 0; }
+.profile-identity-copy strong { overflow: hidden; max-width: 100%; color: #fff1cf; font-size: 18px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.profile-account { overflow: hidden; max-width: 100%; color: rgba(235,211,177,.66); font: 11px/1.4 Arial, sans-serif; text-overflow: ellipsis; white-space: nowrap; }
+.profile-exp-label { display: flex; justify-content: space-between; color: rgba(235,211,177,.78); font-size: 12px; }
+.profile-exp-track { height: 9px; margin-top: 7px; }
+.profile-details { display: grid; gap: 0; margin: 18px 0 20px; padding: 0; }
+.profile-details > div { display: flex; justify-content: space-between; gap: 16px; padding: 11px 2px; border-bottom: 1px solid rgba(239,190,105,.16); }
+.profile-details dt { color: rgba(235,211,177,.7); font-size: 13px; }
+.profile-details dd { margin: 0; color: #fff0c7; text-align: right; font-size: 13px; }
+.profile-dialog .gold-button + .gold-button { margin-top: 10px; }
 .brand { width: min(90vw, 560px); margin-top: -4vh; text-align: center; text-shadow: 0 2px 18px #160609, 0 0 32px rgba(255,183,63,.38); animation: rise 1.2s .15s ease both; }
 .hero-crown { display: block; margin-bottom: 8px; color: #ffd878; font-size: clamp(26px, 3vw, 38px); filter: drop-shadow(0 0 12px rgba(255,193,72,.85)); }
 h1 { margin: 0; font-size: clamp(27px, 4.1vw, 48px); font-weight: 500; letter-spacing: .38em; padding-left: .38em; }

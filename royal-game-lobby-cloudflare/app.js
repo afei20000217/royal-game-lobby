@@ -1,8 +1,15 @@
 const authDialog = document.querySelector("#auth-dialog");
 const nicknameDialog = document.querySelector("#nickname-dialog");
+const profileDialog = document.querySelector("#profile-dialog");
+const playerWidget = document.querySelector("#player-widget");
 const authButton = document.querySelector("#auth-button");
 const userLabel = document.querySelector("#user-label");
 const playerName = document.querySelector("#player-name");
+const profileNickname = document.querySelector("#profile-nickname");
+const profileAccount = document.querySelector("#profile-account");
+const profileJoined = document.querySelector("#profile-joined");
+const profileLogin = document.querySelector("#profile-login");
+const profileEditNickname = document.querySelector("#profile-edit-nickname");
 const authForm = document.querySelector("#auth-form");
 const accountInput = document.querySelector("#account");
 const passwordInput = document.querySelector("#password");
@@ -74,6 +81,22 @@ function updateAccountUI() {
     userLabel.textContent = "";
     playerName.textContent = "訪客玩家";
   }
+  updateProfileUI();
+}
+
+function updateProfileUI() {
+  profileNickname.textContent = currentUser?.nickname || (currentUser ? "尚未設定暱稱" : "訪客玩家");
+  profileAccount.textContent = currentUser ? `帳號：${currentUser.username}` : "訪客模式";
+  profileJoined.textContent = currentUser?.createdAt
+    ? new Intl.DateTimeFormat("zh-TW", { dateStyle: "medium" }).format(new Date(Number(currentUser.createdAt) * 1000))
+    : currentUser ? "資料尚未提供" : "登入後顯示";
+  profileLogin.hidden = Boolean(currentUser);
+  profileEditNickname.hidden = !currentUser;
+}
+
+function openProfileDialog() {
+  updateProfileUI();
+  profileDialog.showModal();
 }
 
 function setMode(nextMode) {
@@ -123,6 +146,16 @@ registerTab.addEventListener("click", () => setMode("register"));
 
 document.querySelectorAll("[data-close]").forEach((button) => {
   button.addEventListener("click", () => document.getElementById(button.dataset.close).close());
+});
+
+playerWidget.addEventListener("click", openProfileDialog);
+profileLogin.addEventListener("click", () => {
+  profileDialog.close();
+  openAuth("login");
+});
+profileEditNickname.addEventListener("click", () => {
+  profileDialog.close();
+  openNicknameDialog();
 });
 
 authButton.addEventListener("click", async () => {
