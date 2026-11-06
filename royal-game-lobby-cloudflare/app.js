@@ -9,7 +9,6 @@ const profileNickname = document.querySelector("#profile-nickname");
 const profileAccount = document.querySelector("#profile-account");
 const profileJoined = document.querySelector("#profile-joined");
 const profileLogin = document.querySelector("#profile-login");
-const profileEditNickname = document.querySelector("#profile-edit-nickname");
 const authForm = document.querySelector("#auth-form");
 const accountInput = document.querySelector("#account");
 const passwordInput = document.querySelector("#password");
@@ -91,7 +90,12 @@ function updateProfileUI() {
     ? new Intl.DateTimeFormat("zh-TW", { dateStyle: "medium" }).format(new Date(Number(currentUser.createdAt) * 1000))
     : currentUser ? "資料尚未提供" : "登入後顯示";
   profileLogin.hidden = Boolean(currentUser);
-  profileEditNickname.hidden = !currentUser;
+  document.querySelector('[data-profile-value="nickname"]').textContent = currentUser?.nickname || "尚未設定";
+  document.querySelector('[data-profile-value="region"]').textContent = currentUser?.region || "尚未設定";
+  document.querySelector('[data-profile-value="birthday"]').textContent = currentUser?.birthday
+    ? `民國${currentUser.birthday.year}年${currentUser.birthday.month}月${currentUser.birthday.day}日` : "尚未設定";
+  document.querySelector('[data-profile-value="gender"]').textContent = currentUser?.gender || "尚未設定";
+  document.querySelectorAll("[data-edit-field]").forEach((button) => { button.hidden = !currentUser; });
 }
 
 function openProfileDialog() {
@@ -153,10 +157,71 @@ profileLogin.addEventListener("click", () => {
   profileDialog.close();
   openAuth("login");
 });
-profileEditNickname.addEventListener("click", () => {
-  profileDialog.close();
-  openNicknameDialog();
-});
+
+const regions = ["台北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "苗栗縣", "台中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣", "台南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "連江縣"];
+const rocYear = new Intl.DateTimeFormat("zh-TW-u-ca-roc", { timeZone: "Asia/Taipei", year: "numeric" }).format(new Date()).replace(/\D/g, "") || "115";
+const birthdayForm = document.querySelector('[data-profile-form="birthday"]');
+const monthSelect = birthdayForm.elements.month;
+const daySelect = birthdayForm.elements.day;
+const yearSelect = birthdayForm.elements.year;
+const option = (value, label = value) => new Option(label, value);
+const regionSelect = document.querySelector('[data-profile-form="region"] [name="region"]');
+regions.forEach((region) => regionSelect.add(option(region)));
+for (let y = 80; y <= Number(rocYear); y += 1) yearSelect.add(option(y, `民國${y}年`));
+for (let m = 1; m <= 12; m += 1) monthSelect.add(option(m, `${m}月`));
+function refreshBirthdayDays(selected = "") {
+  const month = Number(monthSelect.value || 1);
+  const year = 1911 + Number(yearSelect.value || rocYear);
+  const count = new Date(year, month, 0).getDate();
+  daySelect.replaceChildren(option("", "日期"));
+  for (let day = 1; day <= count; day += 1) daySelect.add(option(day, `${day}日`));
+  if (selected && Number(selected) <= count) daySelect.value = selected;
+}
+yearSelect.addEventListener("change", () => refreshBirthdayDays());
+monthSelect.addEventListener("change", () => refreshBirthdayDays());
+refreshBirthdayDays();
+
+document.querySelectorAll("[data-edit-field]").forEach((button) => button.addEventListener("click", () => {
+  const field = button.dataset.editField;
+  document.querySelectorAll("[data-profile-form]").forEach((form) => { form.hidden = true; });
+  const form = document.querySelector(`[data-profile-form="${field}"]`);
+  const value = currentUser?.[field];
+  if (field === "nickname") form.elements.nickname.value = currentUser?.nickname || "";
+  if (field === "region") form.elements.region.value = value || "";
+  if (field === "gender") form.elements.gender.value = value || "";
+  if (field === "birthday") {
+    yearSelect.value = value?.year || "";
+    monthSelect.value = value?.month || "";
+    refreshBirthdayDays(value?.day || "");
+  }
+  form.querySelector(".profile-editor-message").textContent = "";
+  form.hidden = false;
+}));
+document.querySelectorAll("[data-cancel-field]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelector(`[data-profile-form="${button.dataset.cancelField}"]`).hidden = true;
+}));
+document.querySelectorAll("[data-profile-form]").forEach((form) => form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const field = form.dataset.profileForm;
+  const values = new FormData(form);
+  let value;
+  if (field === "birthday") value = { year: Number(values.get("year")), month: Number(values.get("month")), day: Number(values.get("day")) };
+  else value = String(values.get(field) || "").trim();
+  const message = form.querySelector(".profile-editor-message");
+  const submit = form.querySelector('[type="submit"]');
+  submit.disabled = true;
+  message.textContent = "儲存中…";
+  try {
+    const result = await api("/api/auth/profile", { method: "POST", body: { field, value } });
+    currentUser = result.user;
+    updateAccountUI();
+    form.hidden = true;
+    showToast("玩家資料已更新");
+  } catch (error) {
+    message.textContent = error.message;
+    message.classList.add("error");
+  } finally { submit.disabled = false; }
+}));
 
 authButton.addEventListener("click", async () => {
   if (!currentUser) {

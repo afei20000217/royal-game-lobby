@@ -96,12 +96,12 @@
     <div class="player-exp-track profile-exp-track" role="progressbar" aria-label="玩家經驗值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     <dl class="profile-details">
       <div><dt>加入遊戲時間</dt><dd id="profile-joined">登入後顯示</dd></div>
-      <div><dt>地區</dt><dd>尚未設定</dd></div>
-      <div><dt>生日</dt><dd>尚未設定</dd></div>
-      <div><dt>性別</dt><dd>尚未設定</dd></div>
+      <div class="profile-field"><div class="profile-detail-row"><dt>暱稱</dt><dd><span data-profile-value="nickname">尚未設定</span><button class="field-edit" type="button" data-edit-field="nickname" hidden>編輯</button></dd></div><form class="profile-editor" data-profile-form="nickname" hidden><input name="nickname" maxlength="24" required placeholder="輸入暱稱"/><div class="profile-editor-actions"><button type="submit">儲存</button><button type="button" data-cancel-field="nickname">取消</button></div><p class="profile-editor-message" aria-live="polite"></p></form></div>
+      <div class="profile-field"><div class="profile-detail-row"><dt>地區</dt><dd><span data-profile-value="region">尚未設定</span><button class="field-edit" type="button" data-edit-field="region" hidden>編輯</button></dd></div><form class="profile-editor" data-profile-form="region" hidden><select name="region" required><option value="">選擇縣市</option></select><div class="profile-editor-actions"><button type="submit">儲存</button><button type="button" data-cancel-field="region">取消</button></div><p class="profile-editor-message" aria-live="polite"></p></form></div>
+      <div class="profile-field"><div class="profile-detail-row"><dt>生日</dt><dd><span data-profile-value="birthday">尚未設定</span><button class="field-edit" type="button" data-edit-field="birthday" hidden>編輯</button></dd></div><form class="profile-editor birthday-editor" data-profile-form="birthday" hidden><select name="year" required aria-label="民國年"></select><select name="month" required aria-label="月份"></select><select name="day" required aria-label="日期"></select><div class="profile-editor-actions"><button type="submit">儲存</button><button type="button" data-cancel-field="birthday">取消</button></div><p class="profile-editor-message" aria-live="polite"></p></form></div>
+      <div class="profile-field"><div class="profile-detail-row"><dt>性別</dt><dd><span data-profile-value="gender">尚未設定</span><button class="field-edit" type="button" data-edit-field="gender" hidden>編輯</button></dd></div><form class="profile-editor" data-profile-form="gender" hidden><select name="gender" required><option value="">選擇性別</option><option>男</option><option>女</option></select><div class="profile-editor-actions"><button type="submit">儲存</button><button type="button" data-cancel-field="gender">取消</button></div><p class="profile-editor-message" aria-live="polite"></p></form></div>
     </dl>
     <button id="profile-login" class="gold-button" type="button">登入 / 註冊</button>
-    <button id="profile-edit-nickname" class="gold-button" type="button" hidden>設定暱稱</button>
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
