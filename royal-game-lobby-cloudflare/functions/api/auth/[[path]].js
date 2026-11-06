@@ -18,6 +18,7 @@ export async function onRequest(context) {
   if (path === "login") return login(request, env);
   if (path === "logout") return logout(request, env);
   if (path === "profile") return profile(request, env);
+  if (path === "credentials") return credentials(request, env);
   return json({ error: "找不到此服務。" }, 404);
 }
 
@@ -121,6 +122,47 @@ async function profile(request, env) {
     await env.DB.prepare("UPDATE users SET avatar_data_url = ? WHERE id = ?").bind(value, user.id).run();
   } else return json({ error: "找不到這個玩家資料欄位。" }, 400);
   return json({ user: await sessionUser(request, env) });
+}
+
+async function credentials(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "登入狀態已失效，請重新登入。" }, 401);
+  const body = await readBody(request);
+  if (body.error) return json({ error: body.error }, 400);
+  if (!validPasswordLength(body.passwordLength) || typeof body.passwordVerifier !== "string" || !VERIFIER_PATTERN.test(body.passwordVerifier)) {
+    return json({ error: "請輸入正確的目前密碼。" }, 400);
+  }
+  if (await limited(env, "credentials", user.username, 8, 900)) return json({ error: "變更嘗試次數過多，請 15 分鐘後再試。" }, 429);
+  const stored = await env.DB.prepare("SELECT password_hash FROM users WHERE id = ?").bind(user.id).first();
+  const version2 = stored?.password_hash?.startsWith("v2:");
+  const supplied = version2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
+  const expected = version2 ? stored.password_hash.slice(3) : (stored?.password_hash || DUMMY_HASH);
+  if (!stored || !constantEqual(supplied, expected)) return json({ error: "目前密碼不正確。" }, 401);
+
+  if (body.type === "account") {
+    const username = accountName(body.newAccount);
+    if (!username) return json({ error: "新帳號需為 1–24 個字，且不能包含控制字元。" }, 400);
+    try {
+      await env.DB.prepare("UPDATE users SET username = ? WHERE id = ?").bind(username, user.id).run();
+    } catch {
+      return json({ error: "這個帳號已經有人使用，請換一個。" }, 409);
+    }
+    await env.DB.prepare("DELETE FROM auth_attempts WHERE bucket_hash = ?").bind(await bucketHash("credentials", user.username)).run();
+    return json({ user: await sessionUser(request, env) });
+  }
+
+  if (body.type === "password") {
+    if (!validPasswordLength(body.newPasswordLength) || typeof body.newSalt !== "string" || !SALT_PATTERN.test(body.newSalt) || typeof body.newPasswordVerifier !== "string" || !VERIFIER_PATTERN.test(body.newPasswordVerifier)) {
+      return json({ error: "新密碼需為 10–128 個字元，請重新輸入。" }, 400);
+    }
+    await env.DB.prepare("UPDATE users SET password_salt = ?, password_hash = ?, password_iterations = ? WHERE id = ?")
+      .bind(body.newSalt, `v2:${await sha256(body.newPasswordVerifier)}`, PASSWORD_ITERATIONS, user.id).run();
+    const token = cookieValue(request, COOKIE);
+    if (token) await env.DB.prepare("DELETE FROM sessions WHERE user_id = ? AND token_hash <> ?").bind(user.id, await sha256(token)).run();
+    await env.DB.prepare("DELETE FROM auth_attempts WHERE bucket_hash = ?").bind(await bucketHash("credentials", user.username)).run();
+    return json({ user: await sessionUser(request, env), sessionsRevoked: true });
+  }
+  return json({ error: "請選擇要修改帳號或密碼。" }, 400);
 }
 
 const REGIONS = ["台北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "苗栗縣", "台中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣", "台南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "連江縣"];
