@@ -15,6 +15,8 @@ export async function onRequest(context) {
   const path = Array.isArray(params.path) ? params.path.join("/") : (params.path || "");
   if (request.method === "GET" && path === "me") return json({ user: await sessionUser(request, env) });
   if (request.method === "GET" && path === "inventory") return inventory(request, env);
+  if (request.method === "GET" && path === "mail/inbox") return mailbox(request, env, "inbox");
+  if (request.method === "GET" && path === "mail/sent") return mailbox(request, env, "sent");
   if (request.method !== "POST") return json({ error: "不支援此操作。" }, 405, { Allow: "GET, POST" });
   if (!sameOrigin(request)) return json({ error: "請重新整理頁面後再試。" }, 403);
   if (path === "challenge") return challenge(request, env);
@@ -24,7 +26,103 @@ export async function onRequest(context) {
   if (path === "profile") return profile(request, env);
   if (path === "credentials") return credentials(request, env);
   if (path === "purchase") return purchase(request, env);
+  if (path === "mail/send") return sendMail(request, env);
+  if (path === "mail/read") return readMail(request, env);
+  if (path === "mail/broadcast") return broadcastMail(request, env);
   return json({ error: "找不到此服務。" }, 404);
+}
+
+async function mailbox(request, env, view) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入後使用信箱。" }, 401);
+  const now = Math.floor(Date.now() / 1000);
+  const [playerRows, systemRows, unreadPlayer, unreadSystem] = await Promise.all([
+    view === "inbox"
+      ? env.DB.prepare("SELECT m.id, m.subject, m.body, m.created_at, m.read_at, s.nickname AS sender_name, r.nickname AS recipient_name FROM player_mail m JOIN users s ON s.id = m.sender_id JOIN users r ON r.id = m.recipient_id WHERE m.recipient_id = ? ORDER BY m.created_at DESC LIMIT 100").bind(user.id).all()
+      : env.DB.prepare("SELECT m.id, m.subject, m.body, m.created_at, m.read_at, s.nickname AS sender_name, r.nickname AS recipient_name FROM player_mail m JOIN users s ON s.id = m.sender_id JOIN users r ON r.id = m.recipient_id WHERE m.sender_id = ? ORDER BY m.created_at DESC LIMIT 100").bind(user.id).all(),
+    view === "inbox"
+      ? env.DB.prepare("SELECT m.id, m.subject, m.body, m.created_at, CASE WHEN r.message_id IS NULL THEN 0 ELSE 1 END AS is_read FROM system_mail m LEFT JOIN system_mail_reads r ON r.message_id = m.id AND r.user_id = ? ORDER BY m.created_at DESC LIMIT 100").bind(user.id).all()
+      : env.DB.prepare("SELECT id, subject, body, created_at FROM system_mail WHERE sender_id = ? ORDER BY created_at DESC LIMIT 100").bind(user.id).all(),
+    env.DB.prepare("SELECT COUNT(*) AS count FROM player_mail WHERE recipient_id = ? AND read_at IS NULL").bind(user.id).first(),
+    env.DB.prepare("SELECT COUNT(*) AS count FROM system_mail m LEFT JOIN system_mail_reads r ON r.message_id = m.id AND r.user_id = ? WHERE r.message_id IS NULL").bind(user.id).first()
+  ]);
+  const player = (playerRows.results || []).map((row) => ({
+    id: row.id, type: "player", subject: row.subject, body: row.body, createdAt: row.created_at,
+    isRead: view === "sent" || Boolean(row.read_at),
+    senderName: row.sender_name || "玩家", recipientName: row.recipient_name || "玩家"
+  }));
+  const system = (systemRows.results || []).map((row) => ({
+    id: row.id, type: "system", subject: row.subject, body: row.body, createdAt: row.created_at,
+    isRead: view === "sent" || Boolean(row.is_read), senderName: "系統公告",
+    recipientName: view === "sent" ? "所有玩家" : (user.nickname || user.username)
+  }));
+  const items = [...player, ...system].sort((a, b) => b.createdAt - a.createdAt).slice(0, 100);
+  return json({ items, unread: Number(unreadPlayer?.count || 0) + Number(unreadSystem?.count || 0) });
+}
+
+async function sendMail(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入後寄信。" }, 401);
+  const body = await readBody(request);
+  if (body.error) return json({ error: body.error }, 400);
+  const recipientName = normalizeNickname(body.recipient);
+  const subject = mailText(body.subject, 80);
+  const content = mailText(body.body, 2000);
+  if (!recipientName || !subject || !content) return json({ error: "請填寫有效的收件人暱稱、主旨與信件內容。" }, 400);
+  if (await limited(env, "mail", user.username, 30, 3600)) return json({ error: "寄信次數過多，請稍後再試。" }, 429);
+  const recipient = await env.DB.prepare("SELECT id, nickname FROM users WHERE nickname = ? COLLATE NOCASE").bind(recipientName).first();
+  if (!recipient) return json({ error: "找不到這個暱稱，請確認收件人名稱。" }, 404);
+  if (recipient.id === user.id) return json({ error: "不能寄信給自己。" }, 400);
+  const id = crypto.randomUUID();
+  const now = Math.floor(Date.now() / 1000);
+  await env.DB.prepare("INSERT INTO player_mail (id, sender_id, recipient_id, subject, body, created_at) VALUES (?, ?, ?, ?, ?, ?)")
+    .bind(id, user.id, recipient.id, subject, content, now).run();
+  return json({ ok: true, id });
+}
+
+async function readMail(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入後閱讀信件。" }, 401);
+  const body = await readBody(request);
+  if (body.error) return json({ error: body.error }, 400);
+  if (typeof body.id !== "string" || !["player", "system"].includes(body.type)) return json({ error: "信件資料不正確。" }, 400);
+  let result;
+  if (body.type === "player") {
+    result = await env.DB.prepare("UPDATE player_mail SET read_at = ? WHERE id = ? AND recipient_id = ? AND read_at IS NULL")
+      .bind(Math.floor(Date.now() / 1000), body.id, user.id).run();
+    if (!Number(result.meta?.changes || 0)) {
+      const existing = await env.DB.prepare("SELECT id FROM player_mail WHERE id = ? AND recipient_id = ?").bind(body.id, user.id).first();
+      if (!existing) return json({ error: "找不到這封信，或你沒有讀取權限。" }, 404);
+    }
+  } else {
+    const existing = await env.DB.prepare("SELECT id FROM system_mail WHERE id = ?").bind(body.id).first();
+    if (!existing) return json({ error: "找不到這封公告。" }, 404);
+    await env.DB.prepare("INSERT OR IGNORE INTO system_mail_reads (user_id, message_id, read_at) VALUES (?, ?, ?)")
+      .bind(user.id, body.id, Math.floor(Date.now() / 1000)).run();
+  }
+  return mailbox(request, env, "inbox");
+}
+
+async function broadcastMail(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入後發布公告。" }, 401);
+  if (!user.isAdmin) return json({ error: "只有管理員可以發布全體公告。" }, 403);
+  const body = await readBody(request);
+  if (body.error) return json({ error: body.error }, 400);
+  const subject = mailText(body.subject, 80);
+  const content = mailText(body.body, 2000);
+  if (!subject || !content) return json({ error: "請填寫公告主旨與內容。" }, 400);
+  if (await limited(env, "broadcast", user.username, 10, 3600)) return json({ error: "公告發布次數過多，請稍後再試。" }, 429);
+  await env.DB.prepare("INSERT INTO system_mail (id, sender_id, subject, body, created_at) VALUES (?, ?, ?, ?, ?)")
+    .bind(crypto.randomUUID(), user.id, subject, content, Math.floor(Date.now() / 1000)).run();
+  return json({ ok: true });
+}
+
+function mailText(value, maxLength) {
+  if (typeof value !== "string") return null;
+  const result = value.trim();
+  const length = Array.from(result).length;
+  return length >= 1 && length <= maxLength && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(result) ? result : null;
 }
 
 async function inventory(request, env) {
@@ -119,7 +217,7 @@ async function login(request, env) {
     return json({ error: "帳號或密碼錯誤。" }, 401);
   }
   if (await limited(env, "login", username, 10, 900)) return json({ error: "嘗試次數過多，請 15 分鐘後再試。" }, 429);
-  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender, avatar_data_url, fly_coins FROM users WHERE username = ?").bind(username).first();
+  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender, avatar_data_url, fly_coins, is_admin FROM users WHERE username = ?").bind(username).first();
   const isVersion2 = user?.password_hash?.startsWith("v2:");
   const submittedHash = isVersion2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
   const expectedHash = isVersion2 ? user.password_hash.slice(3) : (user?.password_hash || DUMMY_HASH);
@@ -227,7 +325,8 @@ function publicUser(user) {
     birthday: user.birthday_year_roc ? { year: user.birthday_year_roc, month: user.birthday_month, day: user.birthday_day } : null,
     gender: user.gender || null,
     avatar: user.avatar_data_url || null,
-    flyCoins: Number(user.fly_coins ?? 10000)
+    flyCoins: Number(user.fly_coins ?? 10000),
+    isAdmin: Boolean(Number(user.is_admin || 0))
   };
 }
 
@@ -331,7 +430,7 @@ async function sessionUser(request, env) {
   const token = cookieValue(request, COOKIE);
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
     .bind(await sha256(token), now).first();
   return user ? publicUser(user) : null;
 }
