@@ -65,7 +65,7 @@ async function login(request, env) {
     return json({ error: "帳號或密碼錯誤。" }, 401);
   }
   if (await limited(env, "login", username, 10, 900)) return json({ error: "嘗試次數過多，請 15 分鐘後再試。" }, 429);
-  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash FROM users WHERE username = ?").bind(username).first();
+  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender FROM users WHERE username = ?").bind(username).first();
   const isVersion2 = user?.password_hash?.startsWith("v2:");
   const submittedHash = isVersion2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
   const expectedHash = isVersion2 ? user.password_hash.slice(3) : (user?.password_hash || DUMMY_HASH);
@@ -76,7 +76,7 @@ async function login(request, env) {
       .bind(`v2:${await sha256(body.passwordVerifier)}`, user.id, user.password_hash).run();
   }
   await env.DB.prepare("DELETE FROM auth_attempts WHERE bucket_hash = ?").bind(await bucketHash("login", username)).run();
-  return json({ user: { id: user.id, username: user.username, nickname: user.nickname, createdAt: user.created_at } }, 200, { "Set-Cookie": await createSession(env, user.id) });
+  return json({ user: publicUser(user) }, 200, { "Set-Cookie": await createSession(env, user.id) });
 }
 
 async function logout(request, env) {
@@ -90,10 +90,43 @@ async function profile(request, env) {
   if (!user) return json({ error: "登入狀態已失效，請重新登入。" }, 401);
   const body = await readBody(request);
   if (body.error) return json({ error: body.error }, 400);
-  const nickname = normalizeNickname(body.nickname);
-  if (!nickname) return json({ error: "暱稱需為 1–24 個字，且不能包含控制字元。" }, 400);
-  await env.DB.prepare("UPDATE users SET nickname = ? WHERE id = ?").bind(nickname, user.id).run();
-  return json({ user: { ...user, nickname } });
+  const field = body.field || "nickname";
+  const value = body.field ? body.value : body.nickname;
+  if (field === "nickname") {
+    const nickname = normalizeNickname(value);
+    if (!nickname) return json({ error: "暱稱需為 1–24 個字，且不能包含控制字元。" }, 400);
+    if (await env.DB.prepare("SELECT id FROM users WHERE nickname = ? COLLATE NOCASE AND id <> ?").bind(nickname, user.id).first()) {
+      return json({ error: "這個暱稱已有人使用，請換一個。" }, 409);
+    }
+    try { await env.DB.prepare("UPDATE users SET nickname = ? WHERE id = ?").bind(nickname, user.id).run(); }
+    catch { return json({ error: "這個暱稱已有人使用，請換一個。" }, 409); }
+  } else if (field === "region") {
+    if (!REGIONS.includes(value)) return json({ error: "請選擇有效的台灣地區。" }, 400);
+    await env.DB.prepare("UPDATE users SET region = ? WHERE id = ?").bind(value, user.id).run();
+  } else if (field === "birthday") {
+    const { year, month, day } = value || {};
+    const currentRocYear = Number(new Intl.DateTimeFormat("zh-TW-u-ca-roc", { timeZone: "Asia/Taipei", year: "numeric" }).format(new Date()).replace(/[^\d]/g, ""));
+    const days = Number.isInteger(year) && Number.isInteger(month) ? new Date(1911 + year, month, 0).getDate() : 0;
+    if (!Number.isInteger(year) || year < 80 || year > currentRocYear || !Number.isInteger(month) || month < 1 || month > 12 || !Number.isInteger(day) || day < 1 || day > days) {
+      return json({ error: `生日需介於民國80年至民國${currentRocYear}年，並選擇有效日期。` }, 400);
+    }
+    await env.DB.prepare("UPDATE users SET birthday_year_roc = ?, birthday_month = ?, birthday_day = ? WHERE id = ?").bind(year, month, day, user.id).run();
+  } else if (field === "gender") {
+    if (value !== "男" && value !== "女") return json({ error: "請選擇男或女。" }, 400);
+    await env.DB.prepare("UPDATE users SET gender = ? WHERE id = ?").bind(value, user.id).run();
+  } else return json({ error: "找不到這個玩家資料欄位。" }, 400);
+  return json({ user: await sessionUser(request, env) });
+}
+
+const REGIONS = ["台北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "苗栗縣", "台中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣", "台南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "連江縣"];
+
+function publicUser(user) {
+  return {
+    id: user.id, username: user.username, nickname: user.nickname, createdAt: user.created_at,
+    region: user.region || null,
+    birthday: user.birthday_year_roc ? { year: user.birthday_year_roc, month: user.birthday_month, day: user.birthday_day } : null,
+    gender: user.gender || null
+  };
 }
 
 function json(data, status = 200, headers = {}) {
@@ -196,7 +229,7 @@ async function sessionUser(request, env) {
   const token = cookieValue(request, COOKIE);
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
     .bind(await sha256(token), now).first();
-  return user ? { id: user.id, username: user.username, nickname: user.nickname, createdAt: user.created_at } : null;
+  return user ? publicUser(user) : null;
 }
