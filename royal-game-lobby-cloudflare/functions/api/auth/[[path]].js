@@ -133,7 +133,7 @@ async function adminPlayers(request, env) {
   const where = "(? = '' OR CAST(p.number AS TEXT) LIKE ? OR u.username LIKE ? COLLATE NOCASE OR COALESCE(u.nickname, '') LIKE ? COLLATE NOCASE)";
   const total = await env.DB.prepare(`SELECT COUNT(*) AS count FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE ${where}`)
     .bind(query, serialLike, like, like).first();
-  const rows = await env.DB.prepare(`SELECT u.id, p.number AS player_number, u.username, u.nickname, u.region, u.birthday_year_roc, u.birthday_month, u.birthday_day, u.gender, u.created_at, u.fly_coins, u.is_admin, CASE WHEN u.avatar_data_url IS NULL THEN 0 ELSE 1 END AS has_avatar FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE ${where} ORDER BY p.number ASC LIMIT 50 OFFSET ?`)
+  const rows = await env.DB.prepare(`SELECT u.id, p.number AS player_number, u.username, u.nickname, u.region, u.birthday_year_roc, u.birthday_month, u.birthday_day, u.gender, u.created_at, u.fly_coins, u.is_admin, u.is_super_admin, CASE WHEN u.avatar_data_url IS NULL THEN 0 ELSE 1 END AS has_avatar FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE ${where} ORDER BY p.number ASC LIMIT 50 OFFSET ?`)
     .bind(query, serialLike, like, like, (page - 1) * 50).all();
   return json({ players: rows.results || [], total: Number(total?.count || 0), page, pageSize: 50 });
 }
@@ -144,14 +144,14 @@ async function adminPlayer(request, env) {
   if (!user.isAdmin) return json({ error: "只有系統管理員可以查看玩家資料。" }, 403);
   const id = new URL(request.url).searchParams.get("id");
   if (!id || id.length > 80) return json({ error: "玩家資料不正確。" }, 400);
-  const player = await env.DB.prepare("SELECT u.id, p.number AS player_number, u.username, u.nickname, u.region, u.birthday_year_roc, u.birthday_month, u.birthday_day, u.gender, u.created_at, u.fly_coins, u.is_admin, u.avatar_data_url FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE u.id = ?").bind(id).first();
+  const player = await env.DB.prepare("SELECT u.id, p.number AS player_number, u.username, u.nickname, u.region, u.birthday_year_roc, u.birthday_month, u.birthday_day, u.gender, u.created_at, u.fly_coins, u.is_admin, u.is_super_admin, u.avatar_data_url FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE u.id = ?").bind(id).first();
   if (!player) return json({ error: "找不到這位玩家。" }, 404);
   return json({ player: {
     id: player.id, playerNumber: String(player.player_number).padStart(8, "0"), username: player.username,
     nickname: player.nickname, region: player.region, birthday: player.birthday_year_roc ? {
       year: player.birthday_year_roc, month: player.birthday_month, day: player.birthday_day
     } : null, gender: player.gender, createdAt: player.created_at, flyCoins: Number(player.fly_coins || 0),
-    isAdmin: Boolean(Number(player.is_admin || 0)), avatar: player.avatar_data_url || null
+    isAdmin: Boolean(Number(player.is_admin || 0)), isSuperAdmin: Boolean(Number(player.is_super_admin || 0)), avatar: player.avatar_data_url || null
   } });
 }
 
@@ -187,8 +187,10 @@ async function adminUpdatePlayer(request, env) {
     return json({ error: "新密碼需為 10–128 個字元，且安全處理資料必須有效。" }, 400);
   }
   if (body.id === admin.id && !body.isAdmin) return json({ error: "不能移除自己目前使用的管理員權限。" }, 409);
-  const existing = await env.DB.prepare("SELECT id, is_admin FROM users WHERE id = ?").bind(body.id).first();
+  const existing = await env.DB.prepare("SELECT id, is_admin, is_super_admin FROM users WHERE id = ?").bind(body.id).first();
   if (!existing) return json({ error: "找不到這位玩家。" }, 404);
+  if (Number(existing.is_super_admin || 0) === 1 && !body.isAdmin) return json({ error: "不能移除最高管理員的管理權限。" }, 409);
+  if (Number(existing.is_admin || 0) !== Number(body.isAdmin) && !admin.isSuperAdmin) return json({ error: "只有最高管理員可以授予或移除管理員權限。" }, 403);
   if (Number(existing.is_admin) === 1 && !body.isAdmin) {
     const admins = await env.DB.prepare("SELECT COUNT(*) AS count FROM users WHERE is_admin = 1").first();
     if (Number(admins?.count || 0) <= 1) return json({ error: "平台至少需要保留一位管理員。" }, 409);
@@ -205,7 +207,7 @@ async function adminUpdatePlayer(request, env) {
     if (token) await env.DB.prepare("DELETE FROM sessions WHERE user_id = ? AND token_hash <> ?").bind(body.id, await sha256(token)).run();
     else await env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(body.id).run();
   }
-  const updated = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.id = ?").bind(body.id).first();
+  const updated = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, users.is_super_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.id = ?").bind(body.id).first();
   return json({ ok: true, player: publicUser(updated) });
 }
 
@@ -312,7 +314,7 @@ async function login(request, env) {
     return json({ error: "帳號或密碼錯誤。" }, 401);
   }
   if (await limited(env, "login", username, 10, 900)) return json({ error: "嘗試次數過多，請 15 分鐘後再試。" }, 429);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.password_hash, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.username = ?").bind(username).first();
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.password_hash, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, users.is_super_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.username = ?").bind(username).first();
   const isVersion2 = user?.password_hash?.startsWith("v2:");
   const submittedHash = isVersion2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
   const expectedHash = isVersion2 ? user.password_hash.slice(3) : (user?.password_hash || DUMMY_HASH);
@@ -422,7 +424,8 @@ function publicUser(user) {
     avatar: user.avatar_data_url || null,
     flyCoins: Number(user.fly_coins ?? 10000),
     playerNumber: String(Number(user.player_number || 0)).padStart(8, "0"),
-    isAdmin: Boolean(Number(user.is_admin || 0))
+    isAdmin: Boolean(Number(user.is_admin || 0)),
+    isSuperAdmin: Boolean(Number(user.is_super_admin || 0))
   };
 }
 
@@ -526,7 +529,7 @@ async function sessionUser(request, env) {
   const token = cookieValue(request, COOKIE);
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM sessions JOIN users ON users.id = sessions.user_id JOIN player_numbers ON player_numbers.user_id = users.id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, users.is_super_admin, player_numbers.number AS player_number FROM sessions JOIN users ON users.id = sessions.user_id JOIN player_numbers ON player_numbers.user_id = users.id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
     .bind(await sha256(token), now).first();
   return user ? publicUser(user) : null;
 }
