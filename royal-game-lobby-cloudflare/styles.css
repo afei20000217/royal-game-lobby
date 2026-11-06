@@ -57,16 +57,9 @@ button, input { font: inherit; }
 .birthday-editor { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .birthday-editor .profile-editor-actions, .birthday-editor .profile-editor-message { grid-column: 1 / -1; }
 .profile-dialog .gold-button + .gold-button { margin-top: 10px; }
-.brand { width: min(90vw, 560px); margin-top: -4vh; text-align: center; text-shadow: 0 2px 18px #160609, 0 0 32px rgba(255,183,63,.38); animation: rise 1.2s .15s ease both; }
-.hero-crown { display: block; margin-bottom: 8px; color: #ffd878; font-size: clamp(26px, 3vw, 38px); filter: drop-shadow(0 0 12px rgba(255,193,72,.85)); }
-h1 { margin: 0; font-size: clamp(27px, 4.1vw, 48px); font-weight: 500; letter-spacing: .38em; padding-left: .38em; }
-.rule { width: 150px; height: 1px; margin: 18px auto 14px; background: linear-gradient(90deg, transparent, #f1bd61, transparent); opacity: .88; }
-.brand p { margin: 0; color: rgba(255,235,197,.78); font-size: clamp(12px, 1.4vw, 15px); letter-spacing: .34em; padding-left: .34em; }
-.bottom-mark { position: absolute; bottom: clamp(18px, 3.5vh, 34px); left: 50%; transform: translateX(-50%); color: rgba(255,231,187,.72); font: 10px/1.5 Arial, sans-serif; letter-spacing: .32em; text-transform: uppercase; white-space: nowrap; text-shadow: 0 2px 12px #1b0709; }
 .dialog { position: fixed; width: min(92vw, 420px); max-width: 420px; padding: 32px; overflow: visible; border: 1px solid rgba(255,211,121,.54); border-radius: 20px; color: #fff3cf; background: linear-gradient(155deg, rgba(43,12,17,.97), rgba(17,8,11,.98)); box-shadow: 0 24px 90px rgba(0,0,0,.64), 0 0 48px rgba(238,166,54,.14); }
 .dialog::backdrop { background: rgba(10,3,5,.68); backdrop-filter: blur(5px); }
 .dialog-close { position: absolute; top: 12px; right: 16px; width: 34px; height: 34px; border: 0; color: #ead5ad; background: transparent; font: 28px/1 Arial, sans-serif; cursor: pointer; }
-.dialog-crown { display: block; margin-bottom: 8px; color: #ffd878; text-align: center; font-size: 29px; filter: drop-shadow(0 0 10px rgba(255,193,72,.65)); }
 .dialog h2 { margin: 0; color: #fff0c7; text-align: center; font-size: 25px; font-weight: 500; letter-spacing: .18em; }
 .dialog-intro { margin: 10px 0 22px; color: #d8c19c; text-align: center; font-size: 13px; line-height: 1.7; }
 .mode-switch { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 22px; padding: 4px; border: 1px solid rgba(239,190,105,.23); border-radius: 12px; background: rgba(0,0,0,.18); }
@@ -88,28 +81,22 @@ h1 { margin: 0; font-size: clamp(27px, 4.1vw, 48px); font-weight: 500; letter-sp
 .toast.show { transform: translate(-50%, 0); opacity: 1; }
 @keyframes appear { from { opacity: 0 } to { opacity: 1 } }
 @keyframes rise { from { opacity: 0; translate: 0 -8px } to { opacity: 1; translate: 0 0 } }
-@media (max-width: 640px) { .lobby { background-position: 50% center; } .topbar { align-items: flex-start; padding: 19px 16px; } .wordmark { margin-top: 8px; font-size: 12px; } .account-area { gap: 8px; } .user-label { display: none; } .top-button { min-width: 76px; padding: 9px 14px; font-size: 13px; } .player-card { top: 78px; right: 12px; width: min(232px, calc(100vw - 24px)); padding: 15px; border-radius: 14px; } .player-card-heading { gap: 9px; padding-bottom: 12px; } .player-avatar { width: 39px; height: 39px; font-size: 20px; } .player-eyebrow { font-size: 8px; } .player-details { gap: 5px; padding: 12px 0 11px; } .player-details strong { font-size: 17px; } .player-account-row { margin-top: 5px; padding-top: 8px; font-size: 11px; } .player-action { padding: 9px 11px; font-size: 12px; } .player-hint { font-size: 9px; } .brand { margin-top: -2vh; } h1 { letter-spacing: .25em; padding-left: .25em; } .dialog { padding: 28px 23px; } }
+@media (max-width: 640px) { .lobby { background-position: 50% center; } .topbar { align-items: flex-start; padding: 19px 16px; } .wordmark { margin-top: 8px; font-size: 12px; } .account-area { gap: 8px; } .user-label { display: none; } .top-button { min-width: 76px; padding: 9px 14px; font-size: 13px; } .dialog { padding: 28px 23px; } }
 @media (max-width: 640px) { .topbar-start { gap: 10px; } .player-widget { width: 190px; gap: 8px; padding: 7px 8px; border-radius: 10px; } .player-photo-frame { width: 43px; height: 43px; padding: 3px; } .player-widget-title { font-size: 9px; } .player-widget-info strong { font-size: 13px; } .player-exp-label { font-size: 8px; } }
 @media (max-width: 420px) { .topbar { padding-right: 12px; padding-left: 12px; } .topbar-start { gap: 7px; } .wordmark { font-size: 11px; letter-spacing: .04em; } .wordmark span { margin-right: 3px; font-size: 18px; } .player-widget { width: 168px; gap: 6px; padding: 6px; } .player-photo-frame { width: 38px; height: 38px; } .player-widget-title { font-size: 8px; } .player-level { padding: 1px 4px; font-size: 8px; } .player-widget-info strong { font-size: 12px; } .player-exp-label { font-size: 7px; } .account-area { margin-left: 5px; } .top-button { min-width: 62px; padding: 8px 9px; font-size: 11px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 /* Central portrait game artwork; intentionally non-interactive until each game opens. */
-.brand { position: absolute; top: clamp(98px, 13vh, 132px); left: 50%; width: min(90vw, 560px); margin: 0; transform: translateX(-50%); }
 .game-gallery { position: absolute; top: clamp(218px, 30vh, 285px); left: 50%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: clamp(12px, 3vw, 28px); width: min(88vw, 620px); transform: translateX(-50%); }
 .game-tile { display: grid; justify-items: center; min-width: 0; }
 .game-tile img { display: block; width: 100%; max-height: min(48vh, 450px); aspect-ratio: 2 / 3; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0,0,0,.48)); }
 .game-status { margin-top: 8px; padding: 4px 12px; border: 1px solid rgba(255,217,141,.38); border-radius: 999px; color: rgba(255,235,197,.84); background: rgba(25,8,11,.66); font-size: 11px; letter-spacing: .12em; text-shadow: 0 2px 8px #160609; }
 @media (max-width: 640px) {
-  .brand { top: 100px; margin: 0; }
-  .brand .hero-crown, .brand .rule, .brand p { display: none; }
-  .brand h1 { font-size: clamp(22px, 6vw, 30px); letter-spacing: .2em; }
   .game-gallery { top: clamp(165px, 25vh, 205px); width: min(92vw, 460px); gap: 10px; }
   .game-tile img { max-height: 48vh; }
   .game-status { margin-top: 5px; padding: 3px 9px; font-size: 10px; }
 }
 @media (max-height: 560px) and (min-width: 641px) {
-  .brand { top: 86px; }
-  .brand .hero-crown, .brand .rule, .brand p { display: none; }
   .game-gallery { top: 130px; }
   .game-tile img { max-height: 62vh; }
 }

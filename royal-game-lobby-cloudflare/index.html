@@ -13,7 +13,7 @@
   <main class="lobby" aria-label="皇家遊戲大廳">
     <header class="topbar">
       <div class="topbar-start">
-        <a class="wordmark" href="/" aria-label="皇家遊戲大廳首頁"><span aria-hidden="true">♛</span> 首頁</a>
+        <a class="wordmark" href="/" aria-label="首頁">首頁</a>
       </div>
       <div class="account-area">
         <span id="user-label" class="user-label" hidden></span>
@@ -29,12 +29,6 @@
         <span class="player-exp-track" role="progressbar" aria-label="經驗值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></span>
       </span>
     </button>
-    <section class="brand" aria-label="大廳標題">
-      <span class="hero-crown" aria-hidden="true">♛</span>
-      <h1>皇家遊戲大廳</h1>
-      <div class="rule" aria-hidden="true"></div>
-      <p>夜色之中，盛宴即將開始</p>
-    </section>
     <section class="game-gallery" aria-label="遊戲選擇">
       <article class="game-tile" aria-label="山海經，目前尚未開放">
         <img src="/game-art/shanhaijing.png" alt="山海經：金色九尾天狐與山海場景" />
@@ -45,12 +39,10 @@
         <span class="game-status">尚未開放</span>
       </article>
     </section>
-    <div class="bottom-mark">A night of golden possibilities</div>
   </main>
 
   <dialog id="auth-dialog" class="dialog" aria-labelledby="auth-title">
     <button class="dialog-close" type="button" data-close="auth-dialog" aria-label="關閉">×</button>
-    <span class="dialog-crown" aria-hidden="true">♛</span>
     <h2 id="auth-title">歡迎回來</h2>
     <p class="dialog-intro">登入或建立帳號，進入皇家大廳</p>
     <div class="mode-switch" role="tablist" aria-label="登入或註冊">
@@ -69,7 +61,6 @@
   </dialog>
 
   <dialog id="nickname-dialog" class="dialog nickname-dialog" aria-labelledby="nickname-title">
-    <span class="dialog-crown" aria-hidden="true">♛</span>
     <h2 id="nickname-title">設定你的暱稱</h2>
     <p class="dialog-intro">取一個喜歡的名字，讓大家在大廳認識你。</p>
     <form id="nickname-form" novalidate>
@@ -82,7 +73,6 @@
 
   <dialog id="profile-dialog" class="dialog profile-dialog" aria-labelledby="profile-title">
     <button class="dialog-close" type="button" data-close="profile-dialog" aria-label="關閉">×</button>
-    <span class="dialog-crown" aria-hidden="true">♛</span>
     <h2 id="profile-title">玩家資訊</h2>
     <div class="profile-identity">
       <div class="player-photo-frame"><img id="profile-avatar" class="player-photo" alt="玩家大頭照" /></div>
@@ -107,7 +97,6 @@
 
   <dialog id="avatar-crop-dialog" class="dialog avatar-crop-dialog" aria-labelledby="avatar-crop-title">
     <button class="dialog-close" type="button" data-close="avatar-crop-dialog" aria-label="關閉">×</button>
-    <span class="dialog-crown" aria-hidden="true">♛</span>
     <h2 id="avatar-crop-title">調整大頭照</h2>
     <p class="dialog-intro">用滑鼠滾輪縮放，拖曳照片調整裁切位置。</p>
     <div id="avatar-crop-viewport" class="avatar-crop-viewport" role="img" aria-label="大頭照裁切預覽">
