@@ -115,8 +115,8 @@ async function profile(request, env) {
     if (value !== "男" && value !== "女") return json({ error: "請選擇男或女。" }, 400);
     await env.DB.prepare("UPDATE users SET gender = ? WHERE id = ?").bind(value, user.id).run();
   } else if (field === "avatar") {
-    if (value !== null && (typeof value !== "string" || value.length > 400000 || !/^data:image\/webp;base64,[A-Za-z0-9+/]+={0,2}$/.test(value))) {
-      return json({ error: "請上傳有效的圖片（WebP，壓縮後需小於 300 KB）。" }, 400);
+    if (value !== null && (typeof value !== "string" || value.length > 380000 || !/^data:image\/(?:webp|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/.test(value))) {
+      return json({ error: "請上傳有效的圖片（壓縮後需小於 280 KB）。" }, 400);
     }
     await env.DB.prepare("UPDATE users SET avatar_data_url = ? WHERE id = ?").bind(value, user.id).run();
   } else return json({ error: "找不到這個玩家資料欄位。" }, 400);
