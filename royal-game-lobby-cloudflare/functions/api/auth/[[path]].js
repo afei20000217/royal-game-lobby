@@ -17,6 +17,8 @@ export async function onRequest(context) {
   if (request.method === "GET" && path === "inventory") return inventory(request, env);
   if (request.method === "GET" && path === "mail/inbox") return mailbox(request, env, "inbox");
   if (request.method === "GET" && path === "mail/sent") return mailbox(request, env, "sent");
+  if (request.method === "GET" && path === "admin/players") return adminPlayers(request, env);
+  if (request.method === "GET" && path === "admin/player") return adminPlayer(request, env);
   if (request.method !== "POST") return json({ error: "不支援此操作。" }, 405, { Allow: "GET, POST" });
   if (!sameOrigin(request)) return json({ error: "請重新整理頁面後再試。" }, 403);
   if (path === "challenge") return challenge(request, env);
@@ -29,6 +31,7 @@ export async function onRequest(context) {
   if (path === "mail/send") return sendMail(request, env);
   if (path === "mail/read") return readMail(request, env);
   if (path === "mail/broadcast") return broadcastMail(request, env);
+  if (path === "admin/player/update") return adminUpdatePlayer(request, env);
   return json({ error: "找不到此服務。" }, 404);
 }
 
@@ -118,6 +121,84 @@ async function broadcastMail(request, env) {
   return json({ ok: true });
 }
 
+async function adminPlayers(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入管理後台。" }, 401);
+  if (!user.isAdmin) return json({ error: "只有系統管理員可以查看玩家資料。" }, 403);
+  const url = new URL(request.url);
+  const query = (url.searchParams.get("q") || "").trim().slice(0, 80);
+  const page = Math.max(1, Math.min(100000, Number.parseInt(url.searchParams.get("page") || "1", 10) || 1));
+  const like = `%${query}%`;
+  const serialLike = `%${query.replace(/^0+(?=\d)/u, "")}%`;
+  const where = "(? = '' OR CAST(p.number AS TEXT) LIKE ? OR u.username LIKE ? COLLATE NOCASE OR COALESCE(u.nickname, '') LIKE ? COLLATE NOCASE)";
+  const total = await env.DB.prepare(`SELECT COUNT(*) AS count FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE ${where}`)
+    .bind(query, serialLike, like, like).first();
+  const rows = await env.DB.prepare(`SELECT u.id, p.number AS player_number, u.username, u.nickname, u.region, u.birthday_year_roc, u.birthday_month, u.birthday_day, u.gender, u.created_at, u.fly_coins, u.is_admin, CASE WHEN u.avatar_data_url IS NULL THEN 0 ELSE 1 END AS has_avatar FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE ${where} ORDER BY p.number ASC LIMIT 50 OFFSET ?`)
+    .bind(query, serialLike, like, like, (page - 1) * 50).all();
+  return json({ players: rows.results || [], total: Number(total?.count || 0), page, pageSize: 50 });
+}
+
+async function adminPlayer(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入管理後台。" }, 401);
+  if (!user.isAdmin) return json({ error: "只有系統管理員可以查看玩家資料。" }, 403);
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id || id.length > 80) return json({ error: "玩家資料不正確。" }, 400);
+  const player = await env.DB.prepare("SELECT u.id, p.number AS player_number, u.username, u.nickname, u.region, u.birthday_year_roc, u.birthday_month, u.birthday_day, u.gender, u.created_at, u.fly_coins, u.is_admin, u.avatar_data_url FROM users u JOIN player_numbers p ON p.user_id = u.id WHERE u.id = ?").bind(id).first();
+  if (!player) return json({ error: "找不到這位玩家。" }, 404);
+  return json({ player: {
+    id: player.id, playerNumber: String(player.player_number).padStart(8, "0"), username: player.username,
+    nickname: player.nickname, region: player.region, birthday: player.birthday_year_roc ? {
+      year: player.birthday_year_roc, month: player.birthday_month, day: player.birthday_day
+    } : null, gender: player.gender, createdAt: player.created_at, flyCoins: Number(player.fly_coins || 0),
+    isAdmin: Boolean(Number(player.is_admin || 0)), avatar: player.avatar_data_url || null
+  } });
+}
+
+async function adminUpdatePlayer(request, env) {
+  const admin = await sessionUser(request, env);
+  if (!admin) return json({ error: "請先登入管理後台。" }, 401);
+  if (!admin.isAdmin) return json({ error: "只有系統管理員可以修改玩家資料。" }, 403);
+  const body = await readBody(request);
+  if (body.error) return json({ error: body.error }, 400);
+  if (typeof body.id !== "string" || body.id.length > 80) return json({ error: "玩家資料不正確。" }, 400);
+  const account = accountName(body.account);
+  const nickname = typeof body.nickname === "string" && body.nickname.trim() ? normalizeNickname(body.nickname) : null;
+  if (!account || (body.nickname && !nickname)) return json({ error: "帳號或暱稱格式不正確。" }, 400);
+  const region = body.region === "" || body.region === null ? null : body.region;
+  if (region !== null && !REGIONS.includes(region)) return json({ error: "請選擇有效的台灣地區。" }, 400);
+  const gender = body.gender === "" || body.gender === null ? null : body.gender;
+  if (gender !== null && !["男", "女"].includes(gender)) return json({ error: "請選擇有效的性別。" }, 400);
+  const yearRaw = body.year === "" || body.year === null ? null : Number(body.year);
+  const monthRaw = body.month === "" || body.month === null ? null : Number(body.month);
+  const dayRaw = body.day === "" || body.day === null ? null : Number(body.day);
+  const birthdayEmpty = yearRaw === null && monthRaw === null && dayRaw === null;
+  const maxRocYear = new Date().getFullYear() - 1911;
+  if (!birthdayEmpty) {
+    if (!Number.isInteger(yearRaw) || yearRaw < 80 || yearRaw > maxRocYear || !Number.isInteger(monthRaw) || monthRaw < 1 || monthRaw > 12 || !Number.isInteger(dayRaw) || dayRaw < 1 || dayRaw > new Date(1911 + yearRaw, monthRaw, 0).getDate()) {
+      return json({ error: `生日需為民國 80 年至 ${maxRocYear} 年內的有效日期。` }, 400);
+    }
+  }
+  const flyCoins = Number(body.flyCoins);
+  if (!Number.isSafeInteger(flyCoins) || flyCoins < 0 || flyCoins > 2147483647) return json({ error: "飛飛幣需為 0 到 2,147,483,647 的整數。" }, 400);
+  if (typeof body.isAdmin !== "boolean" || typeof body.removeAvatar !== "boolean") return json({ error: "管理欄位資料不正確。" }, 400);
+  if (body.id === admin.id && !body.isAdmin) return json({ error: "不能移除自己目前使用的管理員權限。" }, 409);
+  const existing = await env.DB.prepare("SELECT id, is_admin FROM users WHERE id = ?").bind(body.id).first();
+  if (!existing) return json({ error: "找不到這位玩家。" }, 404);
+  if (Number(existing.is_admin) === 1 && !body.isAdmin) {
+    const admins = await env.DB.prepare("SELECT COUNT(*) AS count FROM users WHERE is_admin = 1").first();
+    if (Number(admins?.count || 0) <= 1) return json({ error: "平台至少需要保留一位管理員。" }, 409);
+  }
+  try {
+    await env.DB.prepare("UPDATE users SET username = ?, nickname = ?, region = ?, birthday_year_roc = ?, birthday_month = ?, birthday_day = ?, gender = ?, fly_coins = ?, is_admin = ?, avatar_data_url = CASE WHEN ? = 1 THEN NULL ELSE avatar_data_url END WHERE id = ?")
+      .bind(account, nickname, region, birthdayEmpty ? null : yearRaw, birthdayEmpty ? null : monthRaw, birthdayEmpty ? null : dayRaw, gender, flyCoins, body.isAdmin ? 1 : 0, body.removeAvatar ? 1 : 0, body.id).run();
+  } catch {
+    return json({ error: "帳號或暱稱已被其他玩家使用。" }, 409);
+  }
+  const updated = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.id = ?").bind(body.id).first();
+  return json({ ok: true, player: publicUser(updated) });
+}
+
 function mailText(value, maxLength) {
   if (typeof value !== "string") return null;
   const result = value.trim();
@@ -201,12 +282,16 @@ async function register(request, env) {
   const id = crypto.randomUUID();
   const now = Math.floor(Date.now() / 1000);
   try {
-    await env.DB.prepare("INSERT INTO users (id, username, password_salt, password_hash, password_iterations, nickname, created_at, fly_coins) VALUES (?, ?, ?, ?, ?, NULL, ?, 10000)")
-      .bind(id, username, body.salt, hash, PASSWORD_ITERATIONS, now).run();
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO users (id, username, password_salt, password_hash, password_iterations, nickname, created_at, fly_coins) VALUES (?, ?, ?, ?, ?, NULL, ?, 10000)")
+        .bind(id, username, body.salt, hash, PASSWORD_ITERATIONS, now),
+      env.DB.prepare("INSERT INTO player_numbers (user_id) VALUES (?)").bind(id)
+    ]);
   } catch {
     return json({ error: "帳號建立失敗，請稍後再試。" }, 500);
   }
-  return json({ user: { id, username, nickname: null, createdAt: now, flyCoins: 10000 } }, 201, { "Set-Cookie": await createSession(env, id) });
+  const newUser = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.id = ?").bind(id).first();
+  return json({ user: publicUser(newUser) }, 201, { "Set-Cookie": await createSession(env, id) });
 }
 
 async function login(request, env) {
@@ -217,7 +302,7 @@ async function login(request, env) {
     return json({ error: "帳號或密碼錯誤。" }, 401);
   }
   if (await limited(env, "login", username, 10, 900)) return json({ error: "嘗試次數過多，請 15 分鐘後再試。" }, 429);
-  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender, avatar_data_url, fly_coins, is_admin FROM users WHERE username = ?").bind(username).first();
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.password_hash, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM users JOIN player_numbers ON player_numbers.user_id = users.id WHERE users.username = ?").bind(username).first();
   const isVersion2 = user?.password_hash?.startsWith("v2:");
   const submittedHash = isVersion2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
   const expectedHash = isVersion2 ? user.password_hash.slice(3) : (user?.password_hash || DUMMY_HASH);
@@ -326,6 +411,7 @@ function publicUser(user) {
     gender: user.gender || null,
     avatar: user.avatar_data_url || null,
     flyCoins: Number(user.fly_coins ?? 10000),
+    playerNumber: String(Number(user.player_number || 0)).padStart(8, "0"),
     isAdmin: Boolean(Number(user.is_admin || 0))
   };
 }
@@ -430,7 +516,7 @@ async function sessionUser(request, env) {
   const token = cookieValue(request, COOKIE);
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins, users.is_admin, player_numbers.number AS player_number FROM sessions JOIN users ON users.id = sessions.user_id JOIN player_numbers ON player_numbers.user_id = users.id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
     .bind(await sha256(token), now).first();
   return user ? publicUser(user) : null;
 }
