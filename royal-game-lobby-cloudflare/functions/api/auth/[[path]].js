@@ -49,12 +49,12 @@ async function register(request, env) {
   const id = crypto.randomUUID();
   const now = Math.floor(Date.now() / 1000);
   try {
-    await env.DB.prepare("INSERT INTO users (id, username, password_salt, password_hash, password_iterations, nickname, created_at) VALUES (?, ?, ?, ?, ?, NULL, ?)")
+    await env.DB.prepare("INSERT INTO users (id, username, password_salt, password_hash, password_iterations, nickname, created_at, fly_coins) VALUES (?, ?, ?, ?, ?, NULL, ?, 10000)")
       .bind(id, username, body.salt, hash, PASSWORD_ITERATIONS, now).run();
   } catch {
     return json({ error: "帳號建立失敗，請稍後再試。" }, 500);
   }
-  return json({ user: { id, username, nickname: null, createdAt: now } }, 201, { "Set-Cookie": await createSession(env, id) });
+  return json({ user: { id, username, nickname: null, createdAt: now, flyCoins: 10000 } }, 201, { "Set-Cookie": await createSession(env, id) });
 }
 
 async function login(request, env) {
@@ -65,7 +65,7 @@ async function login(request, env) {
     return json({ error: "帳號或密碼錯誤。" }, 401);
   }
   if (await limited(env, "login", username, 10, 900)) return json({ error: "嘗試次數過多，請 15 分鐘後再試。" }, 429);
-  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender, avatar_data_url FROM users WHERE username = ?").bind(username).first();
+  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender, avatar_data_url, fly_coins FROM users WHERE username = ?").bind(username).first();
   const isVersion2 = user?.password_hash?.startsWith("v2:");
   const submittedHash = isVersion2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
   const expectedHash = isVersion2 ? user.password_hash.slice(3) : (user?.password_hash || DUMMY_HASH);
@@ -131,7 +131,8 @@ function publicUser(user) {
     region: user.region || null,
     birthday: user.birthday_year_roc ? { year: user.birthday_year_roc, month: user.birthday_month, day: user.birthday_day } : null,
     gender: user.gender || null,
-    avatar: user.avatar_data_url || null
+    avatar: user.avatar_data_url || null,
+    flyCoins: Number(user.fly_coins ?? 10000)
   };
 }
 
@@ -235,7 +236,7 @@ async function sessionUser(request, env) {
   const token = cookieValue(request, COOKIE);
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url, users.fly_coins FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
     .bind(await sha256(token), now).first();
   return user ? publicUser(user) : null;
 }
