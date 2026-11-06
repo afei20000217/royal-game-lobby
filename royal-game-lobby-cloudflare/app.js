@@ -3,6 +3,10 @@ const nicknameDialog = document.querySelector("#nickname-dialog");
 const profileDialog = document.querySelector("#profile-dialog");
 const playerWidget = document.querySelector("#player-widget");
 const authButton = document.querySelector("#auth-button");
+const memberCenterButton = document.querySelector("#member-center-button");
+const memberCenterDialog = document.querySelector("#member-center-dialog");
+const changeAccountForm = document.querySelector("#change-account-form");
+const changePasswordForm = document.querySelector("#change-password-form");
 const currencyDisplay = document.querySelector("#currency-display");
 const currencyAmount = document.querySelector("#currency-amount");
 const userLabel = document.querySelector("#user-label");
@@ -93,6 +97,7 @@ function updateAccountUI() {
     playerName.textContent = currentUser.nickname || currentUser.username;
     currencyDisplay.hidden = false;
     currencyAmount.textContent = formatCurrency(currentUser.flyCoins);
+    memberCenterButton.hidden = false;
   } else {
     authButton.textContent = "登入";
     authButton.setAttribute("aria-label", "登入");
@@ -100,6 +105,8 @@ function updateAccountUI() {
     userLabel.textContent = "";
     playerName.textContent = "訪客玩家";
     currencyDisplay.hidden = true;
+    memberCenterButton.hidden = true;
+    memberCenterDialog.close();
   }
   const avatar = currentUser?.avatar || "";
   if (avatar) {
@@ -189,6 +196,14 @@ document.querySelectorAll("[data-close]").forEach((button) => {
 });
 
 playerWidget.addEventListener("click", openProfileDialog);
+memberCenterButton.addEventListener("click", () => {
+  if (!currentUser) return;
+  changeAccountForm.reset();
+  changePasswordForm.reset();
+  memberCenterDialog.querySelectorAll(".form-message").forEach((message) => { message.textContent = ""; message.classList.remove("error"); });
+  changeAccountForm.elements.newAccount.value = currentUser.username;
+  memberCenterDialog.showModal();
+});
 profileLogin.addEventListener("click", () => {
   profileDialog.close();
   openAuth("login");
@@ -431,6 +446,63 @@ authForm.addEventListener("submit", async (event) => {
     authSubmit.disabled = false;
     authSubmit.textContent = mode === "login" ? "登入" : "註冊並繼續";
   }
+});
+
+async function verifyCurrentPassword(password) {
+  const passwordLength = Array.from(password).length;
+  if (passwordLength < 10 || passwordLength > 128) throw new Error("請輸入正確的目前密碼。");
+  const challenge = await api("/api/auth/challenge", { method: "POST", body: { account: currentUser.username } });
+  return { passwordLength, passwordVerifier: await derivePasswordVerifier(password, challenge.salt, challenge.iterations) };
+}
+
+async function submitCredentialChange(form, type) {
+  const message = form.querySelector(".form-message");
+  const submit = form.querySelector('[type="submit"]');
+  message.textContent = "";
+  message.classList.remove("error");
+  if (!form.reportValidity()) return;
+  const values = new FormData(form);
+  const currentPassword = String(values.get("currentPassword") || "");
+  const change = { type, ...(await verifyCurrentPassword(currentPassword)) };
+  if (type === "account") {
+    change.newAccount = String(values.get("newAccount") || "").trim();
+  } else {
+    const newPassword = String(values.get("newPassword") || "");
+    const confirmPassword = String(values.get("confirmNewPassword") || "");
+    if (newPassword !== confirmPassword) throw new Error("兩次輸入的新密碼不一致。");
+    const newPasswordLength = Array.from(newPassword).length;
+    if (newPasswordLength < 10 || newPasswordLength > 128) throw new Error("新密碼需為 10–128 個字元。");
+    change.newSalt = randomSalt();
+    change.newPasswordLength = newPasswordLength;
+    change.newPasswordVerifier = await derivePasswordVerifier(newPassword, change.newSalt);
+  }
+  submit.disabled = true;
+  submit.textContent = "安全儲存中…";
+  try {
+    const result = await api("/api/auth/credentials", { method: "POST", body: change });
+    currentUser = result.user;
+    updateAccountUI();
+    form.reset();
+    if (type === "account") changeAccountForm.elements.newAccount.value = currentUser.username;
+    showToast(type === "account" ? "帳號已更新" : "密碼已更新" + (result.sessionsRevoked ? "，其他登入裝置已登出" : ""));
+  } catch (error) {
+    message.textContent = error.message;
+    message.classList.add("error");
+  } finally {
+    submit.disabled = false;
+    submit.textContent = type === "account" ? "儲存新帳號" : "儲存新密碼";
+  }
+}
+
+changeAccountForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try { await submitCredentialChange(changeAccountForm, "account"); }
+  catch (error) { const message = changeAccountForm.querySelector(".form-message"); message.textContent = error.message; message.classList.add("error"); }
+});
+changePasswordForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try { await submitCredentialChange(changePasswordForm, "password"); }
+  catch (error) { const message = changePasswordForm.querySelector(".form-message"); message.textContent = error.message; message.classList.add("error"); }
 });
 
 nicknameForm.addEventListener("submit", async (event) => {

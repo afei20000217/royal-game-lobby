@@ -8,6 +8,14 @@ button, input { font: inherit; }
 .wordmark { color: #ffe8b4; text-decoration: none; font-size: clamp(13px, 1.5vw, 17px); letter-spacing: .12em; text-shadow: 0 2px 16px #18070a; }
 .wordmark span { margin-right: 8px; color: #ffd878; font-size: 22px; filter: drop-shadow(0 0 8px rgba(255,193,72,.65)); }
 .account-area { display: flex; align-items: center; gap: 14px; }
+.member-center-dialog { max-height: min(90svh, 760px); overflow-y: auto; }
+.member-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(239,190,105,.2); }
+.member-section h3 { margin: 0 0 14px; color: #f4d394; font-size: 16px; font-weight: 500; letter-spacing: .1em; }
+.member-section form { display: grid; gap: 8px; }
+.member-section label { margin-top: 4px; color: #f5dfb6; font-size: 12px; letter-spacing: .06em; }
+.member-section input { width: 100%; padding: 11px 12px; border: 1px solid rgba(241,197,127,.28); border-radius: 9px; outline: none; color: #fff7e5; background: rgba(6,4,6,.55); font: 14px Arial, "Noto Sans TC", sans-serif; }
+.member-section input:focus { border-color: #e8be6d; box-shadow: 0 0 0 3px rgba(232,190,109,.13); }
+.member-section .gold-button { padding: 11px 14px; }
 .user-label { color: #ffe8b4; font-size: 14px; letter-spacing: .08em; text-shadow: 0 2px 12px #160609; }
 .top-button { min-width: 94px; padding: 10px 20px; border: 1px solid rgba(255,217,141,.76); border-radius: 999px; color: #fff0ca; background: rgba(30,8,11,.56); box-shadow: inset 0 0 16px rgba(237,167,59,.08), 0 5px 24px rgba(0,0,0,.22); cursor: pointer; letter-spacing: .14em; transition: background .2s, box-shadow .2s, transform .2s; }
 .top-button:hover { background: rgba(99,35,26,.72); box-shadow: 0 0 22px rgba(255,195,88,.28); transform: translateY(-1px); }
@@ -128,6 +136,7 @@ button, input { font: inherit; }
 .crop-actions .gold-button { margin: 0; padding: 10px 14px; letter-spacing: .04em; }
 .crop-actions button:disabled { opacity: .6; cursor: wait; }
 .currency-display { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid rgba(239,190,105,.42); border-radius: 999px; color: #ffe8b4; background: rgba(30,8,11,.62); box-shadow: inset 0 0 12px rgba(237,167,59,.08); }
+.member-center-button { min-width: auto; padding-right: 15px; padding-left: 15px; }
 .currency-display[hidden] { display: none; }
 .currency-icon { color: #ffd878; font-size: 19px; line-height: 1; text-shadow: 0 0 10px rgba(255,193,72,.6); }
 .currency-copy { display: grid; gap: 1px; font-size: 9px; letter-spacing: .08em; }
