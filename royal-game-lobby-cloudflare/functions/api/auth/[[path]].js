@@ -65,7 +65,7 @@ async function login(request, env) {
     return json({ error: "帳號或密碼錯誤。" }, 401);
   }
   if (await limited(env, "login", username, 10, 900)) return json({ error: "嘗試次數過多，請 15 分鐘後再試。" }, 429);
-  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender FROM users WHERE username = ?").bind(username).first();
+  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash, region, birthday_year_roc, birthday_month, birthday_day, gender, avatar_data_url FROM users WHERE username = ?").bind(username).first();
   const isVersion2 = user?.password_hash?.startsWith("v2:");
   const submittedHash = isVersion2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
   const expectedHash = isVersion2 ? user.password_hash.slice(3) : (user?.password_hash || DUMMY_HASH);
@@ -114,6 +114,11 @@ async function profile(request, env) {
   } else if (field === "gender") {
     if (value !== "男" && value !== "女") return json({ error: "請選擇男或女。" }, 400);
     await env.DB.prepare("UPDATE users SET gender = ? WHERE id = ?").bind(value, user.id).run();
+  } else if (field === "avatar") {
+    if (value !== null && (typeof value !== "string" || value.length > 400000 || !/^data:image\/webp;base64,[A-Za-z0-9+/]+={0,2}$/.test(value))) {
+      return json({ error: "請上傳有效的圖片（WebP，壓縮後需小於 300 KB）。" }, 400);
+    }
+    await env.DB.prepare("UPDATE users SET avatar_data_url = ? WHERE id = ?").bind(value, user.id).run();
   } else return json({ error: "找不到這個玩家資料欄位。" }, 400);
   return json({ user: await sessionUser(request, env) });
 }
@@ -125,7 +130,8 @@ function publicUser(user) {
     id: user.id, username: user.username, nickname: user.nickname, createdAt: user.created_at,
     region: user.region || null,
     birthday: user.birthday_year_roc ? { year: user.birthday_year_roc, month: user.birthday_month, day: user.birthday_day } : null,
-    gender: user.gender || null
+    gender: user.gender || null,
+    avatar: user.avatar_data_url || null
   };
 }
 
@@ -141,7 +147,7 @@ async function readBody(request) {
   if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) return { error: "請使用有效的表單資料。" };
   try {
     const text = await request.text();
-    if (text.length > 4096) return { error: "輸入內容太長。" };
+    if (text.length > 500000) return { error: "輸入內容太長。" };
     const body = JSON.parse(text);
     return body && typeof body === "object" && !Array.isArray(body) ? body : { error: "表單資料格式不正確。" };
   } catch {
@@ -229,7 +235,7 @@ async function sessionUser(request, env) {
   const token = cookieValue(request, COOKIE);
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at, users.region, users.birthday_year_roc, users.birthday_month, users.birthday_day, users.gender, users.avatar_data_url FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
     .bind(await sha256(token), now).first();
   return user ? publicUser(user) : null;
 }
