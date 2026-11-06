@@ -149,6 +149,46 @@ button, input { font: inherit; }
 .currency-icon { color: #ffd878; font-size: 19px; line-height: 1; text-shadow: 0 0 10px rgba(255,193,72,.6); }
 .currency-copy { display: grid; gap: 1px; font-size: 9px; letter-spacing: .08em; }
 .currency-copy strong { color: #fff0c7; font: 600 13px/1.2 Arial, "Noto Sans TC", sans-serif; letter-spacing: .04em; }
+.store-button { min-width: auto; padding-right: 14px; padding-left: 14px; letter-spacing: .08em; }
+#bag-count { margin-left: 3px; color: #ffe0a0; font: 10px Arial, sans-serif; letter-spacing: 0; }
+.shop-dialog, .bag-dialog { width: min(92vw, 600px); max-width: 600px; max-height: min(90svh, 760px); overflow-y: auto; }
+.shop-item-card { display: grid; grid-template-columns: minmax(180px, .9fr) 1fr; gap: 22px; margin-top: 22px; padding: 14px; border: 1px solid rgba(239,190,105,.28); border-radius: 16px; background: linear-gradient(145deg, rgba(74,37,25,.38), rgba(12,7,9,.45)); }
+.shop-item-image-wrap { display: grid; min-height: 210px; overflow: hidden; place-items: center; border: 1px solid rgba(239,190,105,.24); border-radius: 12px; background: #f8f5ee; }
+.shop-item-image-wrap img { display: block; width: 100%; height: 100%; max-height: 280px; object-fit: contain; }
+.shop-item-info { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-width: 0; }
+.shop-item-tag { padding: 4px 9px; border: 1px solid rgba(239,190,105,.35); border-radius: 999px; color: #f3d092; font-size: 10px; letter-spacing: .1em; }
+.shop-item-info h3 { margin: 12px 0 4px; color: #fff0c7; font-size: 25px; font-weight: 500; letter-spacing: .12em; }
+.shop-item-info > p { margin: 0; color: rgba(235,211,177,.78); font-size: 12px; line-height: 1.7; }
+.shop-item-price { margin-top: 15px; color: #ffe29a; font: 600 15px Arial, "Noto Sans TC", sans-serif; }
+.shop-item-price span { color: #ffd878; }
+.shop-buy-button { width: 100%; margin-top: 16px; padding: 11px; }
+.shop-buy-button:disabled { opacity: .68; cursor: not-allowed; }
+.shop-message { min-height: 18px; margin: 8px 0 0 !important; color: #f3d092 !important; font-size: 11px !important; }
+.shop-message.error { color: #ffaaa1 !important; }
+.bag-dialog .dialog-intro strong { color: #ffe29a; font-weight: 600; }
+.bag-items { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 7px; max-height: min(54vh, 480px); overflow-y: auto; margin: 20px 0 12px; padding: 2px; }
+.bag-slot { display: grid; min-width: 0; aspect-ratio: 1; padding: 4px; place-items: center; border: 1px solid rgba(239,190,105,.28); border-radius: 8px; background: linear-gradient(145deg, rgba(60,31,23,.58), rgba(13,8,9,.7)); }
+.bag-slot-empty { border-color: rgba(239,190,105,.15); background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(0,0,0,.18)); }
+.bag-slot-filled { border-color: rgba(246,206,125,.64); box-shadow: inset 0 0 10px rgba(255,199,91,.09), 0 0 9px rgba(255,199,91,.08); }
+.bag-slot img { display: block; width: 100%; height: 100%; border-radius: 5px; background: #f8f5ee; object-fit: cover; }
+.bag-empty { margin: 26px 0; color: rgba(235,211,177,.64); text-align: center; font-size: 13px; }
+.bag-dialog > .gold-button { display: block; margin: 14px auto 0; }
+@media (max-width: 640px) {
+  .account-area { gap: 6px; }
+  .store-button { padding: 8px 9px; font-size: 11px; }
+  #bag-count { font-size: 9px; }
+  .shop-item-card { grid-template-columns: 1fr; gap: 15px; }
+  .shop-item-image-wrap { min-height: 160px; max-height: 220px; }
+  .shop-item-image-wrap img { max-height: 210px; }
+  .shop-item-info { width: 100%; }
+  .bag-items { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+}
+@media (max-width: 420px) {
+  .account-area { gap: 4px; }
+  .store-button { padding: 7px 7px; font-size: 10px; }
+  .currency-display { padding: 5px 6px; }
+  .currency-copy strong { font-size: 9px; }
+}
 @media (max-width: 640px) {
   .player-widget { top: 76px; left: 12px; width: 148px; gap: 7px; padding: 10px; }
   .player-photo-frame { width: 58px; height: 58px; }

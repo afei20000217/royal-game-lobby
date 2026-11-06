@@ -22,6 +22,8 @@
           <span class="currency-icon" aria-hidden="true">✦</span>
           <span class="currency-copy"><span>飛飛幣</span><strong id="currency-amount">10,000</strong></span>
         </div>
+        <button id="shop-button" class="top-button store-button" type="button">商城</button>
+        <button id="bag-button" class="top-button store-button" type="button">包包 <span id="bag-count">0/100</span></button>
         <button id="auth-button" class="top-button" type="button">登入</button>
       </div>
     </header>
@@ -99,6 +101,32 @@
         <div class="member-form-actions"><button type="button" data-member-cancel="password">取消</button><button class="gold-button" type="submit">儲存新密碼</button></div>
       </form>
     </section>
+  </dialog>
+
+  <dialog id="shop-dialog" class="dialog shop-dialog" aria-labelledby="shop-title">
+    <button class="dialog-close" type="button" data-close="shop-dialog" aria-label="關閉">×</button>
+    <h2 id="shop-title">飛飛商城</h2>
+    <p class="dialog-intro">挑選喜歡的收藏，購買後會放進你的包包。</p>
+    <article class="shop-item-card">
+      <div class="shop-item-image-wrap"><img src="/game-art/niko.jpg" alt="尼可，一隻灰色虎斑貓" /></div>
+      <div class="shop-item-info">
+        <span class="shop-item-tag">商城上架</span>
+        <h3>尼可</h3>
+        <p>把尼可帶回包包收藏吧。</p>
+        <strong class="shop-item-price"><span aria-hidden="true">✦</span> 5,000 飛飛幣</strong>
+        <button id="buy-niko-button" class="gold-button shop-buy-button" type="button">購買尼可</button>
+        <p id="shop-message" class="shop-message" aria-live="polite"></p>
+      </div>
+    </article>
+  </dialog>
+
+  <dialog id="bag-dialog" class="dialog bag-dialog" aria-labelledby="bag-title">
+    <button class="dialog-close" type="button" data-close="bag-dialog" aria-label="關閉">×</button>
+    <h2 id="bag-title">我的包包</h2>
+    <p class="dialog-intro">已使用 <strong id="bag-slots">0 / 100</strong> 格</p>
+    <div id="bag-items" class="bag-items" aria-live="polite"></div>
+    <p id="bag-empty" class="bag-empty">包包還是空的，去商城看看吧。</p>
+    <button id="bag-shop-button" class="gold-button" type="button">前往商城</button>
   </dialog>
 
   <dialog id="nickname-dialog" class="dialog nickname-dialog" aria-labelledby="nickname-title">

@@ -5,6 +5,16 @@ const playerWidget = document.querySelector("#player-widget");
 const authButton = document.querySelector("#auth-button");
 const memberCenterButton = document.querySelector("#member-center-button");
 const memberCenterDialog = document.querySelector("#member-center-dialog");
+const shopDialog = document.querySelector("#shop-dialog");
+const bagDialog = document.querySelector("#bag-dialog");
+const shopButton = document.querySelector("#shop-button");
+const bagButton = document.querySelector("#bag-button");
+const buyNikoButton = document.querySelector("#buy-niko-button");
+const shopMessage = document.querySelector("#shop-message");
+const bagItemsElement = document.querySelector("#bag-items");
+const bagEmptyElement = document.querySelector("#bag-empty");
+const bagSlotsElement = document.querySelector("#bag-slots");
+const bagCountElement = document.querySelector("#bag-count");
 const changeAccountForm = document.querySelector("#change-account-form");
 const changePasswordForm = document.querySelector("#change-password-form");
 const currencyDisplay = document.querySelector("#currency-display");
@@ -47,6 +57,11 @@ let cropZoom = 1;
 let cropPanX = 0;
 let cropPanY = 0;
 let cropPointer = null;
+let inventoryItems = [];
+const BAG_CAPACITY = 100;
+const ITEM_DETAILS = {
+  "niko-cat": { name: "尼可", image: "/game-art/niko.jpg", description: "把尼可帶回包包收藏吧。" }
+};
 const PASSWORD_ITERATIONS = 600_000;
 const encoder = new TextEncoder();
 
@@ -108,6 +123,8 @@ function updateAccountUI() {
     currencyDisplay.hidden = true;
     memberCenterButton.hidden = true;
     memberCenterDialog.close();
+    inventoryItems = [];
+    updateBagUI();
   }
   const avatar = currentUser?.avatar || "";
   if (avatar) {
@@ -122,6 +139,77 @@ function updateAccountUI() {
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat("zh-TW").format(Number(amount ?? 0));
+}
+
+function updateBagUI() {
+  const used = Math.min(inventoryItems.length, BAG_CAPACITY);
+  bagCountElement.textContent = `${used}/${BAG_CAPACITY}`;
+  bagSlotsElement.textContent = `${used} / ${BAG_CAPACITY}`;
+  bagItemsElement.replaceChildren();
+  bagEmptyElement.textContent = "包包還是空的，去商城看看吧。";
+  for (let index = 0; index < BAG_CAPACITY; index += 1) {
+    const item = inventoryItems[index];
+    const slot = document.createElement("div");
+    slot.className = item ? "bag-slot bag-slot-filled" : "bag-slot bag-slot-empty";
+    slot.setAttribute("aria-label", item ? ITEM_DETAILS[item.item_id]?.name || "收藏品" : `空格 ${index + 1}`);
+    if (item) {
+      const details = ITEM_DETAILS[item.item_id] || { name: "收藏品", image: "", description: "" };
+      slot.title = details.name;
+      if (details.image) {
+      const image = document.createElement("img");
+      image.src = details.image;
+      image.alt = details.name;
+        slot.append(image);
+      }
+    }
+    bagItemsElement.append(slot);
+  }
+  bagEmptyElement.hidden = inventoryItems.length > 0;
+}
+
+function updateShopUI() {
+  const ownsNiko = inventoryItems.some((item) => item.item_id === "niko-cat");
+  buyNikoButton.disabled = ownsNiko;
+  buyNikoButton.textContent = ownsNiko ? "已放入包包" : currentUser ? "購買尼可" : "登入後購買";
+}
+
+async function refreshInventory() {
+  if (!currentUser) {
+    inventoryItems = [];
+    updateBagUI();
+    updateShopUI();
+    return;
+  }
+  const result = await api("/api/auth/inventory");
+  inventoryItems = Array.isArray(result.items) ? result.items : [];
+  updateBagUI();
+  updateShopUI();
+}
+
+async function openShop() {
+  showMessage(shopMessage, "");
+  updateShopUI();
+  shopDialog.showModal();
+  if (currentUser) {
+    try { await refreshInventory(); }
+    catch (error) { showMessage(shopMessage, error.message, true); }
+  }
+}
+
+async function openBag() {
+  if (!currentUser) {
+    openAuth("login");
+    return;
+  }
+  bagEmptyElement.hidden = true;
+  bagItemsElement.replaceChildren();
+  bagEmptyElement.textContent = "包包載入中…";
+  bagDialog.showModal();
+  try { await refreshInventory(); }
+  catch (error) {
+    bagEmptyElement.hidden = false;
+    bagEmptyElement.textContent = error.message;
+  }
 }
 
 function updateProfileUI() {
@@ -171,6 +259,7 @@ async function loadSession() {
     const result = await api("/api/auth/me");
     currentUser = result.user;
     updateAccountUI();
+    if (currentUser) refreshInventory().catch(() => {});
     if (currentUser && !currentUser.nickname) openNicknameDialog();
   } catch {
     currentUser = null;
@@ -194,6 +283,35 @@ registerTab.addEventListener("click", () => setMode("register"));
 
 document.querySelectorAll("[data-close]").forEach((button) => {
   button.addEventListener("click", () => document.getElementById(button.dataset.close).close());
+});
+
+shopButton.addEventListener("click", openShop);
+bagButton.addEventListener("click", openBag);
+document.querySelector("#bag-shop-button").addEventListener("click", () => {
+  bagDialog.close();
+  openShop();
+});
+buyNikoButton.addEventListener("click", async () => {
+  if (!currentUser) {
+    shopDialog.close();
+    openAuth("login");
+    return;
+  }
+  buyNikoButton.disabled = true;
+  buyNikoButton.textContent = "購買中…";
+  showMessage(shopMessage, "");
+  try {
+    const result = await api("/api/auth/purchase", { method: "POST", body: { itemId: "niko-cat" } });
+    currentUser = result.user;
+    inventoryItems = Array.isArray(result.items) ? result.items : [];
+    updateAccountUI();
+    updateBagUI();
+    updateShopUI();
+    showMessage(shopMessage, "購買成功，尼可已放進你的包包。");
+  } catch (error) {
+    showMessage(shopMessage, error.message, true);
+    updateShopUI();
+  }
 });
 
 playerWidget.addEventListener("click", openProfileDialog);
@@ -459,6 +577,7 @@ authForm.addEventListener("submit", async (event) => {
     }
     currentUser = result.user;
     updateAccountUI();
+    refreshInventory().catch(() => {});
     authDialog.close();
     authForm.reset();
     if (!currentUser.nickname) openNicknameDialog();
