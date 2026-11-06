@@ -34,6 +34,7 @@
       <span class="player-widget-info">
         <span class="player-widget-title"><span>玩家資訊</span><span class="player-level">LV.1</span></span>
         <strong id="player-name">訪客玩家</strong>
+        <span id="player-number" class="player-widget-number" hidden></span>
         <span class="player-exp-label"><span>經驗值</span><span>0 / 100</span></span>
         <span class="player-exp-track" role="progressbar" aria-label="經驗值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></span>
       </span>
@@ -183,7 +184,7 @@
           <label>性別<select name="gender"><option value="">未設定</option><option>男</option><option>女</option></select></label>
           <label>飛飛幣<input name="flyCoins" type="number" min="0" max="2147483647" step="1" required /></label>
           <label>設定新密碼（選填）<input name="adminPassword" type="password" minlength="10" maxlength="128" autocomplete="new-password" placeholder="不顯示目前密碼；留白代表不修改" /></label>
-          <label class="admin-check"><input name="isAdmin" type="checkbox" /> 管理員權限</label>
+          <label id="admin-role-control" class="admin-check"><input name="isAdmin" type="checkbox" /> 管理員權限（僅最高管理員可調整）</label>
           <div class="admin-avatar-line"><img id="admin-avatar-preview" alt="玩家大頭照預覽" hidden /><span id="admin-avatar-note">尚無大頭照</span><label class="admin-check"><input name="removeAvatar" type="checkbox" /> 移除大頭照</label></div>
           <p id="admin-player-meta" class="admin-player-meta"></p>
           <button class="gold-button" type="submit">儲存玩家資料</button>
