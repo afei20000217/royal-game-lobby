@@ -105,6 +105,25 @@
     <button id="profile-login" class="gold-button" type="button">登入 / 註冊</button>
   </dialog>
 
+  <dialog id="avatar-crop-dialog" class="dialog avatar-crop-dialog" aria-labelledby="avatar-crop-title">
+    <button class="dialog-close" type="button" data-close="avatar-crop-dialog" aria-label="關閉">×</button>
+    <span class="dialog-crown" aria-hidden="true">♛</span>
+    <h2 id="avatar-crop-title">調整大頭照</h2>
+    <p class="dialog-intro">用滑鼠滾輪縮放，拖曳照片調整裁切位置。</p>
+    <div id="avatar-crop-viewport" class="avatar-crop-viewport" role="img" aria-label="大頭照裁切預覽">
+      <canvas id="avatar-crop-canvas" width="280" height="280" aria-label="待裁切的大頭照預覽"></canvas>
+      <span class="avatar-crop-guide" aria-hidden="true"></span>
+    </div>
+    <label class="avatar-zoom-label" for="avatar-zoom">照片大小</label>
+    <input id="avatar-zoom" class="avatar-zoom" type="range" min="100" max="300" value="100" step="1" />
+    <p class="crop-hint">也可以拖曳照片，調整要顯示的區域。</p>
+    <p id="avatar-crop-message" class="form-message" aria-live="polite"></p>
+    <div class="crop-actions">
+      <button id="avatar-crop-cancel" type="button">取消</button>
+      <button id="avatar-crop-save" class="gold-button" type="button">使用這張照片</button>
+    </div>
+  </dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

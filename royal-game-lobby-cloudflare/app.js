@@ -10,6 +10,12 @@ const profileAvatar = document.querySelector("#profile-avatar");
 const avatarChange = document.querySelector("#avatar-change");
 const avatarRemove = document.querySelector("#avatar-remove");
 const avatarFile = document.querySelector("#avatar-file");
+const avatarCropDialog = document.querySelector("#avatar-crop-dialog");
+const avatarCropViewport = document.querySelector("#avatar-crop-viewport");
+const avatarCropCanvas = document.querySelector("#avatar-crop-canvas");
+const avatarZoom = document.querySelector("#avatar-zoom");
+const avatarCropSave = document.querySelector("#avatar-crop-save");
+const avatarCropMessage = document.querySelector("#avatar-crop-message");
 const profileNickname = document.querySelector("#profile-nickname");
 const profileAccount = document.querySelector("#profile-account");
 const profileJoined = document.querySelector("#profile-joined");
@@ -30,6 +36,11 @@ const toast = document.querySelector("#toast");
 let mode = "login";
 let currentUser = null;
 let toastTimer;
+let cropBitmap = null;
+let cropZoom = 1;
+let cropPanX = 0;
+let cropPanY = 0;
+let cropPointer = null;
 const PASSWORD_ITERATIONS = 600_000;
 const encoder = new TextEncoder();
 
@@ -182,25 +193,97 @@ avatarFile.addEventListener("change", async () => {
     return;
   }
   try {
-    const bitmap = await createImageBitmap(file);
-    const side = Math.min(bitmap.width, bitmap.height);
+    if (cropBitmap) cropBitmap.close();
+    cropBitmap = await createImageBitmap(file);
+    cropZoom = 1;
+    cropPanX = 0;
+    cropPanY = 0;
+    avatarZoom.value = "100";
+    showMessage(avatarCropMessage, "");
+    avatarCropDialog.showModal();
+    requestAnimationFrame(renderAvatarCrop);
+  } catch (error) {
+    showToast(error.message || "無法讀取這張圖片，請換一張再試。");
+  }
+});
+function renderAvatarCrop() {
+  if (!cropBitmap) return;
+  const view = avatarCropViewport.clientWidth;
+  const cover = Math.max(view / cropBitmap.width, view / cropBitmap.height);
+  const scale = cover * cropZoom;
+  const width = cropBitmap.width * scale;
+  const height = cropBitmap.height * scale;
+  cropPanX = Math.max(-(width - view) / 2, Math.min((width - view) / 2, cropPanX));
+  cropPanY = Math.max(-(height - view) / 2, Math.min((height - view) / 2, cropPanY));
+  const ratio = avatarCropCanvas.width / view;
+  const context = avatarCropCanvas.getContext("2d");
+  context.clearRect(0, 0, avatarCropCanvas.width, avatarCropCanvas.height);
+  context.drawImage(cropBitmap, ((view - width) / 2 + cropPanX) * ratio, ((view - height) / 2 + cropPanY) * ratio, width * ratio, height * ratio);
+}
+function setAvatarZoom(value) {
+  cropZoom = Math.max(1, Math.min(3, value));
+  avatarZoom.value = String(Math.round(cropZoom * 100));
+  renderAvatarCrop();
+}
+avatarZoom.addEventListener("input", () => setAvatarZoom(Number(avatarZoom.value) / 100));
+avatarCropViewport.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  setAvatarZoom(cropZoom * (event.deltaY < 0 ? 1.1 : 1 / 1.1));
+}, { passive: false });
+avatarCropViewport.addEventListener("pointerdown", (event) => {
+  cropPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  avatarCropViewport.setPointerCapture(event.pointerId);
+  avatarCropViewport.classList.add("dragging");
+});
+avatarCropViewport.addEventListener("pointermove", (event) => {
+  if (!cropPointer || cropPointer.id !== event.pointerId) return;
+  cropPanX += event.clientX - cropPointer.x;
+  cropPanY += event.clientY - cropPointer.y;
+  cropPointer.x = event.clientX;
+  cropPointer.y = event.clientY;
+  renderAvatarCrop();
+});
+function stopAvatarCropDrag() { cropPointer = null; avatarCropViewport.classList.remove("dragging"); }
+avatarCropViewport.addEventListener("pointerup", stopAvatarCropDrag);
+avatarCropViewport.addEventListener("pointercancel", stopAvatarCropDrag);
+avatarCropViewport.addEventListener("lostpointercapture", stopAvatarCropDrag);
+avatarCropDialog.addEventListener("close", () => {
+  if (cropBitmap) cropBitmap.close();
+  cropBitmap = null;
+  cropPointer = null;
+  const context = avatarCropCanvas.getContext("2d");
+  context.clearRect(0, 0, avatarCropCanvas.width, avatarCropCanvas.height);
+});
+document.querySelector("#avatar-crop-cancel").addEventListener("click", () => avatarCropDialog.close());
+avatarCropSave.addEventListener("click", async () => {
+  if (!cropBitmap) return;
+  avatarCropSave.disabled = true;
+  showMessage(avatarCropMessage, "正在保存照片…");
+  try {
     const canvas = document.createElement("canvas");
     canvas.width = 256;
     canvas.height = 256;
-    const context = canvas.getContext("2d");
-    context.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 256, 256);
-    bitmap.close();
-    const avatar = canvas.toDataURL("image/webp", 0.8);
-    if (!avatar.startsWith("data:image/webp;") || avatar.length > 400_000) throw new Error("圖片無法壓縮，請換一張較小的圖片。");
-    avatarChange.disabled = true;
+    const view = avatarCropViewport.clientWidth;
+    const scale = Math.max(256 / cropBitmap.width, 256 / cropBitmap.height) * cropZoom;
+    const width = cropBitmap.width * scale;
+    const height = cropBitmap.height * scale;
+    const ratio = 256 / view;
+    const left = (256 - width) / 2 + cropPanX * ratio;
+    const top = (256 - height) / 2 + cropPanY * ratio;
+    canvas.getContext("2d").drawImage(cropBitmap, left, top, width, height);
+    let avatar = canvas.toDataURL("image/webp", 0.82);
+    if (!avatar.startsWith("data:image/webp;")) avatar = canvas.toDataURL("image/jpeg", 0.82);
+    if (avatar.length > 380_000) avatar = canvas.toDataURL("image/jpeg", 0.62);
+    if (avatar.length > 380_000) throw new Error("照片檔案仍太大，請縮小後再試。");
     const result = await api("/api/auth/profile", { method: "POST", body: { field: "avatar", value: avatar } });
     currentUser = result.user;
     updateAccountUI();
+    avatarCropDialog.close();
     showToast("大頭照已更新");
   } catch (error) {
-    showToast(error.message || "圖片處理失敗，請再試一次。");
+    showMessage(avatarCropMessage, error.message || "照片儲存失敗，請再試一次。", true);
   } finally {
-    avatarChange.disabled = false;
+    avatarCropSave.disabled = false;
   }
 });
 avatarRemove.addEventListener("click", async () => {
