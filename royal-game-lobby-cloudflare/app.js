@@ -5,6 +5,11 @@ const playerWidget = document.querySelector("#player-widget");
 const authButton = document.querySelector("#auth-button");
 const userLabel = document.querySelector("#user-label");
 const playerName = document.querySelector("#player-name");
+const playerAvatarSmall = document.querySelector("#player-avatar-small");
+const profileAvatar = document.querySelector("#profile-avatar");
+const avatarChange = document.querySelector("#avatar-change");
+const avatarRemove = document.querySelector("#avatar-remove");
+const avatarFile = document.querySelector("#avatar-file");
 const profileNickname = document.querySelector("#profile-nickname");
 const profileAccount = document.querySelector("#profile-account");
 const profileJoined = document.querySelector("#profile-joined");
@@ -80,6 +85,14 @@ function updateAccountUI() {
     userLabel.textContent = "";
     playerName.textContent = "訪客玩家";
   }
+  const avatar = currentUser?.avatar || "";
+  if (avatar) {
+    playerAvatarSmall.src = avatar;
+    profileAvatar.src = avatar;
+  } else {
+    playerAvatarSmall.removeAttribute("src");
+    profileAvatar.removeAttribute("src");
+  }
   updateProfileUI();
 }
 
@@ -90,6 +103,8 @@ function updateProfileUI() {
     ? new Intl.DateTimeFormat("zh-TW", { dateStyle: "medium" }).format(new Date(Number(currentUser.createdAt) * 1000))
     : currentUser ? "資料尚未提供" : "登入後顯示";
   profileLogin.hidden = Boolean(currentUser);
+  avatarChange.hidden = !currentUser;
+  avatarRemove.hidden = !currentUser || !currentUser.avatar;
   document.querySelector('[data-profile-value="nickname"]').textContent = currentUser?.nickname || "尚未設定";
   document.querySelector('[data-profile-value="region"]').textContent = currentUser?.region || "尚未設定";
   document.querySelector('[data-profile-value="birthday"]').textContent = currentUser?.birthday
@@ -156,6 +171,48 @@ playerWidget.addEventListener("click", openProfileDialog);
 profileLogin.addEventListener("click", () => {
   profileDialog.close();
   openAuth("login");
+});
+avatarChange.addEventListener("click", () => avatarFile.click());
+avatarFile.addEventListener("change", async () => {
+  const file = avatarFile.files?.[0];
+  avatarFile.value = "";
+  if (!file) return;
+  if (!file.type.startsWith("image/") || file.size > 12 * 1024 * 1024) {
+    showToast("請選擇 12 MB 以內的圖片。");
+    return;
+  }
+  try {
+    const bitmap = await createImageBitmap(file);
+    const side = Math.min(bitmap.width, bitmap.height);
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const context = canvas.getContext("2d");
+    context.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 256, 256);
+    bitmap.close();
+    const avatar = canvas.toDataURL("image/webp", 0.8);
+    if (!avatar.startsWith("data:image/webp;") || avatar.length > 400_000) throw new Error("圖片無法壓縮，請換一張較小的圖片。");
+    avatarChange.disabled = true;
+    const result = await api("/api/auth/profile", { method: "POST", body: { field: "avatar", value: avatar } });
+    currentUser = result.user;
+    updateAccountUI();
+    showToast("大頭照已更新");
+  } catch (error) {
+    showToast(error.message || "圖片處理失敗，請再試一次。");
+  } finally {
+    avatarChange.disabled = false;
+  }
+});
+avatarRemove.addEventListener("click", async () => {
+  avatarRemove.disabled = true;
+  try {
+    const result = await api("/api/auth/profile", { method: "POST", body: { field: "avatar", value: null } });
+    currentUser = result.user;
+    updateAccountUI();
+    showToast("已移除大頭照");
+  } catch (error) {
+    showToast(error.message);
+  } finally { avatarRemove.disabled = false; }
 });
 
 const regions = ["台北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "苗栗縣", "台中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣", "台南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "連江縣"];
