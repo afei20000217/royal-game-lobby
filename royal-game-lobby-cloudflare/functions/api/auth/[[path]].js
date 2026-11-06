@@ -6,11 +6,15 @@ const DUMMY_HASH = "a4c2f0a0ec57f99e03e5f70a918d41e2e95d32221a1f0d3a5baf5af2893f
 const VERIFIER_PATTERN = /^[a-f0-9]{64}$/;
 const SALT_PATTERN = /^[a-f0-9]{32}$/;
 const encoder = new TextEncoder();
+const NIKO_ITEM_ID = "niko-cat";
+const NIKO_PRICE = 5000;
+const BAG_CAPACITY = 100;
 
 export async function onRequest(context) {
   const { request, env, params } = context;
   const path = Array.isArray(params.path) ? params.path.join("/") : (params.path || "");
   if (request.method === "GET" && path === "me") return json({ user: await sessionUser(request, env) });
+  if (request.method === "GET" && path === "inventory") return inventory(request, env);
   if (request.method !== "POST") return json({ error: "不支援此操作。" }, 405, { Allow: "GET, POST" });
   if (!sameOrigin(request)) return json({ error: "請重新整理頁面後再試。" }, 403);
   if (path === "challenge") return challenge(request, env);
@@ -19,7 +23,56 @@ export async function onRequest(context) {
   if (path === "logout") return logout(request, env);
   if (path === "profile") return profile(request, env);
   if (path === "credentials") return credentials(request, env);
+  if (path === "purchase") return purchase(request, env);
   return json({ error: "找不到此服務。" }, 404);
+}
+
+async function inventory(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入後查看包包。" }, 401);
+  const result = await env.DB.prepare("SELECT item_id, purchased_at FROM player_inventory WHERE user_id = ? ORDER BY purchased_at DESC")
+    .bind(user.id).all();
+  const items = result.results || [];
+  return json({ items, used: items.length, capacity: BAG_CAPACITY });
+}
+
+async function purchase(request, env) {
+  const user = await sessionUser(request, env);
+  if (!user) return json({ error: "請先登入後購買商品。" }, 401);
+  const body = await readBody(request);
+  if (body.error) return json({ error: body.error }, 400);
+  if (body.itemId !== NIKO_ITEM_ID) return json({ error: "找不到這個商品。" }, 404);
+
+  const owned = await env.DB.prepare("SELECT item_id FROM player_inventory WHERE user_id = ? AND item_id = ?")
+    .bind(user.id, NIKO_ITEM_ID).first();
+  if (owned) return json({ error: "你的包包裡已經有尼可了。" }, 409);
+  const summary = await env.DB.prepare("SELECT fly_coins, (SELECT COUNT(*) FROM player_inventory WHERE user_id = ?) AS used FROM users WHERE id = ?")
+    .bind(user.id, user.id).first();
+  if (Number(summary?.used || 0) >= BAG_CAPACITY) return json({ error: "包包已滿，請先整理空間。" }, 409);
+  if (Number(summary?.fly_coins || 0) < NIKO_PRICE) return json({ error: "飛飛幣不足，無法購買尼可。" }, 409);
+
+  const purchasedAt = Math.floor(Date.now() / 1000);
+  const results = await env.DB.batch([
+    env.DB.prepare("UPDATE users SET fly_coins = fly_coins - ? WHERE id = ? AND fly_coins >= ? AND NOT EXISTS (SELECT 1 FROM player_inventory WHERE user_id = ? AND item_id = ?) AND (SELECT COUNT(*) FROM player_inventory WHERE user_id = ?) < ?")
+      .bind(NIKO_PRICE, user.id, NIKO_PRICE, user.id, NIKO_ITEM_ID, user.id, BAG_CAPACITY),
+    env.DB.prepare("INSERT INTO player_inventory (user_id, item_id, purchased_at) SELECT ?, ?, ? WHERE changes() = 1")
+      .bind(user.id, NIKO_ITEM_ID, purchasedAt)
+  ]);
+  if (Number(results[0]?.meta?.changes || 0) !== 1) {
+    const latest = await env.DB.prepare("SELECT fly_coins, (SELECT COUNT(*) FROM player_inventory WHERE user_id = ?) AS used FROM users WHERE id = ?")
+      .bind(user.id, user.id).first();
+    const alreadyOwned = await env.DB.prepare("SELECT item_id FROM player_inventory WHERE user_id = ? AND item_id = ?")
+      .bind(user.id, NIKO_ITEM_ID).first();
+    if (alreadyOwned) return json({ error: "你的包包裡已經有尼可了。" }, 409);
+    if (Number(latest?.used || 0) >= BAG_CAPACITY) return json({ error: "包包已滿，請先整理空間。" }, 409);
+    if (Number(latest?.fly_coins || 0) < NIKO_PRICE) return json({ error: "飛飛幣不足，無法購買尼可。" }, 409);
+    return json({ error: "購買沒有完成，請稍後再試。" }, 500);
+  }
+
+  const updatedUser = await sessionUser(request, env);
+  const bag = await env.DB.prepare("SELECT item_id, purchased_at FROM player_inventory WHERE user_id = ? ORDER BY purchased_at DESC")
+    .bind(user.id).all();
+  return json({ user: updatedUser, items: bag.results || [], used: (bag.results || []).length, capacity: BAG_CAPACITY });
 }
 
 async function challenge(request, env) {
