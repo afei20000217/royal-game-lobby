@@ -54,7 +54,7 @@ async function register(request, env) {
   } catch {
     return json({ error: "帳號建立失敗，請稍後再試。" }, 500);
   }
-  return json({ user: { id, username, nickname: null } }, 201, { "Set-Cookie": await createSession(env, id) });
+  return json({ user: { id, username, nickname: null, createdAt: now } }, 201, { "Set-Cookie": await createSession(env, id) });
 }
 
 async function login(request, env) {
@@ -65,7 +65,7 @@ async function login(request, env) {
     return json({ error: "帳號或密碼錯誤。" }, 401);
   }
   if (await limited(env, "login", username, 10, 900)) return json({ error: "嘗試次數過多，請 15 分鐘後再試。" }, 429);
-  const user = await env.DB.prepare("SELECT id, username, nickname, password_hash FROM users WHERE username = ?").bind(username).first();
+  const user = await env.DB.prepare("SELECT id, username, nickname, created_at, password_hash FROM users WHERE username = ?").bind(username).first();
   const isVersion2 = user?.password_hash?.startsWith("v2:");
   const submittedHash = isVersion2 ? await sha256(body.passwordVerifier) : body.passwordVerifier;
   const expectedHash = isVersion2 ? user.password_hash.slice(3) : (user?.password_hash || DUMMY_HASH);
@@ -76,7 +76,7 @@ async function login(request, env) {
       .bind(`v2:${await sha256(body.passwordVerifier)}`, user.id, user.password_hash).run();
   }
   await env.DB.prepare("DELETE FROM auth_attempts WHERE bucket_hash = ?").bind(await bucketHash("login", username)).run();
-  return json({ user: { id: user.id, username: user.username, nickname: user.nickname } }, 200, { "Set-Cookie": await createSession(env, user.id) });
+  return json({ user: { id: user.id, username: user.username, nickname: user.nickname, createdAt: user.created_at } }, 200, { "Set-Cookie": await createSession(env, user.id) });
 }
 
 async function logout(request, env) {
@@ -196,7 +196,7 @@ async function sessionUser(request, env) {
   const token = cookieValue(request, COOKIE);
   if (!token) return null;
   const now = Math.floor(Date.now() / 1000);
-  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
+  const user = await env.DB.prepare("SELECT users.id, users.username, users.nickname, users.created_at FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ? AND sessions.expires_at > ?")
     .bind(await sha256(token), now).first();
-  return user ? { id: user.id, username: user.username, nickname: user.nickname } : null;
+  return user ? { id: user.id, username: user.username, nickname: user.nickname, createdAt: user.created_at } : null;
 }
