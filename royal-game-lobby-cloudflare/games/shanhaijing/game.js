@@ -80,24 +80,29 @@ const WIN_TIERS=[
   {min:150,name:'ULTRA WIN',art:'win-ultra.jpg',duration:3900},
   {min:500,name:'LEGENDARY WIN',art:'win-legendary.jpg',duration:4800}
 ];
-/* Demo wallet only: every page load starts a new 10,000-credit play session.
-   Wins and wagers still accumulate normally until the page is reloaded. */
-const WALLET_KEY='shanHaiJingDemoWalletV3', INITIAL_BALANCE=10000;
+/* The game reads its entry balance from the signed-in lobby account. */
 function cents(value){return Math.round((Number(value)||0)*100)/100;}
 function loadWallet(){
-  return {balance:INITIAL_BALANCE,totalStake:0,totalWon:0};
+  return {balance:0,totalStake:0,totalWon:0};
 }
 const wallet=loadWallet();
 function saveWallet(){
   wallet.balance=cents(balance);
-  try{localStorage.setItem(WALLET_KEY,JSON.stringify(wallet));}catch(error){/* Play remains available without storage. */}
 }
 function debit(amount){const value=cents(amount);balance=cents(balance-value);wallet.totalStake=cents(wallet.totalStake+value);saveWallet();}
 function credit(amount){const value=cents(amount);balance=cents(balance+value);wallet.totalWon=cents(wallet.totalWon+value);saveWallet();}
 function walletNet(){return cents(wallet.totalWon-wallet.totalStake);}
-let board=[],balance=cents(wallet.balance),bet=100,freeSpins=0,featureSpinLimit=0,globalMultiplier=0,roundWin=0,baseWin=0,spinning=false,skip=false,ante=false,autoPlay=false,autoRemaining=0,gameMode=document.body.dataset.mode||'base',featureWin=0,featureRoundCommitted=false,lockedOrbs=[],spinId=0,cellNodes=[],winCloseTimer=0,roundWinAnimation=0,roundWinAnimating=false,displayedRoundWin=0,featureIntroPending=false,featureReturnPending=false,returnAfterSpin=false, fuxiOrbCasts=0,nuwaOrbCasts=0,featureSpinRetryAvailable=false;
+let board=[],balance=cents(wallet.balance),walletReady=false,bet=100,freeSpins=0,featureSpinLimit=0,globalMultiplier=0,roundWin=0,baseWin=0,spinning=false,skip=false,ante=false,autoPlay=false,autoRemaining=0,gameMode=document.body.dataset.mode||'base',featureWin=0,featureRoundCommitted=false,lockedOrbs=[],spinId=0,cellNodes=[],winCloseTimer=0,roundWinAnimation=0,roundWinAnimating=false,displayedRoundWin=0,featureIntroPending=false,featureReturnPending=false,returnAfterSpin=false, fuxiOrbCasts=0,nuwaOrbCasts=0,featureSpinRetryAvailable=false;
 let tumbleTestPending=new URLSearchParams(location.search).get('test')==='tumble';
 const $=selector=>document.querySelector(selector);
+async function loadAccountBalance(){
+  try{
+    const response=await fetch('/api/auth/me',{cache:'no-store',credentials:'same-origin'});
+    const result=await response.json();
+    if(!response.ok||!result.user){walletReady=false;balance=0;status('請先登入大廳，再使用帳戶飛飛幣遊玩。');ui();return;}
+    balance=cents(result.user.flyCoins);wallet.balance=balance;walletReady=true;status('已載入帳戶飛飛幣餘額。');ui();
+  }catch(error){walletReady=false;balance=0;status('無法讀取帳戶飛飛幣，請返回大廳登入後重試。');ui();}
+}
 /* BGM starts only after a real player gesture.  This satisfies browser
    autoplay rules while keeping the soundtrack looping through scene changes. */
 function startBgm(){
@@ -553,7 +558,15 @@ function stripSymbolMarkup(symbol){
    painted board can resolve fractional pixels differently, which causes a
    visible 1px nudge when the belt hands back to the fixed grid. */
 function reelSlotMarkup(symbol,top,height,preview=false){
-  return `<span class="reelSymbolSlot"${preview?' data-preview="1"':''} style="top:${top}px;height:${height}px">${stripSymbolMarkup(symbol)}</span>`;
+  return `<span class="reelSymbolSlot" data-slot-top="${Number(top)||0}" data-slot-height="${Number(height)||0}"${preview?' data-preview="1"':''}>${stripSymbolMarkup(symbol)}</span>`;
+}
+/* CSP blocks style="…" attributes. Set measured reel geometry through the
+   CSSOM after parsing so each symbol keeps its own row on strict deployments. */
+function applyReelSlotGeometry(root){
+  root.querySelectorAll('.reelSymbolSlot').forEach(slot=>{
+    slot.style.top=`${Number(slot.dataset.slotTop)||0}px`;
+    slot.style.height=`${Number(slot.dataset.slotHeight)||0}px`;
+  });
 }
 
 /* This is presentation only.  The existing orb result, probability and payout
@@ -675,6 +688,7 @@ async function clearReelStrip(col,onIncoming){
   strip.style.setProperty('--clear-belt-height',`${beltHeight}px`);
   strip.style.setProperty('--clear-travel',`${beltHeight+lowerRail}px`);
   strip.innerHTML=`<div class="reelClearTrack">${outgoing.map((symbol,row)=>reelSlotMarkup(symbol,slotTops[row],rowRects[row].height)).join('')}</div>`;
+  applyReelSlotGeometry(strip);
   /* Both belts occupy identical cell coordinates for this paint.  Removing
      the settled one after the clear belt is attached prevents a visible gap
      while ensuring no inherited reel-track transform can affect clearing. */
@@ -725,6 +739,7 @@ async function playReelStrip(col,final,stopped,onMotionStart){
   strip.style.setProperty('--reel-start-y',`-${travelDistance}px`);
   strip.style.setProperty('--reel-duration',`${travelDuration}ms`);
   strip.innerHTML=`<div class="reelStripTrack">${landing.map((symbol,row)=>reelSlotMarkup(symbol,slotTops[row],rowRects[row].height)).join('')}${preview.map((symbol,row)=>reelSlotMarkup(symbol,beltHeight+slotTops[row],rowRects[row].height,true)).join('')}</div>`;
+  applyReelSlotGeometry(strip);
   /* Prepare the fixed landing artwork before the belt starts.  It remains
      completely hidden under the travelling strip, but its decoded image,
      exact size and calibrated scale are already present for the full travel
@@ -768,7 +783,7 @@ function ui(){
   if(totalWinHud)totalWinHud.textContent=money(totalWinForHud());
   $('#modeLabel').textContent=gameMode==='free'?'FREE GAMES':gameMode==='bonus'?'神啟之境':'';
   const roundLabel=$('#free').closest('.feature').querySelector('small');
-  if(gameMode==='base'){roundLabel.textContent='虛擬餘額';$('#free').textContent=money(balance);}else{roundLabel.textContent='剩餘回合';$('#free').textContent=freeSpins;}
+  if(gameMode==='base'){roundLabel.textContent='帳戶飛飛幣';$('#free').textContent=money(balance);}else{roundLabel.textContent='剩餘回合';$('#free').textContent=freeSpins;}
   /* The medallion reads value first (6X), centred in the supplied circular
      artwork.  It must never use the legacy x6 order. */
   $('#multi').textContent=`${Math.max(1,globalMultiplier)}X`;if(!roundWinAnimating)paintRoundWin(visibleWinTotal());
@@ -781,9 +796,11 @@ function ui(){
 const updateUi=ui;
 ui=function(){
   updateUi();
-  const locked=spinning||(gameMode!=='base'&&!featureSpinRetryAvailable);
+  const locked=!walletReady||spinning||(gameMode!=='base'&&!featureSpinRetryAvailable);
   $('#spin').disabled=locked;
   $('#spin').textContent=featureSpinRetryAvailable?'重試本回合':'SPIN';
+  const buyButton=$('#buyFeature');if(buyButton)buyButton.disabled=!walletReady||spinning||gameMode!=='base';
+  const autoButton=$('#auto');if(autoButton)autoButton.disabled=!walletReady||spinning;
   const hudDown=$('#hudBetDown'),hudUp=$('#hudBetUp');
   if(hudDown)hudDown.disabled=locked;
   if(hudUp)hudUp.disabled=locked;
@@ -1369,8 +1386,9 @@ function releaseStoppedReelStrips(){
 }
 async function spin(automatic=false){
   /* A spin, tumble and win settlement are one uninterrupted sequence. */
+  if(!walletReady){status('請先登入大廳，才能使用帳戶飛飛幣。');return;}
   if(spinning||(!automatic&&gameMode!=='base'&&!featureSpinRetryAvailable))return;
-  const inFeature=gameMode!=='base',cost=inFeature?0:bet*(ante?1.25:1);if(balance<cost){status('虛擬餘額不足。');return;}
+  const inFeature=gameMode!=='base',cost=inFeature?0:bet*(ante?1.25:1);if(balance<cost){status('帳戶飛飛幣不足。');return;}
   const before={board:board.map(symbol=>symbol?{...symbol}:null),balance,totalStake:wallet.totalStake,totalWon:wallet.totalWon,freeSpins,featureSpinLimit,globalMultiplier,roundWin,baseWin,gameMode,featureWin,featureRoundCommitted,lockedOrbs:lockedOrbs.map(lock=>({...lock,symbol:{...lock.symbol}})),autoRemaining,spinId};
   if(featureSpinRetryAvailable&&!automatic&&inFeature)autoPlay=true;
   featureSpinRetryAvailable=false;
@@ -1479,21 +1497,21 @@ tickLocks();if(returnAfterSpin){returnAfterSpin=false;spinning=false;returnToBas
   }
 }
 function buyFeature(){
-  if(spinning||gameMode!=='base')return;const cost=bet*BUY;if(balance<cost){status('虛擬餘額不足以購買免費遊戲。');return;}
+  if(!walletReady||spinning||gameMode!=='base')return;const cost=bet*BUY;if(balance<cost){status('帳戶飛飛幣不足以購買免費遊戲。');return;}
   debit(cost);freeSpins=START_FREE;featureSpinLimit=START_FREE;globalMultiplier=0;featureWin=0;autoPlay=true;const special=Math.random()<.15;enter(special?'bonus':'free');ui();showFeatureIntro(special?'bonus':'free');
 }
 function toggleAnte(){if(spinning||gameMode!=='base')return;ante=!ante;$('#ante').textContent=ante?'特別投注：開':'特別投注：關';ui();}
 /* Portfolio test entrance: start the standard 15-round Free Game without
    charging demo credits.  It never chooses the separate awakening mode. */
 function startFreeGames(){
-  if(spinning||gameMode!=='base')return;
+  if(!walletReady||spinning||gameMode!=='base')return;
   freeSpins=START_FREE;featureSpinLimit=START_FREE;globalMultiplier=0;featureWin=0;autoPlay=true;
   enter('free');ui();showFeatureIntro('free');
 }
 /* Portfolio test entrance: lets reviewers inspect Awakening without changing
    its normal 4+ Scatter / Qingqiu trigger rule. */
 function startAwakening(){
-  if(spinning||gameMode!=='base')return;
+  if(!walletReady||spinning||gameMode!=='base')return;
   freeSpins=START_FREE;featureSpinLimit=START_FREE;globalMultiplier=0;featureWin=0;lockedOrbs=[];
   /* Do not mark the game as spinning here.  The intro remains clickable and
      closeModal can immediately launch the first automatic feature spin. */
@@ -1512,7 +1530,7 @@ function returnToBaseGame(){
   releaseStoppedReelStrips();releaseSettledCascadeDisplay();
   enter('base');board=makeBoard();render();resetRoundWinDisplay();ui();
 }
-window.gameAssetsReady=preloadArt();board=makeOpeningShowcaseBoard();render();ui();cleanSpinMatte();cleanSpinGlowMatte();cleanBoardMatte();
+window.gameAssetsReady=Promise.all([preloadArt(),loadAccountBalance()]);board=makeOpeningShowcaseBoard();render();ui();cleanSpinMatte();cleanSpinGlowMatte();cleanBoardMatte();
 function adjustBet(delta){if(spinning||gameMode!=='base')return;bet=Math.max(100,Math.min(500,bet+delta));ui();}
 /* The three portfolio entrances are actual buttons. Capture their click in
    the target phase so the scenic main-stage handler cannot steal it. */
