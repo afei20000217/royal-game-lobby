@@ -95,7 +95,7 @@ function saveWallet(){
 function debit(amount){const value=cents(amount);balance=cents(balance-value);wallet.totalStake=cents(wallet.totalStake+value);saveWallet();}
 function credit(amount){const value=cents(amount);balance=cents(balance+value);wallet.totalWon=cents(wallet.totalWon+value);saveWallet();}
 function walletNet(){return cents(wallet.totalWon-wallet.totalStake);}
-let board=[],balance=cents(wallet.balance),bet=100,freeSpins=0,featureSpinLimit=0,globalMultiplier=0,roundWin=0,baseWin=0,spinning=false,skip=false,ante=false,autoPlay=false,autoRemaining=0,gameMode=document.body.dataset.mode||'base',featureWin=0,featureRoundCommitted=false,lockedOrbs=[],spinId=0,cellNodes=[],winCloseTimer=0,roundWinAnimation=0,roundWinAnimating=false,displayedRoundWin=0,featureIntroPending=false,featureReturnPending=false,returnAfterSpin=false, fuxiOrbCasts=0,nuwaOrbCasts=0;
+let board=[],balance=cents(wallet.balance),bet=100,freeSpins=0,featureSpinLimit=0,globalMultiplier=0,roundWin=0,baseWin=0,spinning=false,skip=false,ante=false,autoPlay=false,autoRemaining=0,gameMode=document.body.dataset.mode||'base',featureWin=0,featureRoundCommitted=false,lockedOrbs=[],spinId=0,cellNodes=[],winCloseTimer=0,roundWinAnimation=0,roundWinAnimating=false,displayedRoundWin=0,featureIntroPending=false,featureReturnPending=false,returnAfterSpin=false, fuxiOrbCasts=0,nuwaOrbCasts=0,featureSpinRetryAvailable=false;
 let tumbleTestPending=new URLSearchParams(location.search).get('test')==='tumble';
 const $=selector=>document.querySelector(selector);
 /* BGM starts only after a real player gesture.  This satisfies browser
@@ -146,6 +146,9 @@ document.addEventListener('pointerdown',startBgm,{passive:true});
 $('#multi').closest('.feature')?.classList.add('multiplierFeature');
 $('#free').closest('.feature')?.classList.add('roundsFeature');
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,skip?0:ms));
+/* requestAnimationFrame may pause indefinitely in a background tab. Game
+   logic must still advance, so every awaited paint has a short timer fallback. */
+function nextPaint(){return new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;clearTimeout(timer);resolve();};const timer=setTimeout(finish,80);if(typeof requestAnimationFrame==='function')requestAnimationFrame(finish);else finish();});}
 const money=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const cleanArtCache=new Map();
 
@@ -588,9 +591,11 @@ async function castOrbToBoard(symbol,index,{duration=620,transformDuration=100,o
   const caster=chooseOrbCaster();
   const deity=document.querySelector(caster==='fuxi'?'.deityFuxi':'.deityNuwa');
   const target=cellNodes[index];
-  if(!deity||!target)return;
+  let committed=false;
+  const commit=()=>{if(committed)return;committed=true;onComplete?.({symbol,index});};
+  if(!deity||!target){commit();return;}
   const sourceRect=deity.getBoundingClientRect(),targetRect=target.getBoundingClientRect();
-  if(!sourceRect.width||!targetRect.width)return;
+  if(!sourceRect.width||!targetRect.width){commit();return;}
   /* Hand locations follow the supplied deity art: Fuxi's yin-yang disk and
      Nuwa's five-colour stone. */
   const origin={
@@ -619,13 +624,14 @@ async function castOrbToBoard(symbol,index,{duration=620,transformDuration=100,o
   const boardFocus=makeFocus('boardFocus',targetRect.left+targetRect.width/2,targetRect.top+targetRect.height/2,boardFocusSize);
   document.body.append(handFocus,boardFocus);void boardFocus.offsetWidth;
   handFocus.classList.add('spinning');boardFocus.classList.add('spinning');
-  await pause(duration);
-  handFocus.classList.add('transforming');boardFocus.classList.add('transforming');
-  await pause(transformDuration);
-  /* Commit on the same frame the board artefact finishes fading, not in a
-     later batch after the other reels have finished. */
-  onComplete?.({symbol,index});
-  handFocus.remove();boardFocus.remove();deity.classList.remove('deityCasting');
+  try{
+    await pause(duration);
+    handFocus.classList.add('transforming');boardFocus.classList.add('transforming');
+    await pause(transformDuration);
+  }finally{
+    /* Always settle the target even if its visual ritual was interrupted. */
+    commit();handFocus.remove();boardFocus.remove();deity.classList.remove('deityCasting');
+  }
 }
 
 async function revealMultiplierBalls(placements){
@@ -676,7 +682,7 @@ async function clearReelStrip(col,onIncoming){
   settled?.remove();
   for(let row=0;row<ROWS;row++)cellNodes[row*COLS+col]?.classList.add('reelClearing');
   void strip.offsetHeight;
-  await new Promise(requestAnimationFrame);
+  await nextPaint();
   strip.classList.add('falling');
   /* Match the incoming reel's full 0.68-second travel, so clearing and
      refilling feel like the two directions of the same physical reel. */
@@ -740,7 +746,7 @@ async function playReelStrip(col,final,stopped,onMotionStart){
      state.  Without this frame boundary the first reel can jump straight to
      its final symbols instead of visibly travelling down the board. */
   viewport.append(strip);void strip.offsetHeight;
-  await new Promise(requestAnimationFrame);
+  await nextPaint();
   /* The board slot is already blank.  Start the paired deity ritual on this
      exact animation frame so its transformation ends with this reel landing. */
   onMotionStart?.();
@@ -775,8 +781,9 @@ function ui(){
 const updateUi=ui;
 ui=function(){
   updateUi();
-  const locked=spinning||gameMode!=='base';
+  const locked=spinning||(gameMode!=='base'&&!featureSpinRetryAvailable);
   $('#spin').disabled=locked;
+  $('#spin').textContent=featureSpinRetryAvailable?'重試本回合':'SPIN';
   const hudDown=$('#hudBetDown'),hudUp=$('#hudBetUp');
   if(hudDown)hudDown.disabled=locked;
   if(hudUp)hudUp.disabled=locked;
@@ -961,15 +968,15 @@ async function dropCascade(hit){
       stone.dataset.targetIndex=item.index;
       stones.push(stone);
     });
-    let cascadeRitual=Promise.resolve();
-    requestAnimationFrame(()=>{
-      stones.forEach(stone=>stone.classList.add('falling'));
-      cascadeRitual=Promise.all(cascadeMultiplierPlacements.map(({symbol,index})=>
-        castOrbToBoard(symbol,index,{duration:620,transformDuration:100,onComplete:commitMultiplierBall})
-      ));
-    });
-    await pause(720);
-    await cascadeRitual;
+    await nextPaint();
+    stones.forEach(stone=>stone.classList.add('falling'));
+    const cascadeRitual=Promise.all(cascadeMultiplierPlacements.map(({symbol,index})=>
+      castOrbToBoard(symbol,index,{duration:620,transformDuration:100,onComplete:commitMultiplierBall})
+    ));
+    await Promise.all([pause(720),cascadeRitual]);
+    /* Defence against a lost animation callback: the logic board always has
+       its complete gravity result before the next win scan begins. */
+    cascadeMultiplierPlacements.forEach(commitMultiplierBall);
     /* The travelling stones themselves become the settled display.  Commit
        their physical top/left first, then clear transform in the same style
        update.  No static-cell reveal, no duplicate image and no post-stop
@@ -1362,11 +1369,15 @@ function releaseStoppedReelStrips(){
 }
 async function spin(automatic=false){
   /* A spin, tumble and win settlement are one uninterrupted sequence. */
-  if(spinning||(!automatic&&gameMode!=='base'))return;
+  if(spinning||(!automatic&&gameMode!=='base'&&!featureSpinRetryAvailable))return;
   const inFeature=gameMode!=='base',cost=inFeature?0:bet*(ante?1.25:1);if(balance<cost){status('虛擬餘額不足。');return;}
+  const before={board:board.map(symbol=>symbol?{...symbol}:null),balance,totalStake:wallet.totalStake,totalWon:wallet.totalWon,freeSpins,featureSpinLimit,globalMultiplier,roundWin,baseWin,gameMode,featureWin,featureRoundCommitted,lockedOrbs:lockedOrbs.map(lock=>({...lock,symbol:{...lock.symbol}})),autoRemaining,spinId};
+  if(featureSpinRetryAvailable&&!automatic&&inFeature)autoPlay=true;
+  featureSpinRetryAvailable=false;
   clearSettledCascadeOverlays();
   const stage=document.querySelector('main');stage.style.cursor='default';stage.classList.remove('spinPressed');void stage.offsetWidth;stage.classList.add('spinPressed');setTimeout(()=>stage.classList.remove('spinPressed'),1000);
   spinning=true;skip=false;$('#spin').disabled=true;featureRoundCommitted=false;roundWin=0;resetRoundWinDisplay();spinId++;if(inFeature)freeSpins--;else{debit(cost);if(autoPlay&&autoRemaining>0)autoRemaining--;}$('#spin').textContent='SPIN';ui();
+  try{
   startReelSfx();
   /* Keep the existing symbols in place while reels roll.  Replacing the full
      board every 135 ms caused artwork to flash and re-load during a spin. */
@@ -1452,7 +1463,20 @@ async function spin(automatic=false){
       showWin(finalWin,{returnToBase:true,subtitle:`${special?'神啟之境':'免費遊戲'}結束・x${(finalWin/bet).toFixed(2)}・點擊繼續回到一般遊戲。`});
     }else showFeatureResult(finalWin,special?'bonus':'free');
   }
-tickLocks();spinning=false;skip=false;$('#spin').textContent='SPIN';if(returnAfterSpin){returnAfterSpin=false;returnToBaseGame();return;}if(gameMode==='base'&&autoPlay&&autoRemaining===0)autoPlay=false;$('#auto').textContent=autoPlay&&gameMode==='base'?`AUTO：${autoRemaining}`:'AUTO ×10';ui();if(autoPlay&&((gameMode==='base'&&autoRemaining>0)||(gameMode!=='base'&&freeSpins))&&$('#modal').classList.contains('hidden'))setTimeout(()=>spin(true),700);
+tickLocks();if(returnAfterSpin){returnAfterSpin=false;spinning=false;returnToBaseGame();return;}if(gameMode==='base'&&autoPlay&&autoRemaining===0)autoPlay=false;$('#auto').textContent=autoPlay&&gameMode==='base'?`AUTO：${autoRemaining}`:'AUTO ×10';if(autoPlay&&((gameMode==='base'&&autoRemaining>0)||(gameMode!=='base'&&freeSpins))&&$('#modal').classList.contains('hidden'))setTimeout(()=>spin(true),700);
+  }catch(error){
+    console.error('Spin animation recovered:',error);
+    balance=before.balance;wallet.totalStake=before.totalStake;wallet.totalWon=before.totalWon;saveWallet();
+    board=before.board;freeSpins=before.freeSpins;featureSpinLimit=before.featureSpinLimit;globalMultiplier=before.globalMultiplier;roundWin=before.roundWin;baseWin=before.baseWin;gameMode=before.gameMode;featureWin=before.featureWin;featureRoundCommitted=before.featureRoundCommitted;lockedOrbs=before.lockedOrbs;autoRemaining=before.autoRemaining;spinId=before.spinId;
+    autoPlay=false;returnAfterSpin=false;featureSpinRetryAvailable=inFeature;
+    releaseStoppedReelStrips();releaseSettledCascadeDisplay();document.querySelectorAll('.cascadeStone:not(.settledCascade),.deityFocus,.multiplierCollect').forEach(node=>node.remove());
+    cellNodes.forEach(cell=>cell.classList.remove('reelClearing','reelCleared','reelLanding','cascadeLanding','orbReveal','collecting','win','powerTarget','fuxiPowerTarget','nuwaPowerTarget'));
+    document.querySelectorAll('.deityCasting').forEach(node=>node.classList.remove('deityCasting'));
+    $('#reels').classList.remove('spinning');render();roundWin=0;resetRoundWinDisplay();
+    status(inFeature?'本回合動畫中斷，盤面已復原。請按「重試本回合」繼續。':'本回合動畫中斷，盤面已復原，請再試一次。');
+  }finally{
+    stopReelSfx();spinning=false;skip=false;ui();
+  }
 }
 function buyFeature(){
   if(spinning||gameMode!=='base')return;const cost=bet*BUY;if(balance<cost){status('虛擬餘額不足以購買免費遊戲。');return;}
